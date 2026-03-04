@@ -1,0 +1,194 @@
+<div class="tool-page">
+  <div class="tool-container">
+
+    <!-- Shared Header Component -->
+    <app-tool-header 
+      [toolName]="'Copy AIDA'"
+      (creditClicked)="creditsModal.open()"
+    ></app-tool-header>
+
+    <!-- Tool Header -->
+    <header class="tool-header">
+      <span class="tool-header-badge">📝 MARKETING</span>
+      <h1 class="tool-header-title">Gerador de Copy AIDA</h1>
+      <p class="tool-header-description">
+        Crie textos persuasivos usando a fórmula AIDA
+      </p>
+
+      <div class="tool-header-meta">
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">⭐</span>
+          4.8 avaliação
+        </span>
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">💡</span>
+          2.8k gerações
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+      <!-- Form Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">Configure sua Copy AIDA</h3>
+        </div>
+
+        <div class="tool-card-body">
+          <form (ngSubmit)="generateCopy()">
+
+            <div class="tool-form-group">
+              <label class="tool-label">Produto ou Serviço</label>
+              <input
+                type="text"
+                class="tool-input"
+                [(ngModel)]="form.product"
+                name="product"
+                placeholder="Ex: Curso de Marketing Digital, App de Meditação, Consultoria Financeira"
+                maxlength="100"
+                required>
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Público-Alvo</label>
+              <input
+                type="text"
+                class="tool-input"
+                [(ngModel)]="form.target"
+                name="target"
+                placeholder="Ex: Empreendedores iniciantes, Mulheres acima de 30 anos, Estudantes universitários"
+                maxlength="100"
+                required>
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Benefício Principal</label>
+              <textarea
+                class="tool-textarea"
+                [(ngModel)]="form.benefit"
+                name="benefit"
+                placeholder="O que seu produto oferece de único? Qual problema ele resolve?"
+                rows="2"
+                maxlength="200">
+              </textarea>
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Tom da Copy</label>
+              <select class="tool-select" [(ngModel)]="form.tone">
+                <option *ngFor="let tone of tones" [value]="tone.value">
+                  {{ tone.label }}
+                </option>
+              </select>
+            </div>
+
+            <button
+              class="tool-btn tool-btn-primary"
+              [disabled]="isLoading || !canGenerate()"
+              (click)="generateCopy()">
+              <span class="tool-btn-icon">🎯</span>
+              {{ isLoading ? 'Gerando copy...' : 'Gerar Copy AIDA' }}
+              <span class="credit-cost">(1 crédito)</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="tool-loading" *ngIf="isLoading">
+        <div class="tool-loading-spinner"></div>
+        <p class="tool-loading-text">Criando copy persuasiva...</p>
+      </div>
+
+      <!-- Results Section -->
+      <div class="tool-results" *ngIf="results.length > 0 && !isLoading">
+
+        <!-- AIDA Sections -->
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <h3 class="tool-card-title">🎯 Copy AIDA Completa</h3>
+          </div>
+
+          <div class="tool-card-body">
+            <div class="aida-sections">
+              <div
+                class="aida-section"
+                *ngFor="let result of results; let i = index"
+                [class]="'section-' + result.section">
+
+                <div class="section-header">
+                  <div class="section-info">
+                    <span class="section-number">{{ i + 1 }}</span>
+                    <h4 class="section-title">{{ result.title }}</h4>
+                  </div>
+                  <app-copy-button
+                    [text]="result.content"
+                    [showLabel]="true">
+                  </app-copy-button>
+                </div>
+
+                <div class="section-content">
+                  {{ result.content }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Empty State -->
+      <div class="tool-empty-state" *ngIf="results.length === 0 && !isLoading">
+        <div class="tool-empty-icon">🎯</div>
+        <h3 class="tool-empty-title">Nenhuma copy gerada ainda</h3>
+        <p class="tool-empty-text">
+          Preencha as informações do produto e público-alvo para gerar sua copy AIDA
+        </p>
+      </div>
+
+      <!-- AIDA Explanation -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">ℹ️ O que é a Fórmula AIDA?</h3>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-grid tool-grid-4">
+            <div class="aida-step">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <h5>👀 Atenção</h5>
+                <p>Chame a atenção do leitor com um headline impactante</p>
+              </div>
+            </div>
+            <div class="aida-step">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <h5>💡 Interesse</h5>
+                <p>Desperte interesse apresentando o problema e solução</p>
+              </div>
+            </div>
+            <div class="aida-step">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <h5>❤️ Desejo</h5>
+                <p>Crie desejo destacando benefícios e prova social</p>
+              </div>
+            </div>
+            <div class="aida-step">
+              <div class="step-number">4</div>
+              <div class="step-content">
+                <h5>🚀 Ação</h5>
+                <p>Motive o leitor a agir com um CTA claro</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Credits Modal -->
+    <app-credits-modal #creditsModal></app-credits-modal>
+

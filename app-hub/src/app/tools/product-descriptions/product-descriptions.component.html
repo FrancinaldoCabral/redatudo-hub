@@ -1,0 +1,308 @@
+<div class="tool-page">
+  <div class="tool-container">
+
+    <app-tool-header [toolName]="'Descrições de Produto'" (creditClicked)="creditsModal.open()"></app-tool-header>
+
+    <!-- Tool Header -->
+    <header class="tool-header">
+      <span class="tool-header-badge">🛍️ E-COMMERCE</span>
+      <h1 class="tool-header-title">ShopCopy - Descrições E-commerce</h1>
+      <p class="tool-header-description">
+        Crie descrições profissionais para seus produtos
+      </p>
+
+      <div class="tool-header-meta">
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">⭐</span>
+          4.7 avaliação
+        </span>
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">💡</span>
+          4.3k gerações
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+      <!-- Wizard Steps -->
+      <div class="tool-card">
+        <div class="tool-card-body">
+          <div class="wizard-steps">
+            <div class="wizard-step" [class.active]="form.step === 1" [class.completed]="form.step > 1">
+              <div class="step-number">1</div>
+              <span class="step-label">Categoria</span>
+            </div>
+            <div class="wizard-step" [class.active]="form.step === 2" [class.completed]="form.step > 2">
+              <div class="step-number">2</div>
+              <span class="step-label">Produto</span>
+            </div>
+            <div class="wizard-step" [class.active]="form.step === 3">
+              <div class="step-number">3</div>
+              <span class="step-label">Resultado</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 1: Category Selection -->
+      <div class="tool-card" *ngIf="form.step === 1">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">Escolha a categoria do seu produto</h3>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-grid tool-grid-4">
+            <button
+              class="category-card"
+              *ngFor="let category of categories"
+              [class.selected]="form.category === category.value"
+              (click)="form.category = category.value">
+              <div class="category-icon">{{ category.icon }}</div>
+              <div class="category-label">{{ category.label }}</div>
+            </button>
+          </div>
+
+          <div class="tool-form-group">
+            <button
+              class="tool-btn tool-btn-primary"
+              [disabled]="!canProceedToStep2()"
+              (click)="nextStep()">
+              <span class="tool-btn-icon">▶️</span>
+              Continuar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Product Information -->
+      <div class="tool-card" *ngIf="form.step === 2">
+        <div class="tool-card-header">
+          <div class="step-navigation">
+            <button class="tool-btn tool-btn-secondary" (click)="prevStep()">
+              <span class="tool-btn-icon">◀️</span>
+              Voltar
+            </button>
+            <div class="step-info">
+              <span class="tool-badge tool-badge-info">
+                {{ currentCategoryIcon }} {{ getCategoryLabel(form.category) }}
+              </span>
+            </div>
+          </div>
+          <h3 class="tool-card-title">Informações do produto</h3>
+        </div>
+
+        <div class="tool-card-body">
+          <div class="tool-form-group">
+            <label class="tool-label">Nome do produto</label>
+            <input
+              type="text"
+              class="tool-input"
+              placeholder="Ex: Camiseta Básica Algodão"
+              [(ngModel)]="form.productName">
+          </div>
+
+          <div class="tool-form-group">
+            <label class="tool-label">Características principais</label>
+            <div class="features-section">
+              <input
+                #featureInput
+                type="text"
+                class="tool-input"
+                placeholder="Digite uma característica e pressione Enter"
+                (keyup.enter)="addFeatureFromInput(featureInput)">
+
+              <div class="features-suggestions">
+                <span
+                  class="tool-badge tool-badge-secondary"
+                  *ngFor="let suggestion of featureSuggestions"
+                  (click)="addFeature(suggestion)">
+                  {{ suggestion }}
+                </span>
+              </div>
+
+              <div class="features-selected">
+                <span
+                  class="tool-badge tool-badge-primary"
+                  *ngFor="let feature of form.features">
+                  {{ feature }}
+                  <button class="remove-feature" (click)="removeFeature(feature)">✕</button>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tool-grid tool-grid-2">
+            <div class="tool-form-group">
+              <label class="tool-label">Público-alvo</label>
+              <select class="tool-select" [(ngModel)]="form.targetAudience">
+                <option value="">Selecione o público-alvo</option>
+                <option *ngFor="let audience of audiences" [value]="audience">
+                  {{ audience }}
+                </option>
+              </select>
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Tom da linguagem</label>
+              <select class="tool-select" [(ngModel)]="form.tone">
+                <option *ngFor="let tone of tones" [value]="tone.value">
+                  {{ tone.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="tool-form-group">
+            <button
+              class="tool-btn tool-btn-primary"
+              [disabled]="!canProceedToStep3()"
+              (click)="generateDescriptions()">
+              <span class="tool-btn-icon">🚀</span>
+              Gerar Descrições
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Results -->
+      <div class="tool-card" *ngIf="form.step === 3">
+
+        <!-- Loading State -->
+        <div class="tool-loading" *ngIf="isLoading">
+          <div class="tool-loading-spinner"></div>
+          <p class="tool-loading-text">Gerando descrições profissionais...</p>
+        </div>
+
+        <!-- Results -->
+        <div *ngIf="result && !isLoading">
+
+          <div class="tool-card-header">
+            <div class="step-navigation">
+              <button class="tool-btn tool-btn-secondary" (click)="prevStep()">
+                <span class="tool-btn-icon">◀️</span>
+                Voltar
+              </button>
+              <div class="step-info">
+                <span class="tool-badge tool-badge-success">{{ form.productName }}</span>
+              </div>
+            </div>
+            <h3 class="tool-card-title">Descrições Geradas</h3>
+          </div>
+
+          <div class="tool-card-body">
+
+            <!-- All Content Types -->
+            <div class="tool-grid tool-grid-2">
+
+              <!-- SEO Title -->
+              <app-tap-to-copy-card
+                [content]="result.seoTitle"
+                [title]="'📈 Título SEO Otimizado'">
+              </app-tap-to-copy-card>
+
+              <!-- Short Description -->
+              <app-tap-to-copy-card
+                [content]="result.shortDescription"
+                [title]="'📝 Descrição Curta'">
+              </app-tap-to-copy-card>
+
+              <!-- Long Description -->
+              <app-tap-to-copy-card
+                [content]="result.longDescription"
+                [title]="'📄 Descrição Longa'">
+              </app-tap-to-copy-card>
+
+              <!-- Bullet Points -->
+              <app-tap-to-copy-card
+                [content]="result.bulletPoints.join('\\n')"
+                [title]="'📋 Bullet Points'">
+              </app-tap-to-copy-card>
+
+            </div>
+
+            <!-- Product Preview -->
+            <div class="tool-card">
+              <div class="tool-card-header">
+                <h3 class="tool-card-title">✨ Preview do Produto</h3>
+              </div>
+              <div class="tool-card-body">
+                <div class="preview-card">
+                  <h5 class="preview-title">{{ result.seoTitle }}</h5>
+                  <p class="preview-description">{{ result.shortDescription }}</p>
+                  <div class="preview-features">
+                    <div class="preview-feature" *ngFor="let point of result.bulletPoints.slice(0, 3)">
+                      • {{ point }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="tool-grid tool-grid-3">
+              <button class="tool-btn tool-btn-success" (click)="copyAllDescriptions()">
+                <span class="tool-btn-icon">📋</span>
+                Copiar Tudo
+              </button>
+              <button class="tool-btn tool-btn-secondary" (click)="toggleFavorite()">
+                <span class="tool-btn-icon">❤️</span>
+                {{ result.isFavorite ? 'Nos Favoritos' : 'Adicionar Favorito' }}
+              </button>
+              <button
+                class="tool-btn tool-btn-secondary"
+                [disabled]="!canGenerate()"
+                (click)="regenerateDescriptions()">
+                <span class="tool-btn-icon">🔄</span>
+                Gerar Novas
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Empty State -->
+      <div class="tool-empty-state" *ngIf="!result && !isLoading">
+        <div class="tool-empty-icon">📝</div>
+        <h3 class="tool-empty-title">Nenhuma descrição gerada ainda</h3>
+        <p class="tool-empty-text">
+          Complete as informações do produto e clique em gerar para ver as descrições
+        </p>
+      </div>
+
+      <!-- Tips Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">💡 Dicas para Descrições Matadoras</h3>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-grid tool-grid-2">
+            <div class="tip-item">
+              <strong>✨ Destaque benefícios:</strong> Foque no que o produto faz pelo cliente, não só nas características.
+            </div>
+            <div class="tip-item">
+              <strong>🗣️ Conheça seu público:</strong> Adapte a linguagem ao persona do comprador.
+            </div>
+            <div class="tip-item">
+              <strong>🔑 Palavras-chave:</strong> Use termos relevantes para SEO, mas de forma natural.
+            </div>
+            <div class="tip-item">
+              <strong>🚀 CTA claro:</strong> Incentive a compra, o clique ou o contato.
+            </div>
+            <div class="tip-item">
+              <strong>📱 Mobile-friendly:</strong> Descrições curtas e escaneáveis para celular.
+            </div>
+            <div class="tip-item">
+              <strong>❤️ Crie conexão:</strong> Use storytelling para envolver o cliente.
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <app-credits-modal #creditsModal></app-credits-modal>
+  </div>
+</div>

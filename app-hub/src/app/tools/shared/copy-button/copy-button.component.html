@@ -1,0 +1,16 @@
+<button
+  class="tool-btn tool-btn-secondary"
+  [class.tool-btn-success]="showSuccess"
+  [disabled]="disabled || isLoading"
+  (click)="copyToClipboard()"
+  [attr.aria-label]="buttonText"
+  type="button">
+
+  <span class="tool-btn-icon" [class]="showSuccess ? '✓' : '📋'"></span>
+
+  <span *ngIf="showLabel">
+    {{ showSuccess ? successText : buttonText }}
+  </span>
+
+  <div class="tool-loading-spinner" *ngIf="isLoading"></div>
+</button>

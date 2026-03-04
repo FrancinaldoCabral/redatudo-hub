@@ -1,0 +1,464 @@
+<div class="tool-page">
+  <div class="tool-container">
+
+    <app-tool-header [toolName]="'Editor de Imagens'" (creditClicked)="creditsModal.open()"></app-tool-header>
+
+    <!-- Tool Header -->
+    <header class="tool-header">
+      <span class="tool-header-badge">🎨 IA</span>
+      <h1 class="tool-header-title">Editor de Imagens com IA</h1>
+      <p class="tool-header-description">
+        Crie ou edite imagens usando Ideogram AI com controle total sobre o resultado
+      </p>
+
+      <div class="tool-header-meta">
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">⭐</span>
+          4.8 avaliação
+        </span>
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">🎯</span>
+          12.5k imagens geradas
+        </span>
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">🎨</span>
+          Ideogram AI
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+      <!-- Mode Selection -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">Escolha o Modo de Trabalho</h3>
+          <p class="tool-card-subtitle">Selecione como deseja trabalhar com imagens</p>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-grid tool-grid-2">
+            <div
+              class="mode-card"
+              [class.mode-card-active]="form.mode === 'create'"
+              (click)="form.mode = 'create'">
+              <div class="mode-card-icon">✨</div>
+              <h4 class="mode-card-title">Criar Imagem</h4>
+              <p class="mode-card-description">Gere uma nova imagem do zero usando apenas uma descrição textual</p>
+              <div class="mode-card-badge">
+                <span class="tool-badge tool-badge-primary">Modo Criação</span>
+              </div>
+            </div>
+
+            <div
+              class="mode-card"
+              [class.mode-card-active]="form.mode === 'edit'"
+              (click)="form.mode = 'edit'">
+              <div class="mode-card-icon">🎨</div>
+              <h4 class="mode-card-title">Editar Imagem</h4>
+              <p class="mode-card-description">Modifique partes específicas de uma imagem existente com IA</p>
+              <div class="mode-card-badge">
+                <span class="tool-badge tool-badge-info">Modo Edição</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">
+            {{ form.mode === 'create' ? '✨ Criar Nova Imagem' : '🎨 Editar Imagem Existente' }}
+          </h3>
+          <p class="tool-card-subtitle">
+            {{ form.mode === 'create' ? 'Configure os parâmetros e descreva a imagem desejada' : 'Faça upload da imagem e marque as áreas para editar' }}
+          </p>
+        </div>
+
+        <div class="tool-card-body">
+          <form (ngSubmit)="generateImage()">
+
+            <!-- Image Upload (Edit Mode) -->
+            <div class="tool-form-group" *ngIf="form.mode === 'edit'">
+              <label class="tool-label">
+                📁 Imagem para Editar
+                <span class="required">*</span>
+              </label>
+              <div class="upload-area" [class.upload-area-active]="uploadedImage">
+                <input
+                  type="file"
+                  id="imageUpload"
+                  accept="image/*"
+                  (change)="onFileSelected($event)"
+                  style="display: none;">
+                
+                <label for="imageUpload" class="upload-dropzone">
+                  <div class="upload-icon-large">{{ uploadedImage ? '🖼️' : '📁' }}</div>
+                  <div class="upload-title">
+                    {{ uploadedImage ? 'Imagem Carregada!' : 'Arraste sua imagem aqui' }}
+                  </div>
+                  <div class="upload-subtitle">
+                    {{ uploadedImage ? uploadedImage.name : 'ou clique para selecionar' }}
+                  </div>
+                  <div class="upload-specs" *ngIf="!uploadedImage">
+                    <span class="tool-badge tool-badge-info">JPG, PNG, WEBP</span>
+                    <span class="tool-badge tool-badge-info">Máx. 10MB</span>
+                  </div>
+                  <div class="upload-file-info" *ngIf="uploadedImage">
+                    <span class="tool-badge tool-badge-success">
+                      {{ (uploadedImage.size / 1024 / 1024).toFixed(1) }} MB
+                    </span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Image Preview and Mask Editor (Edit Mode) -->
+            <div class="editor-workspace" *ngIf="form.mode === 'edit' && imagePreview">
+              <div class="tool-card editor-card">
+                <div class="tool-card-header">
+                  <h4 class="tool-card-title">🎨 Editor de Máscara</h4>
+                  <p class="tool-card-subtitle">Pinte de preto as áreas que deseja modificar</p>
+                </div>
+                <div class="tool-card-body">
+                  <div class="editor-layout">
+                    <div class="editor-canvas-container">
+                      <div class="canvas-wrapper">
+                        <img [src]="imagePreview" alt="Imagem original" class="canvas-image">
+                        <canvas
+                          #maskCanvas
+                          class="canvas-mask"
+                          (mousedown)="startDrawing($event)"
+                          (mousemove)="draw($event)"
+                          (mouseup)="stopDrawing()"
+                          (mouseleave)="stopDrawing()">
+                        </canvas>
+                      </div>
+                      
+                      <div class="canvas-legend">
+                        <div class="legend-item">
+                          <span class="legend-color legend-white"></span>
+                          <span class="legend-text">Áreas brancas = preservar</span>
+                        </div>
+                        <div class="legend-item">
+                          <span class="legend-color legend-black"></span>
+                          <span class="legend-text">Áreas pretas = modificar</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="editor-controls-panel">
+                      <div class="control-section">
+                        <label class="tool-label">
+                          <span class="control-icon">🖌️</span>
+                          Tamanho do Pincel
+                        </label>
+                        <div class="control-value-display">
+                          <span class="control-value">{{ brushSize }}px</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="5"
+                          max="50"
+                          [(ngModel)]="brushSize"
+                          name="brushSize"
+                          class="control-slider">
+                        <div class="control-markers">
+                          <span>5px</span>
+                          <span>50px</span>
+                        </div>
+                      </div>
+
+                      <div class="control-section">
+                        <label class="tool-label">
+                          <span class="control-icon">💧</span>
+                          Opacidade
+                        </label>
+                        <div class="control-value-display">
+                          <span class="control-value">{{ (brushOpacity * 100).toFixed(0) }}%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0.1"
+                          max="1"
+                          step="0.1"
+                          [(ngModel)]="brushOpacity"
+                          name="brushOpacity"
+                          class="control-slider">
+                        <div class="control-markers">
+                          <span>10%</span>
+                          <span>100%</span>
+                        </div>
+                      </div>
+
+                      <div class="control-actions">
+                        <button type="button" class="tool-btn tool-btn-secondary" (click)="clearMask()">
+                          <span class="tool-btn-icon">🗑️</span>
+                          Limpar Máscara
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quality Selection -->
+            <div class="tool-form-group">
+              <label class="tool-label">
+                <span class="control-icon">⚡</span>
+                Qualidade da Geração
+              </label>
+              <div class="tool-grid tool-grid-3">
+                <div
+                  class="quality-card"
+                  *ngFor="let quality of qualities"
+                  [class.quality-card-active]="form.quality === quality.value"
+                  (click)="form.quality = quality.value">
+                  <div class="quality-card-header">
+                    <div class="quality-icon">{{ getQualityIcon(quality.value) }}</div>
+                    <h5 class="quality-name">{{ quality.label }}</h5>
+                  </div>
+                  <p class="quality-description">{{ quality.description }}</p>
+                  <div class="quality-footer">
+                    <span class="tool-badge tool-badge-warning">
+                      💰 {{ quality.credits }} crédito{{ quality.credits > 1 ? 's' : '' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Prompt -->
+            <div class="tool-form-group">
+              <label class="tool-label">
+                <span class="control-icon">💭</span>
+                Prompt
+                <span class="required">*</span>
+              </label>
+              <textarea
+                class="tool-textarea"
+                [(ngModel)]="form.prompt"
+                name="prompt"
+                placeholder="Descreva a imagem que deseja criar ou como modificar a imagem existente...&#10;&#10;Exemplo: 'Uma paisagem montanhosa ao pôr do sol com cores vibrantes e céu dramático'"
+                rows="4"
+                maxlength="1000"
+                (input)="onPromptChange()"
+                required>
+              </textarea>
+              <small class="form-text">
+                {{ form.prompt.length }}/1000 caracteres
+              </small>
+            </div>
+
+            <!-- Advanced Options -->
+            <div class="advanced-section">
+              <details class="advanced-toggle">
+                <summary class="advanced-summary">
+                  <span class="summary-icon">⚙️</span>
+                  <span class="summary-text">Opções Avançadas</span>
+                  <span class="summary-badge tool-badge tool-badge-info">Opcional</span>
+                </summary>
+
+                <div class="advanced-content">
+                  <div class="tool-grid tool-grid-3">
+                    <div class="tool-form-group">
+                      <label class="tool-label">
+                        <span class="control-icon">📐</span>
+                        Proporção
+                      </label>
+                      <select class="tool-select" [(ngModel)]="form.aspectRatio" name="aspectRatio">
+                        <option *ngFor="let ratio of aspectRatios" [value]="ratio.value">
+                          {{ ratio.label }}
+                        </option>
+                      </select>
+                    </div>
+
+                    <div class="tool-form-group">
+                      <label class="tool-label">
+                        <span class="control-icon">🖼️</span>
+                        Resolução
+                      </label>
+                      <select class="tool-select" [(ngModel)]="form.resolution" name="resolution">
+                        <option *ngFor="let res of resolutions" [value]="res.value">
+                          {{ res.label }}
+                        </option>
+                      </select>
+                    </div>
+
+                    <div class="tool-form-group">
+                      <label class="tool-label">
+                        <span class="control-icon">✨</span>
+                        Magic Prompt
+                      </label>
+                      <select class="tool-select" [(ngModel)]="form.magicPrompt" name="magicPrompt">
+                        <option *ngFor="let opt of magicPromptOptions" [value]="opt.value">
+                          {{ opt.label }}
+                        </option>
+                      </select>
+                    </div>
+
+                    <div class="tool-form-group">
+                      <label class="tool-label">
+                        <span class="control-icon">🎨</span>
+                        Estilo
+                      </label>
+                      <select class="tool-select" [(ngModel)]="form.style" name="style">
+                        <option *ngFor="let style of styles" [value]="style.value">
+                          {{ style.label }}
+                        </option>
+                      </select>
+                      <small class="form-text">Estilos com preset usam Auto/General automaticamente</small>
+                    </div>
+                  </div>
+                </div>
+              </details>
+            </div>
+
+            <!-- Cost Display -->
+            <div class="generation-summary" *ngIf="form.prompt.length > 0">
+              <div class="summary-card">
+                <div class="summary-icon">💰</div>
+                <div class="summary-content">
+                  <div class="summary-label">Custo Total</div>
+                  <div class="summary-value">
+                    {{ getCreditCost() }} crédito{{ getCreditCost() > 1 ? 's' : '' }}
+                  </div>
+                </div>
+                <div class="summary-badge">
+                  <span class="tool-badge tool-badge-primary">{{ (getCurrentQuality())?.label || 'Balanceado' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Generate Button -->
+            <button
+              type="submit"
+              class="tool-btn tool-btn-primary generate-btn"
+              [disabled]="isLoading || !canGenerate()">
+              <span class="tool-btn-icon">{{ form.mode === 'create' ? '✨' : '🎨' }}</span>
+              {{ isLoading ? 'Gerando imagem...' : (form.mode === 'create' ? 'Criar Imagem' : 'Editar Imagem') }}
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="tool-loading" *ngIf="isLoading">
+        <div class="tool-loading-spinner"></div>
+        <p class="tool-loading-text">
+          {{ form.mode === 'create' ? '✨ Criando sua imagem...' : '🎨 Editando sua imagem...' }}
+        </p>
+        <p class="tool-loading-text" style="font-size: 0.9rem; opacity: 0.7; margin-top: 0.5rem;">
+          Isso pode levar alguns segundos
+        </p>
+      </div>
+
+      <!-- Results Section -->
+      <div class="tool-results" *ngIf="result && !isLoading">
+        <!-- Generated Image -->
+        <div class="tool-result-card">
+          <div class="tool-result-header">
+            <h3 class="tool-result-title">🎨 Imagem Gerada</h3>
+            <div class="tool-result-actions">
+              <button class="tool-btn tool-btn-secondary" (click)="downloadImage()">
+                <span class="tool-btn-icon">📥</span>
+                Download
+              </button>
+              <button class="tool-btn tool-btn-secondary" (click)="copyImageUrl()">
+                <span class="tool-btn-icon">📋</span>
+                Copiar URL
+              </button>
+            </div>
+          </div>
+          <div class="tool-result-content">
+            <div class="result-image-container">
+              <img [src]="result.url" alt="Imagem gerada" class="result-image">
+            </div>
+            
+            <div class="result-metadata">
+              <div class="tool-grid tool-grid-3">
+                <div class="metadata-item">
+                  <span class="metadata-icon">⚡</span>
+                  <div class="metadata-content">
+                    <span class="metadata-label">Qualidade</span>
+                    <span class="metadata-value">{{ result.quality }}</span>
+                  </div>
+                </div>
+                <div class="metadata-item">
+                  <span class="metadata-icon">🕐</span>
+                  <div class="metadata-content">
+                    <span class="metadata-label">Gerada em</span>
+                    <span class="metadata-value">{{ result.timestamp | date:'short' }}</span>
+                  </div>
+                </div>
+                <div class="metadata-item">
+                  <span class="metadata-icon">🎯</span>
+                  <div class="metadata-content">
+                    <span class="metadata-label">Modo</span>
+                    <span class="metadata-value">{{ form.mode === 'create' ? 'Criação' : 'Edição' }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prompt Used -->
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <h3 class="tool-card-title">📝 Prompt Utilizado</h3>
+          </div>
+          <div class="tool-card-body">
+            <div class="prompt-display">
+              <div class="prompt-icon">💭</div>
+              <div class="prompt-text">{{ result.prompt }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="tool-empty-state" *ngIf="!result && !isLoading">
+        <div class="tool-empty-icon">🎨</div>
+        <h3 class="tool-empty-title">Nenhuma imagem gerada ainda</h3>
+        <p class="tool-empty-text">
+          Configure suas opções acima e clique em gerar para criar sua primeira imagem com IA
+        </p>
+      </div>
+
+      <!-- Tips Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">💡 Dicas para Melhores Resultados</h3>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-grid tool-grid-2">
+            <div class="tip-item">
+              <strong>✍️ Seja específico:</strong> Descreva detalhes como iluminação, ângulo, cores e composição para resultados mais precisos
+            </div>
+            <div class="tip-item">
+              <strong>🖌️ Para edição:</strong> Use o pincel preto nas áreas que deseja modificar completamente e deixe branco o que quer manter
+            </div>
+            <div class="tip-item">
+              <strong>⚡ Qualidade:</strong> Avançado oferece os melhores resultados, mas consome mais créditos. Use Rápido para testes
+            </div>
+            <div class="tip-item">
+              <strong>✨ Magic Prompt:</strong> Ajuda a otimizar seu prompt automaticamente adicionando detalhes técnicos
+            </div>
+            <div class="tip-item">
+              <strong>🎲 Seed:</strong> Use o mesmo seed para gerar variações consistentes da mesma imagem base
+            </div>
+            <div class="tip-item">
+              <strong>🎨 Estilos:</strong> Experimente diferentes presets de estilo para variar completamente o visual do resultado
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <app-credits-modal #creditsModal></app-credits-modal>
+  </div>
+</div>

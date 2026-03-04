@@ -1,0 +1,117 @@
+<div class="comparison-view-container">
+  <!-- Header with titles and controls -->
+  <div class="comparison-header">
+    <div class="side-header left">
+      <h3 class="side-title">{{ leftTitle }}</h3>
+      <button class="btn-copy-side" (click)="handleCopyLeft()" title="Copiar texto">
+        <i class="bi bi-clipboard"></i>
+      </button>
+    </div>
+
+    <div class="comparison-controls">
+      <button class="btn-swap" (click)="handleSwap()" title="Trocar lados">
+        <i class="bi bi-arrow-left-right"></i>
+        Trocar
+      </button>
+
+      <!-- Similarity indicator -->
+      <div class="similarity-badge" *ngIf="similarity !== undefined">
+        <div class="similarity-circle" [style.background-color]="similarityColor"></div>
+        <span class="similarity-text">{{ similarity }}% - {{ similarityText }}</span>
+      </div>
+    </div>
+
+    <div class="side-header right">
+      <h3 class="side-title">{{ rightTitle }}</h3>
+      <button class="btn-copy-side" (click)="handleCopyRight()" title="Copiar texto">
+        <i class="bi bi-clipboard"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading overlay -->
+  <div class="loading-overlay" *ngIf="loading">
+    <div class="spinner"></div>
+    <span>Comparando textos...</span>
+  </div>
+
+  <!-- Comparison content -->
+  <div class="comparison-content" *ngIf="!loading">
+    <div class="comparison-side left">
+      <div class="side-container">
+        <textarea
+          class="side-textarea"
+          [value]="leftContent"
+          (input)="handleLeftChange($event)"
+          placeholder="Cole o texto original aqui..."
+          spellcheck="true">
+        </textarea>
+      </div>
+
+      <!-- Diff stats for left side -->
+      <div class="diff-stats" *ngIf="showDiff">
+        <div class="stat-item">
+          <span class="stat-label">Palavras:</span>
+          <span class="stat-value">{{ getWordCount(leftContent) }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Caracteres:</span>
+          <span class="stat-value">{{ leftContent.length }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="comparison-divider">
+      <div class="divider-line"></div>
+      <div class="divider-controls" *ngIf="showDiff">
+        <div class="diff-summary">
+          <div class="diff-item added">
+            <i class="bi bi-plus"></i>
+            <span>{{ getDiffStats().added }} adicionadas</span>
+          </div>
+          <div class="diff-item removed">
+            <i class="bi bi-dash"></i>
+            <span>{{ getDiffStats().removed }} removidas</span>
+          </div>
+        </div>
+      </div>
+      <div class="divider-line"></div>
+    </div>
+
+    <div class="comparison-side right">
+      <div class="side-container">
+        <textarea
+          class="side-textarea"
+          [value]="rightContent"
+          (input)="handleRightChange($event)"
+          placeholder="O texto processado aparecerá aqui..."
+          spellcheck="true">
+        </textarea>
+      </div>
+
+      <!-- Diff stats for right side -->
+      <div class="diff-stats" *ngIf="showDiff">
+        <div class="stat-item">
+          <span class="stat-label">Palavras:</span>
+          <span class="stat-value">{{ getWordCount(rightContent) }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Caracteres:</span>
+          <span class="stat-value">{{ rightContent.length }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer actions -->
+  <div class="comparison-footer" *ngIf="!loading">
+    <button class="btn-action" (click)="onCopyLeft.emit()">
+      <i class="bi bi-clipboard"></i>
+      Copiar Original
+    </button>
+    <button class="btn-action primary" (click)="onCopyRight.emit()">
+      <i class="bi bi-clipboard-check"></i>
+      Usar Texto Processado
+    </button>
+  </div>
+</div>

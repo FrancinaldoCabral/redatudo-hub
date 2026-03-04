@@ -1,0 +1,233 @@
+<div class="tool-page">
+  <div class="tool-container">
+
+    <app-tool-header [toolName]="'Frases Motivacionais'" (creditClicked)="creditsModal.open()"></app-tool-header>
+
+    <!-- Tool Header -->
+    <header class="tool-header">
+      <span class="tool-header-badge">📱 REDES SOCIAIS</span>
+      <h1 class="tool-header-title">Gerador de Frases Motivacionais</h1>
+      <p class="tool-header-description">
+        Crie frases inspiradoras para diversos temas e situações
+      </p>
+
+      <div class="tool-header-meta">
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">⭐</span>
+          4.9 avaliação
+        </span>
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">💡</span>
+          1.9k gerações
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+      <!-- Form Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">Configure sua Frase</h3>
+        </div>
+
+        <div class="tool-card-body">
+          <div class="tool-grid tool-grid-2">
+            <div class="tool-form-group">
+              <label class="tool-label">Tema</label>
+              <select class="tool-select" [(ngModel)]="form.theme">
+                <option *ngFor="let theme of themes" [value]="theme.value">
+                  {{ theme.emoji }} {{ theme.label }}
+                </option>
+              </select>
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Estilo</label>
+              <select class="tool-select" [(ngModel)]="form.style">
+                <option *ngFor="let style of styles" [value]="style.value">
+                  {{ style.label }}
+                </option>
+              </select>
+              <small class="form-text">{{ currentStyleDescription }}</small>
+            </div>
+          </div>
+
+          <button
+            class="tool-btn tool-btn-primary"
+            [disabled]="isLoading"
+            (click)="generateQuotes()">
+            <span class="tool-btn-icon">💬</span>
+            {{ isLoading ? 'Gerando Frases...' : 'Gerar 8 Frases Motivacionais' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="tool-loading" *ngIf="isLoading">
+        <div class="loading-container">
+          <div class="loading-spinner"></div>
+          <div class="loading-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <p class="loading-text">Criando frases inspiradoras...</p>
+          <div class="loading-progress">
+            <div class="progress-bar">
+              <div class="progress-fill"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <div class="tool-results" *ngIf="quotes.length > 0 && !isLoading">
+
+        <!-- Results Header -->
+        <div class="tool-card">
+          <div class="tool-card-body">
+            <div class="results-header m-2">
+              <div class="results-meta">
+                <span class="tool-badge tool-badge-info">
+                  {{ currentThemeEmoji }} {{ currentThemeLabel }}
+                </span>
+                <span class="tool-badge tool-badge-success">
+                  {{ quotes.length }} frases geradas
+                </span>
+              </div>
+
+              <div class="results-actions">
+                <button class="tool-btn tool-btn-success" (click)="copyAllQuotes()">
+                  <span class="tool-btn-icon">📋</span>
+                  Copiar Todas
+                </button>
+                <button class="tool-btn tool-btn-secondary" (click)="downloadQuotes()">
+                  <span class="tool-btn-icon">⬇️</span>
+                  Baixar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quotes Grid -->
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <h3 class="tool-card-title">Frases Geradas</h3>
+            <button
+              class="tool-btn tool-btn-secondary regenerate-btn"
+              [disabled]="!canRegenerate()"
+              (click)="regenerateQuotes()">
+              <span class="tool-btn-icon">🔄</span>
+              Gerar Novas
+            </button>
+          </div>
+
+          <div class="tool-card-body">
+            <div class="quotes-container">
+              <div
+                class="quote-card"
+                *ngFor="let quote of quotes; let i = index">
+
+                <!-- Quote Header -->
+                <div class="quote-header">
+                  <div class="quote-number-badge">
+                    <span class="quote-number">{{ i + 1 }}</span>
+                  </div>
+                  <div class="quote-theme-indicator">
+                    <span class="theme-emoji">{{ currentThemeEmoji }}</span>
+                    <span class="theme-label">{{ currentThemeLabel }}</span>
+                  </div>
+                </div>
+
+                <!-- Quote Content -->
+                <div class="quote-body">
+                  <blockquote class="quote-text">"{{ quote.text }}"</blockquote>
+                </div>
+
+                <!-- Quote Footer -->
+                <div class="quote-footer">
+                  <div class="quote-style">
+                    <span class="style-badge">{{ form.style | titlecase }}</span>
+                  </div>
+
+                  <div class="quote-actions">
+                    <button
+                      class="action-btn copy-btn"
+                      (click)="copyToClipboard(quote.text)"
+                      title="Copiar frase">
+                      <span class="action-icon">📋</span>
+                    </button>
+                    <button
+                      class="action-btn favorite-btn"
+                      (click)="toggleFavorite(quote)"
+                      [class.active]="quote.isFavorite"
+                      title="Adicionar aos favoritos">
+                      <span class="action-icon">❤️</span>
+                    </button>
+                    <button
+                      class="action-btn share-btn"
+                      (click)="shareQuote(quote)"
+                      title="Compartilhar">
+                      <span class="action-icon">📤</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Decorative Elements -->
+                <div class="quote-decoration">
+                  <div class="decoration-line"></div>
+                  <div class="decoration-quote">❝</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Empty State -->
+      <div class="tool-empty-state" *ngIf="quotes.length === 0 && !isLoading">
+        <div class="tool-empty-icon">💬</div>
+        <h3 class="tool-empty-title">Nenhuma frase gerada ainda</h3>
+        <p class="tool-empty-text">
+          Selecione um tema e estilo para gerar suas frases motivacionais
+        </p>
+      </div>
+
+      <!-- Tips Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">💡 Ideias de Uso</h3>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-grid tool-grid-2">
+            <div class="tip-item">
+              <strong>📱 Redes Sociais:</strong> Publique diariamente frases motivacionais no Instagram e LinkedIn
+            </div>
+            <div class="tip-item">
+              <strong>📝 Posts de Blog:</strong> Use como introduções ou finais de artigos
+            </div>
+            <div class="tip-item">
+              <strong>🎨 Animação:</strong> Perfeito para acompanhar imagens inspiradoras
+            </div>
+            <div class="tip-item">
+              <strong>🎴 Cartões:</strong> Crie cartões motivacionais para compartilhar
+            </div>
+            <div class="tip-item">
+              <strong>🎁 Presentes:</strong> Ideal para mensagens personalizadas
+            </div>
+            <div class="tip-item">
+              <strong>📚 Educação:</strong> Use como exemplos de redação e expressão
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <app-credits-modal #creditsModal></app-credits-modal>
+  </div>
+</div>

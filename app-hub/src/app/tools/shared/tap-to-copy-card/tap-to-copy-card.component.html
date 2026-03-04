@@ -1,0 +1,25 @@
+<div class="tap-card" 
+     [class.tap-card-copied]="copied" 
+     (click)="copyContent()"
+     [attr.title]="'Clique para copiar'">
+  
+  <div class="tap-card-header">
+    <h4 class="tap-card-title">{{ title || 'Resultado ' + (index + 1) }}</h4>
+    <div class="tap-card-icon" *ngIf="showCopyIcon">
+      <i class="bi bi-check2-circle" *ngIf="copied"></i>
+      <i class="bi bi-clipboard" *ngIf="!copied"></i>
+    </div>
+  </div>
+
+  <div class="tap-card-content">
+    {{ content }}
+  </div>
+
+  <div class="tap-card-hint" *ngIf="!copied">
+    👆 Toque para copiar
+  </div>
+  
+  <div class="tap-card-success" *ngIf="copied">
+    ✅ Copiado!
+  </div>
+</div>

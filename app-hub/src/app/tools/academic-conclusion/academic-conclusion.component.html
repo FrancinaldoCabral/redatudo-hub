@@ -1,0 +1,239 @@
+<div class="tool-page">
+  <div class="tool-container">
+
+    <app-tool-header [toolName]="'Gerador de Conclusão'" (creditClicked)="creditsModal.open()"></app-tool-header>
+
+    <!-- Tool Header -->
+    <header class="tool-header">
+      <span class="tool-header-badge">🎓 ACADÊMICO</span>
+      <h1 class="tool-header-title">Gerador de Conclusão Acadêmica</h1>
+      <p class="tool-header-description">
+        Crie conclusões profissionais para trabalhos acadêmicos
+      </p>
+
+      <div class="tool-header-meta">
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">⭐</span>
+          4.8 avaliação
+        </span>
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">💡</span>
+          2.1k gerações
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+      <!-- Form Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">Configure sua Conclusão</h3>
+        </div>
+
+        <div class="tool-card-body">
+          <div class="tool-form-group">
+            <label class="tool-label">Introdução do trabalho</label>
+            <app-textarea-ai
+              [placeholder]="'Cole aqui a introdução ou objetivo do seu trabalho...'"
+              [maxLength]="2000"
+              [minLength]="100"
+              [(ngModel)]="form.introduction"
+              (onGenerate)="generateConclusion()"
+              [loading]="isLoading">
+            </app-textarea-ai>
+          </div>
+
+          <div class="tool-grid tool-grid-2">
+            <div class="tool-form-group">
+              <label class="tool-label">Tipo de trabalho</label>
+              <select class="tool-select" [(ngModel)]="form.type">
+                <option *ngFor="let type of types" [value]="type.value">
+                  {{ type.label }}
+                </option>
+              </select>
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Tom da conclusão</label>
+              <select class="tool-select" [(ngModel)]="form.tone">
+                <option *ngFor="let tone of tones" [value]="tone.value">
+                  {{ tone.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="tool-form-group">
+            <label class="tool-label">Pontos principais desenvolvidos</label>
+            <div class="main-points-section">
+              <input
+                type="text"
+                class="tool-input"
+                placeholder="Digite um ponto principal e pressione Enter"
+                (keyup.enter)="onMainPointKeyPress($event)">
+
+              <div class="main-points-list">
+                <div
+                  class="main-point-item"
+                  *ngFor="let point of form.mainPoints; let i = index">
+                  <span class="point-number">{{ i + 1 }}.</span>
+                  <span class="point-text">{{ point }}</span>
+                  <button class="remove-point" (click)="removeMainPoint(point)">✕</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tool-grid tool-grid-2">
+            <div class="tool-form-group">
+              <label class="tool-label">Número de palavras: {{ form.wordCount }}</label>
+              <input
+                type="range"
+                class="word-count-slider"
+                [min]="wordCountRange.min"
+                [max]="wordCountRange.max"
+                [(ngModel)]="form.wordCount">
+            </div>
+
+            <div class="tool-form-group">
+              <label class="checkbox-wrapper">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="form.includeCitation">
+                <span>Incluir citação de autor</span>
+              </label>
+            </div>
+          </div>
+
+          <button
+            class="tool-btn tool-btn-primary"
+            [disabled]="!form.introduction.trim() || form.mainPoints.length === 0 || isLoading"
+            (click)="generateConclusion()">
+            <span class="tool-btn-icon">🏁</span>
+            {{ isLoading ? 'Gerando Conclusão...' : 'Gerar Conclusão' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="tool-loading" *ngIf="isLoading">
+        <div class="tool-loading-spinner"></div>
+        <p class="tool-loading-text">Analisando trabalho e gerando conclusão...</p>
+      </div>
+
+      <!-- Results Section -->
+      <div class="tool-results" *ngIf="result && !isLoading">
+
+        <!-- Structure Overview -->
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <h3 class="tool-card-title">📋 Estrutura da Conclusão</h3>
+          </div>
+          <div class="tool-card-body">
+            <div class="tool-grid tool-grid-2">
+
+              <div class="structure-item">
+                <div class="structure-number">1</div>
+                <div class="structure-content">
+                  <h4 class="structure-title">Retomada da Tese</h4>
+                  <p class="structure-text">{{ result.structure.thesis }}</p>
+                </div>
+              </div>
+
+              <div class="structure-item">
+                <div class="structure-number">2</div>
+                <div class="structure-content">
+                  <h4 class="structure-title">Síntese dos Argumentos</h4>
+                  <p class="structure-text">{{ result.structure.synthesis }}</p>
+                </div>
+              </div>
+
+              <div class="structure-item">
+                <div class="structure-number">3</div>
+                <div class="structure-content">
+                  <h4 class="structure-title">Considerações Finais</h4>
+                  <p class="structure-text">{{ result.structure.closing }}</p>
+                </div>
+              </div>
+
+              <div class="structure-item" *ngIf="result.structure.futureResearch">
+                <div class="structure-number">4</div>
+                <div class="structure-content">
+                  <h4 class="structure-title">Pesquisas Futuras</h4>
+                  <p class="structure-text">{{ result.structure.futureResearch }}</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Full Conclusion -->
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <h3 class="tool-card-title">📄 Conclusão Completa</h3>
+            <div class="tool-result-actions">
+              <app-copy-button [text]="result.conclusion" [showLabel]="true"></app-copy-button>
+              <button class="tool-btn tool-btn-secondary" (click)="toggleFavorite()">
+                <span class="tool-btn-icon">❤️</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="tool-card-body">
+            <!-- Meta Information -->
+            <div class="tool-grid tool-grid-3 tool-mb-md">
+              <div class="tool-badge tool-badge-info">
+                📄 {{ result.conclusion.split(' ').length }} palavras
+              </div>
+              <div class="tool-badge tool-badge-success">
+                📋 {{ currentTypeLabel }}
+              </div>
+              <div class="tool-badge tool-badge-warning">
+                💰 1 crédito
+              </div>
+            </div>
+
+            <div class="tool-result-content">
+              <markdown [data]="result.conclusion"></markdown>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="tool-grid tool-grid-3">
+          <button class="tool-btn tool-btn-success" (click)="copyToClipboard(result.conclusion)">
+            <span class="tool-btn-icon">📋</span>
+            Copiar Conclusão
+          </button>
+          <button class="tool-btn tool-btn-secondary" (click)="toggleFavorite()">
+            <span class="tool-btn-icon">❤️</span>
+            {{ result.isFavorite ? 'Nos Favoritos' : 'Adicionar Favorito' }}
+          </button>
+          <button
+            class="tool-btn tool-btn-secondary"
+            [disabled]="!canRegenerate()"
+            (click)="regenerateConclusion()">
+            <span class="tool-btn-icon">🔄</span>
+            Gerar Nova
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Empty State -->
+      <div class="tool-empty-state" *ngIf="!result && !isLoading">
+        <div class="tool-empty-icon">🏁</div>
+        <h3 class="tool-empty-title">Nenhuma conclusão gerada ainda</h3>
+        <p class="tool-empty-text">
+          Preencha a introdução e os pontos principais para gerar sua conclusão
+        </p>
+      </div>
+
+    </main>
+
+    <app-credits-modal #creditsModal></app-credits-modal>
+  </div>
+</div>

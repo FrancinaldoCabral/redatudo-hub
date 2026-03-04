@@ -1,0 +1,61 @@
+{
+  "name": "redatudo-hub",
+  "description": "Plataforma completa de geração de conteúdo com IA",
+  "type": "docker-compose",
+  "services": {
+    "frontend": {
+      "name": "Frontend Angular",
+      "port": 80,
+      "healthcheck": "/health",
+      "public": true
+    },
+    "api": {
+      "name": "API Backend",
+      "port": 5000,
+      "healthcheck": "/health",
+      "public": true
+    },
+    "worker": {
+      "name": "Background Worker",
+      "public": false
+    },
+    "mongodb": {
+      "name": "MongoDB Database",
+      "port": 27017,
+      "public": false,
+      "persistent": true
+    },
+    "redis": {
+      "name": "Redis Cache",
+      "port": 6379,
+      "public": false,
+      "persistent": true
+    },
+    "minio": {
+      "name": "MinIO Storage",
+      "port": 9000,
+      "public": false,
+      "persistent": true
+    }
+  },
+  "environment": {
+    "required": [
+      "MONGO_PASSWORD",
+      "REDIS_PASSWORD",
+      "JWT_SECRET",
+      "OPENAI_API_KEY"
+    ],
+    "optional": [
+      "ANTHROPIC_API_KEY",
+      "REPLICATE_API_TOKEN",
+      "STRIPE_SECRET_KEY",
+      "STRIPE_WEBHOOK_SECRET",
+      "CONVERTIO_API_KEY"
+    ]
+  },
+  "volumes": [
+    "mongodb_data",
+    "redis_data",
+    "minio_data"
+  ]
+}

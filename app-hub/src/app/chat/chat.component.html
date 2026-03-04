@@ -1,0 +1,1060 @@
+<app-loader *ngIf="!getSocketIsConnect()"></app-loader>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+
+      <div class="col-12 text-center fixed-top" style="font-size: small;" >
+
+        <div class="toast fixed-top mt-2 start-50 translate-middle-x align-items-center border-0 w-50 bg-transparent text-white show" role="alert" aria-live="assertive" aria-atomic="true" style="z-index: 10001;" id="toastAdsense">
+          <div class="toast-header border-0 bg-transparent text-white">
+            <button type="button" class="mr-2 mb-1 close border-0 bg-transparent text-white" data-dismiss="toast" aria-label="Close" (click)="closeAd()">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="toast-body border-0 bg-transparent text-white">
+            <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-client="ca-pub-9848635946946970"
+            data-ad-slot="1606489465"
+            data-ad-format="horizontal"></ins>
+          </div>
+        </div>
+
+        <!-- INVÍSIVEL -->
+        <nav class="navbar navbar-collapse text-center fixed-top d-none bg-transparent border-0" data-bs-theme="dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+              <img src="https://redatudo.online/wp-content/uploads/2025/04/logotipo-redatudo-sem-fundo.png" height="45px" width="45px" alt="">
+            </a>
+            <button class="navbar-toggler" type="button" *ngIf="getSocketIsConnect()"
+            data-bs-toggle="collapse" 
+            data-bs-target="#navbarSupportedContent" 
+            aria-controls="navbarSupportedContent" 
+            aria-expanded="false" aria-label="Toggle navigation" (click)="editZIndexAdsense()">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="nav-link text-center fw-lighter text-warning cursor mt-2" style="font-size: xx-small;" 
+            *ngIf="!getSocketIsConnect()">
+              <div class="spinner-border spinner-border-sm" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <br>
+              Connecting...
+            </a>
+            <div class="collapse navbar-collapse fixe-top" id="navbarSupportedContent">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+<!--                 <li class="nav-item">
+                  <a class="nav-link cursor" data-bs-toggle="tooltip" data-bs-title="Open" 
+                  routerLink="book-generator">
+                    <i class="bi bi-book"></i>
+                    Book generator <span class="badge text-bg-success">New</span>
+                  </a>
+                </li> -->
+                <hr class="my-2 text-secondary">
+                <li class="nav-item">
+                  <a class="nav-link cursor text-danger" *ngIf="isAdmin()"
+                    data-bs-toggle="tooltip" data-bs-title="Admin" 
+                    data-bs-target="#adminModal" 
+                    data-bs-toggle="modal" aria-label="Close">
+                    <i class="bi bi-person-fill-gear"></i>
+                    <br>Admin
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link cursor" data-bs-toggle="tooltip" data-bs-title="New" 
+                  (click)="reloadPage()">
+                    <i class="bi bi-plus-circle"></i>
+                    New chat
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link cursor" data-bs-toggle="tooltip" data-bs-title="Save" (click)="saveMessages()">
+                    <i class="bi bi-download"></i>
+                    Save chat
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link cursor" data-bs-toggle="tooltip" data-bs-title="Open" 
+                  data-bs-toggle="modal" data-bs-target="#openMessagesModal">
+                    <i class="bi bi-folder2-open"></i>
+                    Open chat
+                  </a>
+                </li>
+                <hr class="my-2 text-secondary">
+                <li class="nav-item">
+                  <a class="nav-link cursor"
+                      data-bs-target="#toolsModal" data-bs-toggle="modal" aria-label="Close" 
+                      (click)="fetchToolsAndAgents()">
+                      <i class="bi bi-tools"></i>
+                      Tools
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link cursor" data-bs-toggle="tooltip" data-bs-title="Settings"
+                    data-bs-target="#configModelModal" data-bs-toggle="modal" aria-label="Close">
+                    <i class="bi bi-gear"></i>
+                    Settings
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link cursor mt-2 mb-2" data-bs-toggle="tooltip" data-bs-title="Credits"
+                    data-bs-target="#creditsModal" data-bs-toggle="modal" aria-label="Close">
+                    <i class="bi bi-bar-chart"></i>
+                    Usage
+                  </a>  
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link cursor" data-bs-toggle="tooltip" data-bs-title="Support" 
+                  data-bs-toggle="modal" data-bs-target="#supportModal">
+                    <i class="bi bi-whatsapp"></i>
+                    Support
+                  </a>
+                </li>
+                <hr class="my-2 text-secondary">
+                <li class="nav-item">
+                  <a class="nav-link cursor text-center text-warning fw-lighter mt-2" style="font-size:medium; cursor: pointer;"
+                  data-bs-toggle="tooltip" data-bs-title="Exit"
+                  (click)="logout()" *ngIf="getSocketIsConnect()">
+                    <i class="bi bi-box-arrow-left"></i>
+                    Exit
+                  </a> 
+                  <a class="nav-link text-center fw-lighter text-warning cursor mt-2" style="font-size: xx-small;" 
+                  *ngIf="!getSocketIsConnect()">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    Connecting...
+                  </a> 
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+
+        <nav class="navbar fixed-top bg-transparent border-0" data-bs-theme="dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+              <img src="assets/img/logotipo-redatudo-sem-fundo.webp" height="45px" width="45px" alt="">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" *ngIf="getSocketIsConnect()" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" 
+            aria-label="Toggle navigation" (click)="editZIndexAdsense()">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="nav-link text-center fw-lighter text-warning cursor mt-2" style="font-size: xx-small;" 
+            *ngIf="!getSocketIsConnect()">
+              <div class="spinner-border spinner-border-sm" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <br>
+              Connecting...
+            </a>
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+              <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Redatudo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+              </div>
+              <div class="offcanvas-body">
+                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+<!--                   <li class="nav-item">
+                    <a class="nav-link cursor" data-bs-toggle="tooltip" data-bs-title="Open" 
+                    routerLink="book-generator">
+                      <i class="bi bi-book"></i>
+                      Book generator <span class="badge text-bg-success">New</span>
+                    </a>
+                  </li> -->
+                  <hr class="my-2 text-secondary">
+                  <li class="nav-item">
+                    <a class="nav-link cursor text-danger" *ngIf="isAdmin()"
+                      data-bs-toggle="tooltip" data-bs-title="Admin" 
+                      data-bs-target="#adminModal" 
+                      data-bs-toggle="modal" aria-label="Close">
+                      <i class="bi bi-person-fill-gear"></i>
+                      <br>Admin
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link cursor" data-bs-toggle="tooltip" data-bs-title="New" 
+                    (click)="reloadPage()">
+                      <i class="bi bi-plus-circle"></i>
+                      New chat
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link cursor" data-bs-toggle="tooltip" data-bs-title="Save" (click)="saveMessages()">
+                      <i class="bi bi-download"></i>
+                      Save chat
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link cursor" data-bs-toggle="tooltip" data-bs-title="Open" 
+                    data-bs-toggle="modal" data-bs-target="#openMessagesModal">
+                      <i class="bi bi-folder2-open"></i>
+                      Open chat
+                    </a>
+                  </li>
+                  <hr class="my-2 text-secondary">
+                  <li class="nav-item">
+                    <a class="nav-link cursor"
+                        data-bs-target="#toolsModal" data-bs-toggle="modal" aria-label="Close" 
+                        (click)="fetchToolsAndAgents()">
+                        <i class="bi bi-tools"></i>
+                        Tools
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link cursor" data-bs-toggle="tooltip" data-bs-title="Settings"
+                      data-bs-target="#configModelModal" data-bs-toggle="modal" aria-label="Close">
+                      <i class="bi bi-gear"></i>
+                      Settings
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link cursor mt-2 mb-2" data-bs-toggle="tooltip" data-bs-title="Credits"
+                      data-bs-target="#creditsModal" data-bs-toggle="modal" aria-label="Close">
+                      <i class="bi bi-bar-chart"></i>
+                      Usage
+                    </a>  
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link cursor" data-bs-toggle="tooltip" data-bs-title="Support" 
+                    data-bs-toggle="modal" data-bs-target="#supportModal">
+                      <i class="bi bi-whatsapp"></i>
+                      Support
+                    </a>
+                  </li>
+                  <hr class="my-2 text-secondary">
+                  <li class="nav-item">
+                    <a class="nav-link cursor text-center text-warning fw-lighter mt-2" style="font-size:medium; cursor: pointer;"
+                    data-bs-toggle="tooltip" data-bs-title="Exit"
+                    (click)="logout()" *ngIf="getSocketIsConnect()">
+                      <i class="bi bi-box-arrow-left"></i>
+                      Exit
+                    </a> 
+                    <a class="nav-link text-center fw-lighter text-warning cursor mt-2" style="font-size: xx-small;" 
+                    *ngIf="!getSocketIsConnect()">
+                      <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                      Connecting...
+                    </a> 
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </div>
+      
+      <!-- Message container -->
+      <div class="col-12 col-md-9 col-lg-9 mt-4 pt-4 pb-4">
+        <div class="row pt-4 pb-4 mb-4 justify-content-center">
+          <div class="col-12">
+            <br><br><br><br>
+          </div>
+          <!-- No message -->
+          <div class="col-11 col-md-9 col-lg-9 mb-3 animate__animated animate__fadeIn" 
+            *ngIf="messages.length == 0">
+
+            <div class="card row-robo p-3 shadow-lg rounded border-0">
+                <div class="card-body">
+                  <h5 class="mb-3" style="font-family: 'Orbitron', Arial, sans-serif; color:#00ffd0; letter-spacing:1px; font-weight: 700;">👋 Bem-vindo ao Redatudo!</h5>
+                  <p style="color:#b8e6ff; font-size:1.09rem;">
+                    Sou seu assistente inteligente pronto para <strong style="color:#00ffd0;">criar textos, eBooks, imagens, vídeos, áudios e muito mais</strong> usando IA. <br>
+                    Diga o que precisa — desde artigos para blog até materiais didáticos, roteiros e resumos — e veja a mágica acontecer em segundos.<br>
+                    Experimente pedir um <strong style="color:#00ffd0;">eBook</strong>, gerar uma <strong style="color:#00ffd0;">imagem</strong> pelo prompt, ou explorar outros recursos.
+                    <br><br>
+                    <span style="color:#7f00ff;">Seja criativo. Seja produtivo.<br>Vamos começar?</span>
+                  </p>
+                </div>
+            </div>
+          </div>
+          <div class="col-11 col-md-9 col-lg-9 mb-3 animate__animated animate__fadeIn" 
+            *ngFor="let msg of messages; let i=index">
+
+            <div class="card" 
+            [ngClass]="{'row-user p-3 shadow-sm rounded border-0' : msg.role=='user', 
+            'row-robo p-3 shadow-lg rounded border-0':msg.role=='assistant'}">
+              
+              <!-- User message -->
+              <div class="card-body" *ngIf="msg.role=='user'">
+                
+                <!-- NO EDITABLE -->
+                <a class="badge bg-secondary p-1 mb-1 card-link" href="{{mediaMessages[i].publicLink}}" target="_blank" *ngIf="!isEditable[i] && mediaMessages[i]">
+                  <strong><i class="{{getIconByTypeFile(mediaMessages[i].contentType)}}"></i>{{mediaMessages[i].fileName}}</strong>
+                </a> 
+                <app-file-render *ngIf="!isEditable[i] && mediaMessages[i]" [fileUrl]="mediaMessages[i].publicLink"></app-file-render>
+                <p class="card-text p-1" *ngIf="!isEditable[i]" [innerHtml]="msg.content"></p>
+                
+                <!-- IS EDITABLE -->
+                <a class="card-link" href="{{mediaMessages[i].publicLink}}" target="_blank" *ngIf="isEditable[i] && mediaMessages[i]">
+                  <strong><i class="{{getIconByTypeFile(mediaMessages[i].contentType)}}"></i>{{mediaMessages[i].fileName}}</strong>
+                </a>   
+                <app-file-render *ngIf="isEditable[i] && mediaMessages[i]" [fileUrl]="mediaMessages[i].publicLink"></app-file-render>             
+                <form *ngIf="isEditable[i]">
+                  <div class="form-group">
+                    <textarea name="msgContent" id="msgContent" class="form-control mt-2" 
+                    autosize [(ngModel)]="msg.content">
+                    </textarea>
+                  </div>
+                </form>
+                
+                <span class="card-text small text-center " id="status" 
+                *ngIf="msg.role=='user' && sendSpinner==true && i==messages.length-1">
+                  
+                  <span class="d-flex align-items-center"
+                  [ngClass]="{'text-secondary':status.toLowerCase()!='completed' 
+                  && status.toLowerCase()!='error',
+                  'text-success':status.toLowerCase()=='completed',
+                  'text-danger':status.toLowerCase()=='error'}">
+
+                    <div class="spinner-border spinner-border-sm m-1" role="status" 
+                      *ngIf="status.toLowerCase()!='completed' 
+                      && status.toLowerCase()!='error'">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+
+                    <i class="bi bi-check-circle" *ngIf="status.toLowerCase()=='completed'"></i>
+                    
+                    <span class="m-1">{{status}}</span>
+                  </span>
+
+                </span>
+                <span class="w-100 p-1 mt-2" *ngIf="msg.role=='user' && sendSpinner==true && i==messages.length-1">
+                  <ins class="adsbygoogle"
+                    style="display:block"
+                    data-ad-format="fluid"
+                    data-ad-layout-key="-gw-3+1f-3d+2z"
+                    data-ad-client="ca-pub-9848635946946970"
+                    data-ad-slot="7410346452"></ins>
+                </span>
+
+                <p class="card-text text-secondary small text-end" *ngIf="!sendSpinner">
+                  <a class="cursor m-1" (click)="copy(i)">
+                    <i class="bi bi-clipboard" *ngIf="!copyCheck"></i>
+                    <i class="bi bi-clipboard-check" *ngIf="copyCheck"></i>
+                  </a>
+                  <a *ngIf="isEditable[i]"class="cursor m-1" (click)="editMessage(i)"><i class="bi bi-check-circle"></i> Ok </a>
+                  <a *ngIf="isEditable[i]"class="cursor m-1" (click)="editMessage(i); regenerate(i)"><i class="bi bi-check-circle"></i> Ok and regenerate</a>
+                  <a *ngIf="!isEditable[i]" class="cursor m-1" (click)="editMessage(i)"><i class="bi bi-pencil-square"></i></a>
+                  <a *ngIf="!isEditable[i]" class="cursor m-1" (click)="regenerate(i)"><i class="bi bi-arrow-clockwise"></i></a>
+                </p>
+              </div>
+
+
+              <!-- Assistant message -->
+              <span *ngIf="msg.role=='assistant'" class="p-2 bg-transparent text-white"
+              id="{{i+'spanAssistantContent'}}">
+
+                <markdown [data]="msg.content" *ngIf="!msg.noMark"
+                  emoji
+                  katex
+                  mermaid
+                  clipboard
+                  >
+                </markdown>
+                <span class="w-100 p-1 mt-2">
+                  <ins class="adsbygoogle"
+                    style="display:block"
+                    data-ad-client="ca-pub-9848635946946970"
+                    data-ad-slot="5092107205"
+                    data-ad-format="auto"
+                    data-full-width-responsive="true"></ins>
+                </span>
+
+
+                <span *ngIf="msg.noMark">
+                  <span class="w-100 p-1 mt-2">
+                    <ins class="adsbygoogle"
+                    style="display:block"
+                    data-ad-format="fluid"
+                    data-ad-layout-key="-gw-3+1f-3d+2z"
+                    data-ad-client="ca-pub-9848635946946970"
+                    data-ad-slot="7410346452"></ins>
+                  </span>
+                  <p class="card-text mt-4">😅 Ops! Parece que você está sem créditos...
+                    Já considerou fazer uma recarga?🚀</p>
+
+                    <p class="card-text"><strong>Veja como é simples:</strong></p>
+                    <ul>
+                        <li>
+                            1- Clique em 
+                            <a class="btn btn-primary cursor mt-2 mb-2" data-bs-toggle="tooltip" data-bs-title="Credits"
+                                data-bs-target="#creditsModal" data-bs-toggle="modal" aria-label="Close" (click)="fetchBalance();">
+                                <i class="bi bi-bar-chart"></i>
+                                 Usage
+                            </a> 
+                        </li>
+                        <li>Escolha uma opção que melhor atenda suas necessidades e realize o pagamento.</li>
+                        <li>Pronto! Continue seu progresso na criação de conteúdo.</li>
+                    </ul>
+                    <h5>Por que escolher REDATUDO?</h5>
+                    <ul>
+                        <li>
+                            Sem mensalidade. Pré pago, pague só o que usar.
+                        </li>
+                        <li>
+                            Pague com pix, boleto ou cartão de crédito (a vista ou parcelado).
+                        </li>
+                        <li>
+                            Use chatgpt plus, sem pagar mensalidade.
+                        </li>
+                        <li>
+                            Crie texto, imagem, música, narração e vídeo. Tudo que você precisa pra sua estratégia de conteúdo nas redes sociais e blogs.
+                        </li>
+                        <li>
+                            Deixe as tarefas do dia a dia no trabalho mais fáceis com ferramentas de pesquisa na internet de sites, imagens e documentos.
+                        </li>
+                        <li>
+                            Faça perguntas diretas para sites e documentos e deixe que nosso assistente ofereça a melhor resposta encontrada.
+                        </li>
+                        <li>
+                            Leitura e análise de imagens, sites e documentos. Deixe que o assistente leia o documento e resolva problemas de reescrita, resumo e outros processamentos que você solicitar.
+                        </li>
+                    </ul>
+                    <p class="card-text">
+                        Recarregue agora mesmo 
+                        <a class="btn btn-primary cursor mt-2 mb-2" data-bs-toggle="tooltip" data-bs-title="Credits"
+                            data-bs-target="#creditsModal" data-bs-toggle="modal" aria-label="Close" (click)="fetchBalance();">
+                            <i class="bi bi-bar-chart"></i>
+                             Usage
+                        </a> 
+                    </p>
+                    <p class="card-text"><strong>📞 Fale com o suporte humano a qualquer momento:</strong></p>
+                    <p class="card-text">
+                        <a href="mailto:suporte@redatudo.online">Envie um email.</a> <br>
+                        <a href="https://wa.me/556584011436">Chame no whatsapp </a> <i class="bi bi-whatsapp"></i>
+                    </p>
+                    <p class="card-text">Obrigado pela paciência! 😊</p>
+                </span>
+              </span>
+
+              <span>
+                <a *ngIf="msg.role=='assistant'"class="cursor m-2" 
+                (click)="copy(i)"> 
+                  <i class="bi bi-clipboard" *ngIf="!copyCheck"></i>
+                  <i class="bi bi-clipboard-check" *ngIf="copyCheck"></i>
+                </a> 
+                <a *ngIf="msg.role=='assistant'" (click)="setFeedback(messages[i-1].content, msg.content, msg.formFeedback.toolCallsText)"
+                class="cursor m-2" data-bs-toggle="tooltip" data-bs-title="Open" 
+                data-bs-toggle="modal" data-bs-target="#feedbackModal"><i class="bi bi-hand-thumbs-down"></i></a>
+              </span>
+
+            </div>
+          </div>
+
+        </div>
+
+
+        <div class="row justify-content-center fixed-bottom mt-4 mb-4" >
+          
+          <div class="col-12 text-center m-0 p-0" *ngIf="usedFile">
+            <div class="row justify-content-center">
+              <div class="col-11 col-md-4 col-lg-4 text-center">
+                <app-file-render [fileUrl]="usedFile.publicLink"></app-file-render>
+                <div class="input-group input-group-sm mt-1 mb-1 p-0 bg-transparent text-white text-center">
+                  <span class="input-group-text bg-transparent text-white border-secondary m-0 p-1">
+                    <i class="{{getIconByTypeFile(usedFile.contentType)}}"></i>
+                  </span>
+                  <span class="input-group-text form-control m-0 p-1 bg-transparent text-white border-secondary text-center text-wrap">
+                    <a class="text-center text-wrap" href="{{usedFile.publicLink}}" target="_blank">
+                      {{usedFile.fileName}}
+                    </a>
+                  </span>
+                  <span class="input-group-text m-0 p-1 bg-transparent text-white border-secondary text-center">
+                    <i class="bi bi-x-lg cursor text-danger" (click)="cancelUsedFile()"></i>
+                  </span>
+                  <!-- <input type="button" class="form-control" aria-label="Sizing example input" (click)="cancelUsedFile()"> -->
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          
+          <div class="col-11 col-md-9 col-lg-9 row-user opacity-50 p-2 m-1 shadow-sm rounded" style="z-index: 9999;">
+            <form #form="ngForm">
+              <div class="row justify-content-center">
+                  <div class="col-12">
+                      <div class="input-group">
+                          <button type="button" class="btn btn-outline-primary border-0 cursor" 
+                          data-bs-toggle="modal" data-bs-target="#fileModal" 
+                          [disabled]="!getSocketIsConnect()"
+                          (click)="fetchFiles()">
+                              <h5><i class="bi bi-paperclip"></i></h5>
+                          </button>
+                          <textarea #textareaMessage autosize type="text" rows="1"
+                          class="form-control form-control-lg border-0 rounded bg-transparent text-white" aria-label="With textarea"
+                          name="currentMessage" placeholder="Enter a message"
+                          [(ngModel)]="currentMessage" 
+                          [disabled]="!getSocketIsConnect()" (keydown.enter)="inputAndSendMessage()"></textarea>
+                          
+                          <button type="button" class="btn btn-outline-primary border-0" 
+                          [disabled]="sendSpinner==true || !getSocketIsConnect()"  
+                          (click)="inputAndSendMessage()">
+                            <h5>
+                              <i class="bi bi-send" *ngIf="sendSpinner==false && usedFile==null"></i>
+                              <i class="bi bi-send-plus" *ngIf="sendSpinner==false && usedFile!=null"></i>
+                            </h5>
+                          </button>
+                          <button type="button" class="btn btn-outline-primary border-0" *ngIf="sendSpinner==true"
+                          (click)="cancelJob()">
+                            <i class="bi bi-stop-circle-fill"></i>
+                          </button>
+                      </div>
+                  </div>
+              </div>
+            </form> 
+          </div>
+          <div class="col-12 text-secondary m-0 p-0 text-center">
+            <a class="cursor" data-bs-toggle="tooltip" data-bs-title="Credits"
+            data-bs-target="#creditsModal" data-bs-toggle="modal" aria-label="Close">
+              <i class="bi bi-bar-chart"></i>
+              Add credits
+            </a> | <a href="">Unlimited plan</a> | <i>Boost productivity with AI🚀</i>
+          </div>
+        </div>
+      </div>
+      
+      <div id="fim_container" class="mt-4 mb-4">
+        <br><br><br><br> 
+      </div>
+
+    </div>
+</div>
+<audio #audioPlayer style="display: none;">
+  <source src="assets/audio/message-receiver.mp3" type="audio/mp3">
+  Seu navegador não suporta o elemento de áudio.
+</audio>
+
+<!-- SELECT | UPLOAD FILE -->
+<div class="modal fade" id="fileModal" tabindex="-1" style="z-index: 10001;"
+data-bs-backdrop="static" data-bs-keyboard="false"
+aria-labelledby="fileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="fileModalLabel">
+          Select or upload files
+          <div class="spinner-border spinner-border-sm m-1" role="status"
+          *ngIf="waitSpinner || !getSocketIsConnect() || uploadSpinner">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </h1>
+        <button id="uploadModalButton" type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" *ngIf="getSocketIsConnect()">
+        <ul class="nav nav-tabs mb-3">
+          <li class="nav-item">
+            <a class="nav-link cursor" [ngClass]="{'active': locFiles==='uploads/'}" (click)="locFiles='uploads/'; fetchFiles();">Uploads</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link cursor" [ngClass]="{'active': locFiles==='archives/'}" (click)="locFiles='archives/'; fetchFiles();">Archieves</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link cursor" [ngClass]="{'active': locFiles==='books/'}" (click)="locFiles='books/'; fetchFiles();">Books</a>
+          </li>
+        </ul>
+        <table class="table table-sm border-0">
+          <thead class="table-dark">
+            <tr>
+              <th>
+                <span class="display-6 m-1">
+                  Files
+                </span>
+                <button class="btn btn-primary btn-sm m-1" *ngIf="locFiles==='uploads/'"
+                [disabled]="uploadSpinner" (click)="selectFile()">
+                  <i class="bi bi-file-earmark-plus" *ngIf="!uploadSpinner"></i> 
+                  <span>Upload a file</span>
+                </button>
+              </th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody class="table-dark">
+            <tr>
+              <th class="text-center" colspan="2">
+                Filter: 
+                <button class="btn btn-outline-secondary btn-sm m-1 ml-2"
+                  (click)="filterFilesNow('all'); fetchFiles();"
+                  [ngClass]="{'btn-secondary text-light':contentTypeFilter==='all'}">
+                  all
+                </button>
+                <button class="btn btn-outline-secondary btn-sm m-1" 
+                  *ngFor="let type of getFilterFilesType()"
+                  [ngClass]="{'btn-secondary text-light':contentTypeFilter===type}"
+                  (click)="filterFilesNow(type); fetchFiles();">
+                  {{type}}
+                </button>
+
+                <button class="btn btn-danger btn-sm m-1" 
+                  id="btnAlertRemove" data-bs-toggle="modal" data-bs-target="#alertRemoveModal" 
+                  (click)="setFileToRemove(filterFiles())">
+                  Remove {{filterFiles().length}} filtered files.
+                </button>
+                <form class="text-end">
+                  <div class="input-group mb-1 bg-transparent text-end">
+                    <span class="input-group-text" id="basic-search-file">
+                      <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control bg-transparent text-white" placeholder="Search" 
+                    aria-label="Search" aria-describedby="basic-search-file" name="fileFilterInput" [(ngModel)]="fileFilterInput">
+                  </div>
+                </form>
+              </th>
+            </tr>
+            <tr *ngIf="filterFiles().length==0">
+              <td class="text-secondary text-center"><i>Upload some files.</i></td>
+            </tr>
+            <tr *ngFor="let file of filterFiles(); let i=index">
+              <td>
+                <a href="{{file.publicLink}}" target="_blank" [ngClass]="{'fw-bold':urlIsIndexed(file.publicLink), 'fw-lighter':!urlIsIndexed(file.publicLink)}">
+                    {{file.fileName}}
+                </a>
+                <br>
+                <span class="small text-white text-muted">
+                  <span class="badge bg-secondary m-1"><i class="{{getIconByTypeFile(file.contentType)}}"></i> {{file.contentType}}</span>
+                  <span class="badge bg-secondary m-1">{{formatSize(file.size)}}</span>
+                  <span class="badge bg-secondary m-1">{{formatDate(file.timeCreated)}}</span>
+                  <span class="badge bg-success m-1" *ngIf="urlIsIndexed(file.publicLink)"><i class="bi bi-search"></i>Indexed</span>
+                </span>
+              </td>
+              <td class="text-end">
+                <div class="dropdown">
+                  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-gear"></i> Actions
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item cursor" (click)="useFile(file)"><i class="bi bi-arrow-right"></i> Use in chat</a></li>
+                    <li><a class="dropdown-item" href="{{file.downloadLink}}"><i class="bi bi-download"></i> Download</a></li>
+                    
+                    <li>
+                      <div class="dropdown-item">                      
+                        <div *ngIf="deleteFileSpinner[i] || indexedFileSpinner[i]">
+                          <div class="spinner-border spinner-border-sm text-danger" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                          </div>
+                          Indexing...
+                        </div>
+                        <div class="form-check form-switch" *ngIf="isIndexable(file.contentType)">
+                          <label [hidden]="indexedFileSpinner[i]" for="flexSwitchCheckDefault">Index file</label>
+                          
+                          <input class="form-check-input" *ngIf="!urlIsIndexed(file.publicLink)"
+                            [hidden]="deleteFileSpinner[i] || indexedFileSpinner[i]"
+                            [disabled]="indexedFileSpinner[i]"
+                            [checked]="false"
+                            (click)="indexFile(file.publicLink, i)"
+                            type="checkbox" role="switch" id="flexSwitchCheckDefault">
+      
+                          <input class="form-check-input" *ngIf="urlIsIndexed(file.publicLink)"
+                            [hidden]="deleteFileSpinner[i] || indexedFileSpinner[i]"
+                            [disabled]="indexedFileSpinner[i]"
+                            [checked]="true"
+                            (click)="deleteIndexFile(file.publicLink, i)"
+                            type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        </div>
+                      </div>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                      <a id="btnAlertRemove" class="dropdown-item cursor text-danger" data-bs-toggle="modal" data-bs-target="#alertRemoveModal" [ngClass]="{'disabled':deleteFileSpinner[i]}"
+                      (click)="setFileToRemove(file.pathName)">
+                      <i class="bi bi-trash"></i> Remove file</a>
+                    </li>
+
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-center mt-2 text-center">
+            <li class="page-item me-1" [class.disabled]="currentPage === 1">
+              <button class="btn btn-outline-secondary" (click)="goToPageFiles(currentPage - 1)">Previous</button>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === getTotalPagesFiles()">
+              <button class="btn btn-outline-secondary" (click)="goToPageFiles(currentPage + 1)">Next</button>
+            </li>
+          </ul>
+        </nav> 
+      </div>
+      <form class="d-none d-md-none d-lg-none" enctype="multipart/form-data">
+        <input id="attach" type="file" name="file" (change)="onFileSelected($event)" />
+      </form>
+    </div>
+  </div>
+</div>
+<!-- REMOVE FILE ALERT -->
+<div class="modal fade" id="alertRemoveModal" aria-hidden="true"  style="z-index: 10001;"
+  aria-labelledby="exampleModalToggleLabel2" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalToggleLabel2"><i class="bi bi-exclamation-triangle"></i> Do you want to remove the file and its search indexes?</h1>
+        <button type="button" class="btn-close" data-bs-target="#fileModal" data-bs-toggle="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger" role="alert">
+          <p *ngFor="let url of linksFileToRemoveTemp; let i=index">
+            {{removePathFileName(url)}}
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-danter" data-bs-target="#fileModal" data-bs-toggle="modal">Cancel</button>
+        <button class="btn btn-danger" data-bs-target="#fileModal" data-bs-toggle="modal"
+        (click)="deleteFiles(linksFileToRemoveTemp)"
+          [disabled]="deleteFileSpinner[0]">
+          <span *ngIf="!deleteFileSpinner[0]">Remove file</span>
+          <span *ngIf="deleteFileSpinner[0]">
+            <div class="spinner-border spinner-border-sm" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <br>
+            Removing...
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+<!-- CONFIG -->
+<div class="modal fade" id="configModelModal" tabindex="-1"  style="z-index: 10001;"
+  aria-labelledby="configModelModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="configModelModalLabel">Settings</h1>
+        <button id="uploadModalButton" type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body m-1">
+        <form>
+          <div class="form-floating mb-3">
+            <input type="text" id="inputAccount" class="form-control" value="#ID {{getAccount().id}} - Email {{getAccount().email}}" disabled>
+            <label for="inputAccount">Your account.</label>
+          </div>
+        </form>
+        <form>
+          <div class="mb-2">
+            <h4>Select LLM</h4>
+            <ng-select 
+             [items]="openrouterModels" [loading]="modelsLoading"
+             [clearable]="selectedModel!='openai/gpt-4.1-mini'"
+             [searchable]="true"
+             name="selectedModel"
+             [(ngModel)]="selectedModel"
+             [compareWith]="compareFn"
+             [searchFn]="customSearchFn"
+             (change)="onModelSelected($event)">
+              <ng-template ng-option-tmp let-item="item">
+                {{ item.id }} <span class="badge bg-secondary">{{item.platform}}</span>
+              </ng-template>
+            </ng-select> 
+          </div>
+          <small id="modelHelp" class="form-text text-white" *ngIf="getOpenrouterModelById(selectedModel)">
+            <h4>{{ getOpenrouterModelById(selectedModel)?.name }}</h4>
+            <small class="text-muted">{{ getOpenrouterModelById(selectedModel)?.plataform }}</small>
+        
+            <p>{{ getOpenrouterModelById(selectedModel)?.description || 'Sem descrição disponível.' }}</p>
+        
+            <ul class="list-unstyled">
+                <li><strong>Preço por 1 milhão tokens:</strong> ${{ calculatePricePerMillionTokens(getOpenrouterModelById(selectedModel)) }}</li>
+                <li><strong>Preço por 1 mil palavras:</strong> ${{ calculatePricePerThousandWords(getOpenrouterModelById(selectedModel)) }}</li>
+            </ul>
+          </small>
+        
+          <div class="mt-3 mb-3 rounded bg-secondary p-2">
+            <p>Add your openrouter and replicate api keys to use redatudo unlimited.</p>
+            <p class="d-inline-flex gap-1">
+              <a class="btn btn-light btn-sm" data-bs-toggle="collapse" href="#collapseAddKeys" role="button" aria-expanded="false" aria-controls="collapseAddKeys">
+                <i class="bi bi-key"></i> Add api key
+              </a>
+            </p>
+            <div class="collapse" id="collapseAddKeys">
+              <div class="card card-body">
+                <div class="input-group mb-1">
+                  <input type="text" name="key" id="key" class="form-control" [(ngModel)]="formProvider.key">
+                  <select name="keys" id="keys" [(ngModel)]="formProvider.provider">
+                    <option value="openrouter">Openrouter</option>
+                    <option value="replicate">Replicate</option>
+                  </select>
+                  <button class="btn btn-primary" (click)="addProvider();">
+                    <div class="spinner-border" role="status" *ngIf="providersSpinner">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <span *ngIf="!providersSpinner">Add key</span>
+                  </button>
+                </div>
+                <h6>My API Keys</h6>
+                <p *ngIf="providers.length===0"><i>You have not yet registered your openrouter and replicate api keys.</i></p>
+                <table class="table" *ngIf="providers.length>0">
+                  <tbody>
+                    <tr *ngFor="let prov of providers; let i=index">
+                      <td>{{prov.provider}}</td>
+                      <td>{{prov.key | truncateApiKey }}</td>
+                      <td>
+                        <button class="btn btn-danger" (click)="removeProvider(prov._id, i)">
+                          <div class="spinner-border" role="status" *ngIf="removeProvidersSpinner[i]">
+                            <span class="visually-hidden">Loading...</span>
+                          </div>
+                          <i class="bi bi-trash" *ngIf="!removeProvidersSpinner[i]"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </form>
+        <br>
+        <span style="font-size: smaller;">
+          <p class="text-secondary">
+            <a href="https://app.redatudo.online/?token={{getToken()}}">Return to Redatudo Legacy</a>
+          </p>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MESSAGE FILE -->
+<div class="modal fade" id="openMessagesModal" tabindex="-1"  style="z-index: 10001;"
+  aria-labelledby="openMessagesModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="openMessagesModalLabel">Messages</h1>
+        <button type="button" class="btn-close bg-light" id="btnCloseMessagesFile"
+        data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form #formFile="ngForm">
+          <div class="m-1">
+            <label for="messagesJsonFile" class="form-label">Messages .json</label>
+            <input class="form-control bg-dark text-white" type="file" 
+            id="messagesJsonFile" #inputFile
+            (change)="onFileSelectedJson($event); formFile.reset(); inputFile.value=''">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOOLS -->
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false"
+id="toolsModal" tabindex="-1"  style="z-index: 10001;"
+  aria-labelledby="toolsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="toolsModalLabel">Tools</h1>
+        <button id="uploadModalButton" type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="list-group" *ngIf="!waitSpinner">
+            <button *ngFor="let tool of tools; let i=index"
+            (click)="activateTool(tool.schema?.function?.name)" aria-label="Close"
+             class="list-group-item bg-transparent text-white list-group-item-action d-flex gap-3 py-3 cursor" 
+             aria-current="true" (click)="setTool(tool)">
+              <img src="{{tool.icon}}" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
+              <div class="d-flex gap-2 w-100 justify-content-between">
+                <div>
+                  <h6 class="mb-0">{{tool.title}}</h6>
+                  <p class="mb-0 opacity-75">{{tool.description}}</p>
+                </div>
+                <small class="opacity-50 text-nowrap">
+                  <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" role="switch" 
+                      #toolCheck id="flexSwitchCheckChecked" [checked]="!getToolDeactivated().includes(tool.schema?.function?.name)">
+                      <label class="form-check-label" for="flexSwitchCheckChecked">
+                        <span *ngIf="!toolCheck.checked">Disable</span>
+                        <span *ngIf="toolCheck.checked">Enable</span>
+                      </label>
+                  </div>
+                </small>
+              </div>
+            </button>
+        </div>
+        <span *ngIf="waitSpinner" class="text-center">
+          <div class="spinner-border spinner-border-sm m-1" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          Loading...
+        </span>
+      </div>
+<!--       <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div> -->
+    </div>
+  </div>
+</div>
+
+<!-- FEEDBACK -->
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false"
+  id="feedbackModal" tabindex="-1"  style="z-index: 10001;"
+  aria-labelledby="feedbackModalLabel'" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header text-white">
+        <h1 class="modal-title fs-5" id="feedbackModalLabel">
+          Feedback
+        </h1>
+        <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="feedbackControlTextarea1" class="form-label">Feedback (optional)</label>
+            <textarea class="form-control" id="feedbackControlTextarea1" rows="3" placeholder="Optional" name="feedback"
+            #textareaFeedback></textarea>
+          </div>
+          <div class="mb-3">
+            <button class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close"
+              (click)="sendFeedback(textareaFeedback.value)">
+              Send feedback
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CREDITS -->
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false"
+  id="creditsModal" tabindex="-1"  style="z-index: 10001;"
+  aria-labelledby="creditsModalLabel'" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header text-white">
+        <h1 class="modal-title fs-5" id="creditsModalLabel">
+          Add Credits
+        </h1>
+        <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" *ngIf="waitSpinner || !getSocketIsConnect()">
+        <span class="text-center">
+          <div class="spinner-border spinner-border-sm m-1" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          Loading...
+        </span>
+      </div>
+      <div class="modal-body" *ngIf="!waitSpinner && getSocketIsConnect()">
+        <form class="form-floating mb-2">
+          <input type="number" class="form-control" id="floatingInputBalance" 
+          placeholder="{{balance}}" name="balance" [(ngModel)]="balance" disabled>
+          <label for="floatingInputBalance">Your credits.</label>
+        </form>
+        <form>
+          <div class="input-group mb-2">
+            <div class="form-floating">
+<!--               <input type="number" min="1" step="1" name="credits" [(ngModel)]="inputCredits" 
+              class="form-control form-control-lg" id="inputCredits" > -->
+
+
+              <select class="form-control"
+              id="inputCredits"
+              name="credits"
+              [(ngModel)]="inputCredits">
+                <option selected>Select a credit package</option>
+                <option [value]="5">5 credits</option>
+                <option [value]="10">10 credits</option>
+                <option [value]="50">50 credits</option>
+                <option [value]="100">100 credits</option>
+              </select>
+              <label for="inputCredits" class="form-label">Buy credits.</label>
+            </div>
+            <a class="form-control form-control-sm btn btn-primary text-center" style="font-size: small;" [attr.href]="getUrlPayment(inputCredits)">
+              Purchase <br>
+              {{calcPrice(inputCredits) | currency : 'USD'}}
+            </a>
+          </div>
+          <p *ngIf="inputCredits==5">Save $0 with this package. Select larger packages to save.</p>
+          <p class="text-success" *ngIf="inputCredits==10">Save $1.35 with this bundle. Select larger bundles to save.</p>
+          <p class="text-success" *ngIf="inputCredits==50">Save $12.63 with this bundle. Select larger bundles to save.</p>
+          <p class="text-success" *ngIf="inputCredits==100">Save $28.66 with this bundle. Select larger bundles to save.</p>
+        </form>
+        <p>
+          <a class="cursor" data-bs-target="#historicModal" data-bs-toggle="modal" aria-label="Close">
+            <i class="bi bi-bar-chart"></i> Usage history
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORIC -->
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false"
+  id="historicModal" tabindex="-1"  style="z-index: 10001;"
+  aria-labelledby="historicModalLabel'" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header text-white">
+        <h1 class="modal-title fs-5" id="historicModalLabel">
+          Historic
+        </h1>
+        <button type="button" class="btn-close bg-light" data-bs-target="#creditsModal" data-bs-toggle="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <span *ngIf="waitSpinner || !getSocketIsConnect()" class="text-center">
+          <div class="spinner-border spinner-border-sm m-1" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          Loading...
+        </span>
+        <app-historic></app-historic>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false"
+  id="adminModal" tabindex="-1"  style="z-index: 10001;"
+  aria-labelledby="adminModalLabel'" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header text-white">
+        <h1 class="modal-title fs-5 text-danger" id="adminModalLabel">
+          Admin
+        </h1>
+        <button type="button" class="btn-close bg-light" data-bs-toggle="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <app-user-admin></app-user-admin>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUPPORT -->
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false"
+  id="supportModal" tabindex="-1"  style="z-index: 10001;"
+  aria-labelledby="supportModalLabel'" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header text-white">
+        <h1 class="modal-title fs-5 text-danger" id="supportModalLabel">
+          Support
+        </h1>
+        <button type="button" class="btn-close bg-light" data-bs-toggle="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Envie um <a href="mailto:suporte@redatudo.online">Email</a> ou chame no <a href="https://wa.me/556584011436">WhatsApp</a>.
+        </p>
+        <p>
+          Email: <a href="mailto:suporte@redatudo.online">Email de suporte</a> <br>
+          Whatsapp: <a href="https://wa.me/556584011436">Whatsapp de suporte</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

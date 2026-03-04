@@ -1,0 +1,112 @@
+<!-- 
+  src/app/ebook-studio/ebook-studio.component.html
+  FOCO: Design "Estúdio de Foco". Uma interface premium, centralizada e com animações suaves 
+  para criar uma experiência de utilizador que impressiona e vende.
+-->
+<div class="studio-background">
+  <div class="studio-panel">
+
+    <!-- CABEÇALHO COM A BARRA DE PROGRESSO -->
+    <div class="panel-header">
+      <div class="progress-bar">
+        <div class="progress-track" [style.width.%]="getProgressPercentage()"></div>
+      </div>
+      <div class="progress-steps">
+        <div 
+          class="progress-step" 
+          *ngFor="let step of steps" 
+          [ngClass]="getStepStatus(step.id)"
+          (click)="goToStep(step.id)"
+          [class.clickable]="step.id <= highestStepReached">
+          {{ step.id }}
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTEÚDO DINÂMICO DO PASSO -->
+    <div class="panel-content" [@fadeSlide]="currentStep">
+      <!-- Indicador de Carregamento -->
+      <div *ngIf="isLoading" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>A nossa IA está a trabalhar...</p>
+      </div>
+
+      <!-- ETAPA 1: BRIEFING -->
+      <div *ngIf="currentStep === 1 && !isLoading">
+        <div class="step-icon"><i class="bi bi-stars"></i></div>
+        <h2>Qual é a grande ideia do seu ebook?</h2>
+        <p class="subtitle">Este é o ponto de partida. Descreva o tema central e a IA fará a sua magia.</p>
+        <textarea 
+          class="form-control" 
+          rows="5" 
+          placeholder="Ex: Um guia completo sobre as melhores práticas de SEO para e-commerces em 2025..."
+          [(ngModel)]="ebookIdea"></textarea>
+      </div>
+
+      <!-- ETAPA 2: SUMÁRIO -->
+      <div *ngIf="currentStep === 2 && !isLoading">
+        <div class="step-icon"><i class="bi bi-list-nested"></i></div>
+        <h2>Estrutura e Sumário</h2>
+        <p class="subtitle">Revise e refine os capítulos propostos. Arraste para reordenar, edite ou adicione novas secções.</p>
+        
+        <ul class="summary-list" cdkDropList (cdkDropListDropped)="drop($event)">
+          <li *ngFor="let chapter of summary" cdkDrag>
+            <i class="bi bi-grip-vertical drag-handle" cdkDragHandle></i>
+            <input type="text" class="form-control-inline" [(ngModel)]="chapter.title">
+          </li>
+        </ul>
+      </div>
+
+      <!-- ETAPA 3: CONTEÚDO -->
+      <div *ngIf="currentStep === 3 && !isLoading">
+        <div class="step-icon"><i class="bi bi-pencil-fill"></i></div>
+        <h2>Escrita e Edição</h2>
+        <p class="subtitle">O texto foi gerado. Agora é a sua vez de dar o seu toque pessoal e refinar o conteúdo.</p>
+        <textarea class="form-control content-editor" rows="10" [(ngModel)]="ebookContent"></textarea>
+      </div>
+
+      <!-- ETAPA 4: ESTILO VISUAL -->
+      <div *ngIf="currentStep === 4 && !isLoading">
+        <div class="step-icon"><i class="bi bi-palette-fill"></i></div>
+        <h2>Design e Estilo</h2>
+        <p class="subtitle">Escolha um dos nossos templates profissionais para dar vida ao seu ebook.</p>
+        <div class="template-gallery">
+          <div 
+            class="template-card" 
+            *ngFor="let template of availableTemplates"
+            [class.selected]="template.id === selectedTemplateId"
+            (click)="selectTemplate(template.id)">
+            <img [src]="template.thumbnailUrl" [alt]="'Imagem de ' + template.name" class="template-thumbnail">
+            <div class="template-name">{{ template.name }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ETAPA 5: FINALIZAR -->
+      <div *ngIf="currentStep === 5 && !isLoading">
+        <div class="step-icon"><i class="bi bi-check-circle-fill"></i></div>
+        <h2>A sua obra-prima está pronta!</h2>
+        <p class="subtitle">O seu ebook foi compilado com sucesso. Faça o download nos formatos abaixo.</p>
+        <div class="export-buttons">
+          <button class="btn btn-export-primary"><i class="bi bi-file-earmark-pdf-fill me-2"></i>Exportar PDF</button>
+          <button class="btn btn-export-secondary"><i class="bi bi-book-fill me-2"></i>Exportar ePub</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RODAPÉ COM NAVEGAÇÃO -->
+    <div class="panel-footer">
+      <button class="btn btn-secondary" (click)="previousStep()" [class.invisible]="currentStep === 1">
+        <i class="bi bi-arrow-left me-2"></i> Voltar
+      </button>
+      <button 
+        class="btn btn-primary" 
+        (click)="nextStep()" 
+        [hidden]="currentStep === steps.length"
+        [disabled]="currentStep === 1 && ebookIdea.trim().length === 0">
+        Próximo Passo <i class="bi bi-arrow-right ms-2"></i>
+      </button>
+    </div>
+
+  </div>
+</div>

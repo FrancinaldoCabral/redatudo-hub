@@ -1,0 +1,27 @@
+<nav class="tool-navigation">
+  <div class="nav-left">
+    <button class="nav-back-btn" (click)="goBackToHub()">
+      <span class="nav-back-icon">←</span>
+      Voltar ao Hub
+    </button>
+    <div class="nav-breadcrumb">
+      <span class="breadcrumb-item">RedaTudo Hub</span>
+      <span class="breadcrumb-separator">/</span>
+      <span class="breadcrumb-item active">{{ toolName }}</span>
+    </div>
+  </div>
+
+  <div class="nav-right">
+    <div class="credits-display">
+      <span class="credits-label">Créditos:</span>
+      <span class="credits-value">{{ balance }}</span>
+      <button 
+        class="credits-button" 
+        (click)="onCreditClick()"
+        [class.low-balance]="showCreditWarning"
+      >
+        💳 Comprar
+      </button>
+    </div>
+  </div>
+</nav>

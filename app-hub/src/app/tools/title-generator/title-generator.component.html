@@ -1,0 +1,160 @@
+<div class="tool-page">
+  <div class="tool-container">
+
+    <app-tool-header [toolName]="'Gerador de Títulos'" (creditClicked)="creditsModal.open()"></app-tool-header>
+
+    <!-- Tool Header -->
+    <header class="tool-header">
+      <span class="tool-header-badge">✍️ TEXTO</span>
+      <h1 class="tool-header-title">Gerador de Títulos Criativos</h1>
+      <p class="tool-header-description">
+        Crie títulos impactantes e profissionais para seu conteúdo
+      </p>
+
+      <div class="tool-header-meta">
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">⭐</span>
+          4.9 avaliação
+        </span>
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">💡</span>
+          12.4k gerações
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+      <!-- Form Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">Configure seu Título</h3>
+        </div>
+
+        <div class="tool-card-body">
+          <div class="tool-form-group">
+            <label class="tool-label">Sobre o que é seu conteúdo?</label>
+            <app-textarea-ai
+              [placeholder]="'Ex: livro sobre produtividade pessoal'"
+              [maxLength]="500"
+              [minLength]="10"
+              [(ngModel)]="form.topic"
+              (onGenerate)="generateTitles()"
+              [loading]="isLoading">
+            </app-textarea-ai>
+          </div>
+
+          <div class="tool-grid tool-grid-2">
+            <div class="tool-form-group">
+              <label class="tool-label">Tipo de conteúdo</label>
+              <select class="tool-select" [(ngModel)]="form.type">
+                <option *ngFor="let type of types" [value]="type.value">
+                  {{ type.label }}
+                </option>
+              </select>
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Tom: {{ getToneDescription() }}</label>
+              <div class="tone-control">
+                <span class="tone-label">Formal</span>
+                <input
+                  type="range"
+                  class="tone-slider"
+                  [min]="minTone"
+                  [max]="maxTone"
+                  [step]="toneStep"
+                  [(ngModel)]="form.tone">
+                <span class="tone-label">Criativo</span>
+              </div>
+              <div class="tone-value">Nível {{ form.tone }}/10</div>
+            </div>
+          </div>
+
+          <button
+            class="tool-btn tool-btn-primary"
+            [disabled]="!form.topic.trim() || isLoading"
+            (click)="generateTitles()">
+            <span class="tool-btn-icon">🚀</span>
+            {{ isLoading ? 'Gerando Títulos...' : 'Gerar 9 Títulos' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="tool-loading" *ngIf="isLoading">
+        <div class="tool-loading-spinner"></div>
+        <p class="tool-loading-text">Gerando títulos criativos...</p>
+      </div>
+
+      <!-- Results Section -->
+      <div class="tool-results" *ngIf="results.length > 0 && !isLoading">
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <h3 class="tool-card-title">{{ results.length }} títulos gerados</h3>
+            <button
+              class="tool-btn tool-btn-secondary"
+              [disabled]="!canRegenerate()"
+              (click)="regenerateTitles()">
+              <span class="tool-btn-icon">🔄</span>
+              Gerar mais 9 variações
+            </button>
+          </div>
+
+          <div class="tool-card-body">
+            <div class="tool-grid tool-grid-3">
+              <app-tap-to-copy-card
+                *ngFor="let result of results; let i = index"
+                [content]="result.title"
+                [title]="'Título ' + (i + 1)"
+                [index]="i">
+              </app-tap-to-copy-card>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="tool-empty-state" *ngIf="results.length === 0 && !isLoading">
+        <div class="tool-empty-icon">📝</div>
+        <h3 class="tool-empty-title">Nenhum título gerado ainda</h3>
+        <p class="tool-empty-text">
+          Preencha o formulário acima e clique em gerar para ver os títulos
+        </p>
+      </div>
+
+      <!-- Tips Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">💡 Dicas para Títulos Perfeitos</h3>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-grid tool-grid-2">
+            <div class="tip-item">
+              <strong>🎯 Específico:</strong> Inclua palavras-chave do seu conteúdo
+            </div>
+            <div class="tip-item">
+              <strong>❓ Curiosidade:</strong> Use perguntas para gerar interesse
+            </div>
+            <div class="tip-item">
+              <strong>🔥 Emoção:</strong> Desperte sentimentos no leitor
+            </div>
+            <div class="tip-item">
+              <strong>📏 Tamanho:</strong> Mantenha entre 6-12 palavras para melhor impacto
+            </div>
+            <div class="tip-item">
+              <strong>🎨 Criatividade:</strong> Use metáforas e linguagem figurada
+            </div>
+            <div class="tip-item">
+              <strong>✅ Promessa:</strong> Mostre o benefício que o leitor terá
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <app-credits-modal #creditsModal></app-credits-modal>
+  </div>
+</div>

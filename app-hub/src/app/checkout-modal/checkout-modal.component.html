@@ -1,0 +1,49 @@
+
+<a class="cursor" data-bs-toggle="tooltip" data-bs-title="Credits"
+data-bs-target="#paymentModal" data-bs-toggle="modal" aria-label="Close">
+<i class="bi bi-bar-chart"></i>
+Add credits
+</a>  
+<div class="modal fade" tabindex="-1" role="dialog" id="paymentModal">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            Payment
+          </h5>
+          <button type="button" class="btn-close" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+            <div class="card p-4">
+                <h3>Comprar Créditos</h3>
+                <label>Quantidade de créditos:
+                  <input type="number" [(ngModel)]="credit" min="1" />
+                </label>
+            
+                <button class="btn btn-primary mt-3"
+                        (click)="pay()"
+                        [disabled]="credit < 1 || loading">
+                  {{ loading ? 'Aguarde...' : 'Pagar ' + displayPrice() }}
+                </button>
+            
+                <div *ngIf="breakdown" class="mt-3">
+                  <small class="text-muted">
+                    <a href="#" (click)="showDetails = !showDetails; $event.preventDefault()">
+                      {{ showDetails ? 'Ocultar' : 'Mostrar' }} detalhes
+                    </a>
+                  </small>
+                  <div *ngIf="showDetails" class="mt-2">
+                    <ul class="list-unstyled">
+                      <li>Preço líquido (P_eq): {{ breakdown.priceNet | currency:'USD' }}</li>
+                      <li>Margem ({{ breakdown.marginRate * 100 }}%): +{{ (breakdown.priceGross - breakdown.priceNet) | currency:'USD' }}</li>
+                      <li>Impostos ({{ breakdown.taxRate * 100 }}%): +{{ (breakdown.priceWithTaxes - breakdown.priceGross) | currency:'USD' }}</li>
+                      <li><strong>Total:</strong> {{ breakdown.priceWithTaxes | currency:'USD' }}</li>
+                    </ul>
+                  </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+  

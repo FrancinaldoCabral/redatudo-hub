@@ -1,0 +1,24 @@
+<div class="infinite-bg">
+  <div class="particles-layer layer-1">
+    <div
+      class="particle small"
+      *ngFor="let p of particlesLayer1"
+      [style.left.%]="p.left"
+      [style.animation-delay.s]="p.delay"></div>
+  </div>
+  <div class="particles-layer layer-2">
+    <div
+      class="particle medium"
+      *ngFor="let p of particlesLayer2"
+      [style.left.%]="p.left"
+      [style.animation-delay.s]="p.delay"></div>
+  </div>
+  <div class="particles-layer layer-3">
+    <div
+      class="particle large"
+      *ngFor="let p of particlesLayer3"
+      [style.left.%]="p.left"
+      [style.animation-delay.s]="p.delay"></div>
+  </div>
+  <div class="gradient-overlay"></div>
+</div>

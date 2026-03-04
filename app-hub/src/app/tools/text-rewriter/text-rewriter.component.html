@@ -1,0 +1,207 @@
+<div class="tool-page">
+  <div class="tool-container">
+
+    <app-tool-header [toolName]="'Reformulador de Textos'" (creditClicked)="creditsModal.open()"></app-tool-header>
+
+    <!-- Tool Header -->
+    <header class="tool-header">
+      <span class="tool-header-badge">✍️ TEXTO</span>
+      <h1 class="tool-header-title">Reformulador de Textos</h1>
+      <p class="tool-header-description">
+        Reescreva textos mantendo o significado com diferentes objetivos
+      </p>
+
+      <div class="tool-header-meta">
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">⭐</span>
+          4.7 avaliação
+        </span>
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">💡</span>
+          6.7k gerações
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+      <!-- Form Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">Texto para Reformular</h3>
+        </div>
+
+        <div class="tool-card-body">
+          <form (ngSubmit)="rewriteText()">
+
+            <!-- Text Stats (if text exists) -->
+            <div class="tool-grid tool-grid-4 tool-mb-md" *ngIf="form.originalText.length > 0">
+              <div class="tool-badge tool-badge-info">
+                📝 {{ getTextStats().words }} palavras
+              </div>
+              <div class="tool-badge tool-badge-info">
+                🔤 {{ getTextStats().characters }} caracteres
+              </div>
+              <div class="tool-badge tool-badge-info">
+                ⏱️ {{ getTextStats().readingTime }} min leitura
+              </div>
+              <div class="tool-badge tool-badge-warning">
+                💰 {{ getCreditCost() }} crédito{{ getCreditCost() > 1 ? 's' : '' }}
+              </div>
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Texto Original</label>
+              <textarea
+                class="tool-textarea"
+                [(ngModel)]="form.originalText"
+                name="originalText"
+                placeholder="Cole aqui o texto que deseja reescrever..."
+                rows="6"
+                maxlength="2000"
+                (input)="onTextChange()"
+                required>
+              </textarea>
+            </div>
+
+            <div class="tool-grid tool-grid-2">
+              <div class="tool-form-group">
+                <label class="tool-label">Objetivo da Reescrita</label>
+                <select class="tool-select" [(ngModel)]="form.objective" name="objective">
+                  <option *ngFor="let objective of objectives" [value]="objective.value">
+                    {{ objective.label }}
+                  </option>
+                </select>
+                <small class="form-text">{{ getCurrentObjective()?.description }}</small>
+              </div>
+
+              <div class="tool-form-group" *ngIf="form.objective === 'parafrasear'">
+                <label class="tool-label">Nível de Reformulação</label>
+                <select class="tool-select" [(ngModel)]="form.rewriteLevel" name="rewriteLevel">
+                  <option *ngFor="let level of rewriteLevels" [value]="level.value">
+                    {{ level.label }}
+                  </option>
+                </select>
+                <small class="form-text">{{ getCurrentRewriteLevel()?.description }}</small>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              class="tool-btn tool-btn-primary"
+              [disabled]="isLoading || !form.originalText.trim()">
+              <span class="tool-btn-icon">🔄</span>
+              {{ isLoading ? 'Reescrevendo...' : 'Reescrever Texto' }}
+              <span class="credit-cost">({{ getCreditCost() }} crédito{{ getCreditCost() > 1 ? 's' : '' }})</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="tool-loading" *ngIf="isLoading">
+        <div class="tool-loading-spinner"></div>
+        <p class="tool-loading-text">Reescrevendo seu texto...</p>
+      </div>
+
+      <!-- Results Section -->
+      <div class="tool-results" *ngIf="result && !isLoading">
+
+        <!-- Comparison Stats -->
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <h3 class="tool-card-title">📊 Estatísticas da Reformulação</h3>
+          </div>
+          <div class="tool-card-body">
+            <div class="tool-grid tool-grid-3">
+              <div class="tool-badge tool-badge-info">
+                📄 Original: {{ result.originalLength }} caracteres
+              </div>
+              <div class="tool-badge tool-badge-success">
+                ✨ Reescrevido: {{ result.rewrittenLength }} caracteres
+              </div>
+              <div class="tool-badge tool-badge-warning">
+                🔄 ~{{ result.changesCount }} alterações
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comparison View -->
+        <div class="tool-grid tool-grid-2">
+          <!-- Original Text -->
+          <div class="tool-card">
+            <div class="tool-card-header">
+              <h3 class="tool-card-title">📄 Texto Original</h3>
+            </div>
+            <div class="tool-card-body">
+              <div class="tool-result-content">
+                {{ form.originalText }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Rewritten Text -->
+          <div class="tool-card">
+            <div class="tool-card-header">
+              <h3 class="tool-card-title">✨ Texto Reescrevido</h3>
+              <div class="tool-result-actions">
+                <app-copy-button
+                  [text]="result.content"
+                  [showLabel]="true">
+                </app-copy-button>
+              </div>
+            </div>
+            <div class="tool-card-body">
+              <div class="tool-result-content">
+                <markdown [data]="result.content"></markdown>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="tool-empty-state" *ngIf="!result && !isLoading">
+        <div class="tool-empty-icon">📝</div>
+        <h3 class="tool-empty-title">Nenhum texto reformulado ainda</h3>
+        <p class="tool-empty-text">
+          Cole um texto no campo acima e clique em reescrever para ver o resultado
+        </p>
+      </div>
+
+      <!-- Tips Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">💡 Quando Usar Cada Objetivo</h3>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-grid tool-grid-2">
+            <div class="tip-item">
+              <strong>Parafrasear:</strong> Para evitar plágio ou tornar o texto único
+            </div>
+            <div class="tip-item">
+              <strong>Formalizar:</strong> Para emails profissionais ou documentos corporativos
+            </div>
+            <div class="tip-item">
+              <strong>Simplificar:</strong> Para tornar conteúdo acessível ao público geral
+            </div>
+            <div class="tip-item">
+              <strong>Humanizar IA:</strong> Para tornar textos gerados por IA mais naturais
+            </div>
+            <div class="tip-item">
+              <strong>Acadêmico:</strong> Para trabalhos escolares e científicos
+            </div>
+            <div class="tip-item">
+              <strong>Marketing:</strong> Para textos de vendas e persuasão
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <app-credits-modal #creditsModal></app-credits-modal>
+  </div>
+</div>

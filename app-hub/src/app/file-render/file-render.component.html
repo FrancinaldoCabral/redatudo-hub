@@ -1,0 +1,56 @@
+<ng-container [ngSwitch]="getFileType(fileUrl)">
+    <div class="card"  *ngSwitchCase="'image'">
+        <img [src]="fileUrl" class="card-img-top" alt="Image">
+    </div>
+    <div class="card"  *ngSwitchCase="'video'">
+        <video [src]="fileUrl" class="card-img-top" controls></video>
+    </div>
+    <div class="card bg-transparent border-0" *ngSwitchCase="'audio'">
+        <div class="card-body border-0 bg-transparent">
+            <audio [src]="fileUrl" controls></audio>
+        </div> 
+    </div>
+    <div class="card bg-transparent border-0" *ngSwitchCase="'pdf'">
+        <div class="card-body border-0 bg-transparent">
+            <ngx-doc-viewer
+                [url]="fileUrl"
+                viewer="google"
+                style="width:100%;height:50vh;"
+            ></ngx-doc-viewer>
+        </div>
+    </div>
+    <div class="card bg-transparent border-0" *ngSwitchCase="'html'" id="bookIframe">
+        <div class="card-body border-0 bg-transparent">
+<!--             <ngx-doc-viewer
+                [url]="fileUrl"
+                viewer="google"
+                style="width:100%;height:50vh;"
+            ></ngx-doc-viewer> -->
+            <iframe 
+            width="100%" height="100%"
+            src="https://bucket-s3-api.redatudo.online/storage/public/1/books/books-4fc0fad2-5943-4d6d-ba0b-418e38ab6e70.html" frameborder="0"></iframe>
+        </div>
+    </div>
+    <div class="card bg-transparent border-0" *ngSwitchCase="'text'">
+        <div class="card-body border-0 bg-transparent">
+            <ngx-doc-viewer
+                [url]="fileUrl"
+                viewer="google"
+                style="width:100%;height:50vh;"
+            ></ngx-doc-viewer>
+        </div>
+    </div>
+    <div class="card bg-transparent border-0" *ngSwitchCase="'office'">
+        <div class="card-body border-0 bg-transparent">
+            <ngx-doc-viewer
+            [viewerUrl]="'https://docs.google.com/gview?url=%URL%&embedded=true'"
+            [url]="fileUrl"
+            viewer="url"
+            style="width:100%;height:50vh;"
+          >
+          </ngx-doc-viewer>
+        </div>
+    </div>
+    <p *ngSwitchDefault>Tipo de arquivo não suportado.</p>
+</ng-container>
+  

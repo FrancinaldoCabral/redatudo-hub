@@ -1,0 +1,51 @@
+<div class="tool-page">
+  <div class="tool-container">
+
+    <!-- Tool Header -->
+    <header class="tool-header">
+      <button class="tool-btn tool-btn-secondary tool-mb-md" (click)="goToHome()">
+        <span class="tool-btn-icon">←</span>
+        Voltar ao Hub
+      </button>
+
+      <div class="tool-details">
+        <div class="tool-icon">{{ icon }}</div>
+        <div class="tool-text">
+          <h1 class="tool-header-title">{{ title }}</h1>
+          <p class="tool-header-description">{{ description }}</p>
+        </div>
+      </div>
+
+      <!-- Credit Balance (se autenticado) -->
+      <div class="tool-header-meta" *ngIf="!isLoading">
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">💰</span>
+          {{ balance }} créditos
+        </span>
+        <button class="tool-btn tool-btn-success" (click)="goToCredits()">
+          <span class="tool-btn-icon">➕</span>
+          Adicionar Créditos
+        </button>
+      </div>
+    </header>
+
+    <!-- Credit Warning -->
+    <div class="tool-card tool-warning" *ngIf="showCreditWarning">
+      <div class="tool-card-header">
+        <h3 class="tool-card-title">⚠️ Créditos Insuficientes</h3>
+      </div>
+      <div class="tool-card-body">
+        <p>Você precisa de pelo menos {{ creditCost }} crédito(s) para usar esta ferramenta.</p>
+        <button class="tool-btn tool-btn-primary" (click)="goToCredits()">
+          Adicionar Créditos
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+      <ng-content></ng-content>
+    </main>
+
+  </div>
+</div>

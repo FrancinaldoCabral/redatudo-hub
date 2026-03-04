@@ -1,0 +1,316 @@
+<div class="tool-page">
+  <div class="tool-container">
+
+    <app-tool-header [toolName]="'Assistente Acadêmico'" (creditClicked)="creditsModal.open()"></app-tool-header>
+
+    <!-- Tool Header -->
+    <header class="tool-header">
+      <span class="tool-header-badge">🎓 ACADÊMICO</span>
+      <h1 class="tool-header-title">Assistente Acadêmico</h1>
+      <p class="tool-header-description">
+        Gere introduções, conclusões e formate textos ABNT
+      </p>
+
+      <div class="tool-header-meta">
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">⭐</span>
+          4.8 avaliação
+        </span>
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">💡</span>
+          7.2k gerações
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+      <!-- Tab Navigation -->
+      <div class="tool-card">
+        <div class="tool-card-body">
+          <div class="tool-grid tool-grid-3">
+            <button
+              class="tool-btn"
+              [class.tool-btn-primary]="activeTab === 'introduction'"
+              [class.tool-btn-secondary]="activeTab !== 'introduction'"
+              (click)="setActiveTab('introduction')">
+              <span class="tool-btn-icon">📝</span>
+              Introdução
+            </button>
+            <button
+              class="tool-btn"
+              [class.tool-btn-primary]="activeTab === 'conclusion'"
+              [class.tool-btn-secondary]="activeTab !== 'conclusion'"
+              (click)="setActiveTab('conclusion')">
+              <span class="tool-btn-icon">🏁</span>
+              Conclusão
+            </button>
+            <button
+              class="tool-btn"
+              [class.tool-btn-primary]="activeTab === 'formatter'"
+              [class.tool-btn-secondary]="activeTab !== 'formatter'"
+              (click)="setActiveTab('formatter')">
+              <span class="tool-btn-icon">📋</span>
+              Formatação
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tool-card" *ngIf="activeTab === 'introduction'">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">📝 Gerar Introdução</h3>
+        </div>
+        <div class="tool-card-body">
+          <form (ngSubmit)="generateIntroduction()">
+
+            <!-- Character Counter -->
+            <div class="tool-badge tool-badge-info tool-mb-md" *ngIf="introForm.topic.length > 0">
+              🔤 {{ introForm.topic.length }}/300 caracteres
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Tema do Trabalho Acadêmico</label>
+              <textarea
+                class="tool-textarea"
+                [(ngModel)]="introForm.topic"
+                name="topic"
+                [placeholder]="getCurrentPlaceholder()"
+                rows="3"
+                maxlength="300"
+                required>
+              </textarea>
+            </div>
+
+            <div class="tool-grid tool-grid-2">
+              <div class="tool-form-group">
+                <label class="tool-label">Tipo de Trabalho</label>
+                <select class="tool-select" [(ngModel)]="introForm.academicType" name="academicType">
+                  <option *ngFor="let type of academicTypes" [value]="type.value">
+                    {{ type.label }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="tool-form-group">
+                <label class="tool-label">Palavras-chave (opcional)</label>
+                <input
+                  type="text"
+                  class="tool-input"
+                  [(ngModel)]="introForm.keywords"
+                  name="keywords"
+                  placeholder="Ex: redes sociais, comportamento, consumidor">
+              </div>
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Contexto Adicional (opcional)</label>
+              <textarea
+                class="tool-textarea"
+                [(ngModel)]="introForm.context"
+                name="context"
+                placeholder="Informações adicionais sobre o contexto, objetivos específicos, metodologia, etc."
+                rows="2"
+                maxlength="200">
+              </textarea>
+            </div>
+
+            <button
+              type="submit"
+              class="tool-btn tool-btn-primary"
+              [disabled]="isLoading || !introForm.topic.trim()">
+              <span class="tool-btn-icon">🚀</span>
+              {{ isLoading ? 'Gerando introdução...' : 'Gerar Introdução' }}
+              <span class="credit-cost">(2 créditos)</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Conclusion Tab -->
+      <div class="tool-card" *ngIf="activeTab === 'conclusion'">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">🏁 Gerar Conclusão</h3>
+        </div>
+        <div class="tool-card-body">
+          <form (ngSubmit)="generateConclusion()">
+
+            <!-- Character Counter -->
+            <div class="tool-badge tool-badge-info tool-mb-md" *ngIf="conclusionForm.mainPoints.length > 0">
+              🔤 {{ conclusionForm.mainPoints.length }}/500 caracteres
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Principais Pontos do Trabalho</label>
+              <textarea
+                class="tool-textarea"
+                [(ngModel)]="conclusionForm.mainPoints"
+                name="mainPoints"
+                [placeholder]="getCurrentPlaceholder()"
+                rows="4"
+                maxlength="500"
+                required>
+              </textarea>
+            </div>
+
+            <div class="tool-grid tool-grid-2">
+              <div class="tool-form-group">
+                <label class="tool-label">Tipo de Conclusão</label>
+                <select class="tool-select" [(ngModel)]="conclusionForm.conclusionType" name="conclusionType">
+                  <option *ngFor="let type of conclusionTypes" [value]="type.value">
+                    {{ type.label }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="tool-form-group">
+                <label class="tool-label">Contribuição do Trabalho (opcional)</label>
+                <textarea
+                  class="tool-textarea"
+                  [(ngModel)]="conclusionForm.contribution"
+                  name="contribution"
+                  placeholder="Descreva as principais contribuições e impactos do seu trabalho..."
+                  rows="2"
+                  maxlength="200">
+                </textarea>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              class="tool-btn tool-btn-primary"
+              [disabled]="isLoading || !conclusionForm.mainPoints.trim()">
+              <span class="tool-btn-icon">🚀</span>
+              {{ isLoading ? 'Gerando conclusão...' : 'Gerar Conclusão' }}
+              <span class="credit-cost">(2 créditos)</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Formatter Tab -->
+      <div class="tool-card" *ngIf="activeTab === 'formatter'">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">📋 Formatação ABNT</h3>
+        </div>
+        <div class="tool-card-body">
+          <form (ngSubmit)="formatText()">
+
+            <!-- Character Counter -->
+            <div class="tool-badge tool-badge-info tool-mb-md" *ngIf="formatterForm.text.length > 0">
+              🔤 {{ formatterForm.text.length }}/2000 caracteres
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Texto para Formatação</label>
+              <textarea
+                class="tool-textarea"
+                [(ngModel)]="formatterForm.text"
+                name="text"
+                [placeholder]="getCurrentPlaceholder()"
+                rows="6"
+                maxlength="2000"
+                required>
+              </textarea>
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Norma de Formatação</label>
+              <select class="tool-select" [(ngModel)]="formatterForm.formatType" name="formatType">
+                <option *ngFor="let format of formatTypes" [value]="format.value">
+                  {{ format.label }}
+                </option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              class="tool-btn tool-btn-primary"
+              [disabled]="isLoading || !formatterForm.text.trim()">
+              <span class="tool-btn-icon">🚀</span>
+              {{ isLoading ? 'Formatando texto...' : 'Formatar Texto' }}
+              <span class="credit-cost">(2 créditos)</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="tool-loading" *ngIf="isLoading">
+        <div class="tool-loading-spinner"></div>
+        <p class="tool-loading-text">Gerando conteúdo acadêmico...</p>
+      </div>
+
+      <!-- Results Section -->
+      <div class="tool-results" *ngIf="results.length > 0 && !isLoading">
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <h3 class="tool-card-title">{{ results[0].title }}</h3>
+            <div class="tool-result-actions">
+              <app-copy-button
+                [text]="results[0].content"
+                [showLabel]="true">
+              </app-copy-button>
+            </div>
+          </div>
+
+          <div class="tool-card-body">
+            <!-- Result Meta -->
+            <div class="tool-grid tool-grid-3 tool-mb-md">
+              <div class="tool-badge tool-badge-info">
+                📄 {{ results[0].type === 'introduction' ? 'Introdução' : results[0].type === 'conclusion' ? 'Conclusão' : 'Texto Formatado' }}
+              </div>
+              <div class="tool-badge tool-badge-success">
+                🔤 {{ results[0].content.length }} caracteres
+              </div>
+              <div class="tool-badge tool-badge-warning">
+                💰 2 créditos
+              </div>
+            </div>
+
+            <div class="tool-result-content">
+              <markdown [data]="results[0].content"></markdown>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="tool-empty-state" *ngIf="results.length === 0 && !isLoading">
+        <div class="tool-empty-icon">📝</div>
+        <h3 class="tool-empty-title">Nenhum conteúdo gerado ainda</h3>
+        <p class="tool-empty-text">
+          Selecione uma aba acima e preencha o formulário para gerar conteúdo acadêmico
+        </p>
+      </div>
+
+      <!-- Academic Tips -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">💡 Dicas para Trabalhos Acadêmicos</h3>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-grid tool-grid-2">
+            <div class="tip-item">
+              <strong>📝 Introdução:</strong> Apresente o tema, contextualize o problema, defina objetivos e delineie a estrutura.
+            </div>
+            <div class="tip-item">
+              <strong>🏁 Conclusão:</strong> Sintetize os principais achados e discuta as implicações do seu trabalho.
+            </div>
+            <div class="tip-item">
+              <strong>📋 Formatação:</strong> Siga rigorosamente as normas da ABNT para garantir a qualidade acadêmica.
+            </div>
+            <div class="tip-item">
+              <strong>🔑 Palavras-chave:</strong> Use termos específicos do seu campo de estudo para melhor indexação.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <app-credits-modal #creditsModal></app-credits-modal>
+  </div>
+</div>

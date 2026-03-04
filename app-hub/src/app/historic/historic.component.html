@@ -1,0 +1,46 @@
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <form class="form-floating mb-2" *ngIf="!waitBalanceSpinner">
+                <input type="number" class="form-control" id="floatingInputBalance" 
+                placeholder="{{balance}}" name="balance" [(ngModel)]="balance" disabled>
+                <label for="floatingInputBalance">Your credits.</label>
+            </form>
+            <span *ngIf="waitBalanceSpinner" class="text-center">
+              <div class="spinner-grow spinner-grow-sm m-1" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              Loading...
+            </span>
+            <h3>Usage</h3>
+            <hr>
+            <ul class="list-group" *ngIf="historicData.length > 0">
+                <li class="list-group-item bg-dark text-light" *ngFor="let h of historicData; let i=index">
+                    {{h.description | uppercase}} <br>
+                    <span [ngClass]="{'text-warning':h.operation==='debit', 
+                    'text-success':h.operation==='credit'}">{{h.total}}</span><br>
+                    {{dateFormat(h.createdAt)}}
+                </li>
+            </ul>
+            <p class="text-center bg-secondary p-3 m-3" *ngIf="historicData.length === 0">
+              <i>Empty historic</i>
+            </p>
+            <span *ngIf="waitSpinner" class="text-center">
+              <div class="spinner-grow spinner-grow-sm m-1" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              Loading...
+            </span>
+            <nav aria-label="Page navigation example">
+              <ul class="pagination justify-content-center mt-2 text-center">
+                <li class="page-item" [class.disabled]="currentPage === 1">
+                  <button class="btn btn-outline-secondary" (click)="goToPage(currentPage - 1)">Previous</button>
+                </li>
+                <li class="page-item" [class.disabled]="currentPage === getTotalPages()">
+                  <button class="btn btn-outline-secondary" (click)="goToPage(currentPage + 1)">Next</button>
+                </li>
+              </ul>
+            </nav>            
+        </div>
+    </div>
+</div>

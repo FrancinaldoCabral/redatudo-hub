@@ -1,0 +1,103 @@
+<!-- Banner variant -->
+<div class="upgrade-prompt banner" *ngIf="variant === 'banner' && isVisible" [class]="containerClass">
+  <div class="prompt-content">
+    <div class="prompt-icon">
+      <i class="bi bi-star"></i>
+    </div>
+    <div class="prompt-text">
+      <h4 class="prompt-title">{{ defaultTitle }}</h4>
+      <p class="prompt-description">{{ defaultDescription }}</p>
+    </div>
+    <div class="prompt-actions">
+      <button class="btn-upgrade" (click)="handleUpgrade()">
+        <i class="bi bi-rocket"></i>
+        Fazer Upgrade - {{ price }}
+      </button>
+      <button class="btn-dismiss" *ngIf="dismissible" (click)="handleDismiss()">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Card variant -->
+<div class="upgrade-prompt card" *ngIf="variant === 'card' && isVisible" [class]="containerClass">
+  <div class="card-header">
+    <div class="card-icon">
+      <i class="bi bi-crown"></i>
+    </div>
+    <button class="btn-close" *ngIf="dismissible" (click)="handleClose()">
+      <i class="bi bi-x"></i>
+    </button>
+  </div>
+
+  <div class="card-content">
+    <h3 class="card-title">{{ defaultTitle }}</h3>
+    <p class="card-description">{{ defaultDescription }}</p>
+
+    <div class="card-features">
+      <div class="feature">
+        <i class="bi bi-x-circle"></i>
+        <span>Plano Grátis: {{ currentLimit }}</span>
+      </div>
+      <div class="feature">
+        <i class="bi bi-check-circle"></i>
+        <span>Plano Pro: {{ proLimit }}</span>
+      </div>
+    </div>
+
+    <button class="btn-upgrade-card" (click)="handleUpgrade()">
+      <i class="bi bi-rocket"></i>
+      Upgrade Agora - {{ price }}
+    </button>
+  </div>
+</div>
+
+<!-- Modal variant -->
+<div class="upgrade-prompt modal" *ngIf="variant === 'modal' && isVisible" [class]="containerClass">
+  <div class="modal-overlay" (click)="handleClose()"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">{{ defaultTitle }}</h3>
+      <button class="btn-close-modal" (click)="handleClose()">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <p class="modal-description">{{ defaultDescription }}</p>
+
+      <div class="modal-comparison">
+        <div class="plan current">
+          <h4>Plano Atual</h4>
+          <div class="plan-limit">{{ currentLimit }}</div>
+        </div>
+        <div class="plan-arrow">
+          <i class="bi bi-arrow-right"></i>
+        </div>
+        <div class="plan pro">
+          <h4>Plano Pro</h4>
+          <div class="plan-limit">{{ proLimit }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-upgrade-modal" (click)="handleUpgrade()">
+        <i class="bi bi-rocket"></i>
+        Fazer Upgrade - {{ price }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Inline variant -->
+<div class="upgrade-prompt inline" *ngIf="variant === 'inline' && isVisible" [class]="containerClass">
+  <div class="inline-content">
+    <i class="bi bi-info-circle"></i>
+    <span class="inline-text">{{ defaultDescription }}</span>
+    <button class="btn-upgrade-inline" (click)="handleUpgrade()">
+      Upgrade
+    </button>
+  </div>
+</div>

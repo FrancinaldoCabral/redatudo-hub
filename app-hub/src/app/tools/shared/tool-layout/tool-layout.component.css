@@ -1,0 +1,63 @@
+/* Tool Layout - Using Design System Classes */
+/* All styles now use the global design system variables and classes */
+
+.tool-details {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.tool-icon {
+  width: 72px;
+  height: 72px;
+  background: var(--primary-purple);
+  border-radius: var(--border-radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.25rem;
+  box-shadow: var(--shadow-md);
+}
+
+.tool-text {
+  flex: 1;
+}
+
+.tool-text .tool-header-title {
+  margin-bottom: var(--spacing-sm);
+}
+
+.tool-text .tool-header-description {
+  margin: 0;
+}
+
+.tool-warning {
+  border-color: var(--danger-red);
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.tool-warning .tool-card-title {
+  color: var(--danger-red);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .tool-details {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-md);
+  }
+
+  .tool-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 1.75rem;
+  }
+
+  .tool-header-meta {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    align-items: center;
+  }
+}

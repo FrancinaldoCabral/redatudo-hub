@@ -1,0 +1,221 @@
+<div class="tool-page">
+  <div class="tool-container">
+
+    <app-tool-header [toolName]="'Temas TCC'" (creditClicked)="creditsModal.open()"></app-tool-header>
+
+    <!-- Tool Header -->
+    <header class="tool-header">
+      <span class="tool-header-badge">🎓 ACADÊMICO</span>
+      <h1 class="tool-header-title">Gerador de Temas TCC</h1>
+      <p class="tool-header-description">
+        Encontre temas relevantes e originais para seu trabalho acadêmico
+      </p>
+
+      <div class="tool-header-meta">
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">⭐</span>
+          4.8 avaliação
+        </span>
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">💡</span>
+          3.1k gerações
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+      <!-- Form Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">Configure seu Tema</h3>
+        </div>
+
+        <div class="tool-card-body">
+          <div class="tool-grid tool-grid-2">
+            <div class="tool-form-group">
+              <label class="tool-label">Tipo de trabalho</label>
+              <select class="tool-select" [(ngModel)]="form.type">
+                <option *ngFor="let type of types" [value]="type.value">
+                  {{ type.label }}
+                </option>
+              </select>
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Área de conhecimento</label>
+              <select class="tool-select" [(ngModel)]="form.area">
+                <option value="">Selecione uma área</option>
+                <option *ngFor="let area of areas" [value]="area">
+                  {{ area }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="tool-grid tool-grid-2">
+            <div class="tool-form-group">
+              <label class="tool-label">Nível de dificuldade</label>
+              <select class="tool-select" [(ngModel)]="form.difficulty">
+                <option *ngFor="let difficulty of difficulties" [value]="difficulty.value">
+                  {{ difficulty.label }} - {{ difficulty.description }}
+                </option>
+              </select>
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Ano de referência</label>
+              <select class="tool-select" [(ngModel)]="form.year">
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="tool-form-group">
+            <label class="tool-label">Palavras-chave (opcional - máx 5)</label>
+            <div class="keywords-section">
+              <input
+                type="text"
+                class="tool-input"
+                placeholder="Digite uma palavra-chave e pressione Enter"
+                (keyup.enter)="onKeywordKeyPress($event)">
+
+              <div class="keywords-selected">
+                <span
+                  class="tool-badge tool-badge-primary"
+                  *ngFor="let keyword of form.keywords">
+                  {{ keyword }}
+                  <button class="remove-keyword" (click)="removeKeyword(keyword)">✕</button>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trending Topics -->
+          <div class="tool-form-group">
+            <label class="tool-label">Tópicos em alta (clique para adicionar)</label>
+            <div class="trending-tags">
+              <button
+                class="tool-btn tool-btn-secondary"
+                *ngFor="let topic of trendingTopics"
+                (click)="addKeyword(topic)"
+                [disabled]="form.keywords.includes(topic) || form.keywords.length >= 5">
+                {{ topic }}
+              </button>
+            </div>
+          </div>
+
+          <button
+            class="tool-btn tool-btn-primary"
+            [disabled]="!form.area.trim() || isLoading"
+            (click)="generateThemes()">
+            <span class="tool-btn-icon">📋</span>
+            {{ isLoading ? 'Gerando Temas...' : 'Gerar 10 Temas' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="tool-loading" *ngIf="isLoading">
+        <div class="tool-loading-spinner"></div>
+        <p class="tool-loading-text">Pesquisando temas relevantes...</p>
+      </div>
+
+      <!-- Results Section -->
+      <div class="tool-results" *ngIf="results.length > 0 && !isLoading">
+
+        <!-- Results Header -->
+        <div class="tool-card">
+          <div class="tool-card-body">
+            <div class="results-header m-2">
+              <h3 class="results-title">{{ results.length }} temas acadêmicos gerados</h3>
+              <div class="results-info">
+                <span class="tool-badge tool-badge-info">{{ currentTypeLabel }}</span>
+                <span class="tool-badge tool-badge-info">{{ form.area }}</span>
+                <span class="tool-badge tool-badge-info">{{ currentDifficultyDescription }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Themes Grid -->
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <h3 class="tool-card-title">Temas Sugeridos</h3>
+            <button
+              class="tool-btn tool-btn-secondary"
+              [disabled]="!canRegenerate()"
+              (click)="regenerateThemes()">
+              <span class="tool-btn-icon">🔄</span>
+              Gerar Novos
+            </button>
+          </div>
+
+          <div class="tool-card-body">
+            <div class="tool-grid tool-grid-2">
+              <div
+                class="theme-item"
+                *ngFor="let result of results; let i = index">
+
+                <div class="theme-content">
+                  <h4 class="theme-title">{{ result.title }}</h4>
+                  <p class="theme-justification">{{ result.justification }}</p>
+                </div>
+
+                <div class="theme-footer">
+                  <div class="theme-meta">
+                    <div class="relevance">
+                      <span class="meta-label">Relevância:</span>
+                      <div class="stars">
+                        <span
+                          class="star"
+                          *ngFor="let star of relevanceStars"
+                          [class.active]="star < result.relevance">
+                          ⭐
+                        </span>
+                      </div>
+                    </div>
+                    <div class="difficulty">
+                      <span class="meta-label">Dificuldade:</span>
+                      <span class="tool-badge" [style.background-color]="getDifficultyColor(result.difficulty)">
+                        {{ result.difficulty }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="theme-actions">
+                    <app-copy-button
+                      [text]="result.title + '\n\n' + result.justification"
+                      [showLabel]="true">
+                    </app-copy-button>
+                    <button
+                      class="tool-btn tool-btn-secondary"
+                      (click)="toggleFavorite(result)"
+                      [class.tool-btn-success]="result.isFavorite">
+                      <span class="tool-btn-icon">❤️</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Empty State -->
+      <div class="tool-empty-state" *ngIf="results.length === 0 && !isLoading">
+        <div class="tool-empty-icon">📋</div>
+        <h3 class="tool-empty-title">Nenhum tema gerado ainda</h3>
+        <p class="tool-empty-text">
+          Selecione uma área de conhecimento e clique em gerar para ver os temas
+        </p>
+      </div>
+
+    </main>
+
+    <app-credits-modal #creditsModal></app-credits-modal>
+  </div>
+</div>

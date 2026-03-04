@@ -1,0 +1,210 @@
+<div class="tool-page">
+  <div class="tool-container">
+
+    <app-tool-header [toolName]="'Nomes de Livros'" (creditClicked)="creditsModal.open()"></app-tool-header>
+
+    <!-- Tool Header -->
+    <header class="tool-header">
+      <span class="tool-header-badge">📖 TEXTO</span>
+      <h1 class="tool-header-title">Gerador de Nomes de Livros</h1>
+      <p class="tool-header-description">
+        Crie títulos criativos e cativantes para seu livro
+      </p>
+
+      <div class="tool-header-meta">
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">⭐</span>
+          4.7 avaliação
+        </span>
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">💡</span>
+          1.2k gerações
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+      <!-- Form Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">Configure seu Título</h3>
+        </div>
+
+        <div class="tool-card-body">
+          <div class="tool-form-group">
+            <label class="tool-label">Descrição do enredo</label>
+            <app-textarea-ai
+              [placeholder]="'Conte uma breve sinopse do livro. Ex: Uma jovem descobre segredos ancestrais enquanto tenta salvar sua vila de uma ameaça sobrenatural...'"
+              [maxLength]="2000"
+              [minLength]="50"
+              [(ngModel)]="form.plotSummary"
+              (onGenerate)="generateBookNames()"
+              [loading]="isLoading">
+            </app-textarea-ai>
+          </div>
+
+          <div class="tool-grid tool-grid-2">
+            <div class="tool-form-group">
+              <label class="tool-label">Gênero</label>
+              <select class="tool-select" [(ngModel)]="form.genre">
+                <option *ngFor="let genre of genres" [value]="genre.value">
+                  {{ genre.emoji }} {{ genre.label }}
+                </option>
+              </select>
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Tamanho do nome</label>
+              <select class="tool-select" [(ngModel)]="form.length">
+                <option *ngFor="let length of lengths" [value]="length.value">
+                  {{ length.label }}
+                </option>
+              </select>
+              <small class="form-text">{{ getLengthDescription() }}</small>
+            </div>
+          </div>
+
+          <button
+            class="tool-btn tool-btn-primary"
+            [disabled]="!form.plotSummary.trim() || isLoading"
+            (click)="generateBookNames()">
+            <span class="tool-btn-icon">📚</span>
+            {{ isLoading ? 'Criando Nomes...' : 'Gerar 12 Nomes' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="tool-loading" *ngIf="isLoading">
+        <div class="tool-loading-spinner"></div>
+        <p class="tool-loading-text">Criando títulos criativos e únicos...</p>
+      </div>
+
+      <!-- Results Section -->
+      <div class="tool-results" *ngIf="results.length > 0 && !isLoading">
+
+        <!-- Results Header -->
+        <div class="tool-card">
+          <div class="tool-card-body">
+            <div class="results-header m-2">
+              <div class="results-meta">
+                <span class="tool-badge tool-badge-info">
+                  {{ currentGenreEmoji }} {{ currentGenreLabel }}
+                </span>
+                <span class="tool-badge tool-badge-success">
+                  {{ resultsCount }} nomes gerados
+                </span>
+              </div>
+
+              <div class="results-actions">
+                <button class="tool-btn tool-btn-success" (click)="copyAllBookNames()">
+                  <span class="tool-btn-icon">📋</span>
+                  Copiar Todos
+                </button>
+                <button class="tool-btn tool-btn-secondary" (click)="downloadBookNames()">
+                  <span class="tool-btn-icon">⬇️</span>
+                  Baixar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Book Names Grid -->
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <h3 class="tool-card-title">Títulos Gerados</h3>
+            <button
+              class="tool-btn tool-btn-secondary"
+              [disabled]="!canRegenerate()"
+              (click)="regenerateBookNames()">
+              <span class="tool-btn-icon">🔄</span>
+              Gerar Novos
+            </button>
+          </div>
+
+          <div class="tool-card-body">
+            <div class="tool-grid tool-grid-2">
+              <div
+                class="book-name-item"
+                *ngFor="let result of getFilteredResults(); let i = index">
+
+                <div class="book-name-content">
+                  <div class="rank-number">{{ i + 1 }}</div>
+
+                  <div class="book-title">
+                    {{ result.title }}
+                  </div>
+
+                  <div class="book-subtitle" *ngIf="result.subtitle">
+                    {{ result.subtitle }}
+                  </div>
+
+                  <div class="book-meta">
+                    <span class="creativity">
+                      {{ getCreativityEmoji(result.creativityScore) }} {{ result.creativityScore }}/10
+                    </span>
+                  </div>
+                </div>
+
+                <div class="book-name-actions">
+                  <app-copy-button
+                    [text]="result.title + (result.subtitle ? ' - ' + result.subtitle : '')"
+                    [showLabel]="true">
+                  </app-copy-button>
+                  <button class="tool-btn tool-btn-secondary">
+                    <span class="tool-btn-icon">❤️</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Empty State -->
+      <div class="tool-empty-state" *ngIf="results.length === 0 && !isLoading">
+        <div class="tool-empty-icon">📚</div>
+        <h3 class="tool-empty-title">Nenhum título gerado ainda</h3>
+        <p class="tool-empty-text">
+          Descreva o enredo do seu livro e clique em gerar para ver os títulos
+        </p>
+      </div>
+
+      <!-- Tips Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">💡 Dicas para nomes de livros</h3>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-grid tool-grid-2">
+            <div class="tip-item">
+              <strong>😊 Apelo emocional:</strong> Use palavras que evoquem curiosidade, medo, alegria ou reflexão
+            </div>
+            <div class="tip-item">
+              <strong>📝 Sinopse clara:</strong> Seja mais específico sobre o enredo para títulos mais direcionados
+            </div>
+            <div class="tip-item">
+              <strong>📈 Bestsellers:</strong> Estude nomes de livros famosos do mesmo gênero para inspiração
+            </div>
+            <div class="tip-item">
+              <strong>🧠 Memorabilidade:</strong> Nomes fáceis de lembrar aumentam as chances de venda
+            </div>
+            <div class="tip-item">
+              <strong>📖 Subtítulos:</strong> Considere usar títulos principais curtos com subtítulos descritivos
+            </div>
+            <div class="tip-item">
+              <strong>🎯 Relevância:</strong> Gênero adicional é importante para marketing e descoberta
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <app-credits-modal #creditsModal></app-credits-modal>
+  </div>
+</div>

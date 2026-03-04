@@ -1,0 +1,233 @@
+<div class="tool-page">
+  <div class="tool-container">
+
+    <app-tool-header [toolName]="'Gerador de Hashtags'" (creditClicked)="creditsModal.open()"></app-tool-header>
+
+    <!-- Tool Header -->
+    <header class="tool-header">
+      <span class="tool-header-badge">📱 REDES SOCIAIS</span>
+      <h1 class="tool-header-title">Gerador de Hashtags Instagram</h1>
+      <p class="tool-header-description">
+        Crie hashtags estratégicas para aumentar o alcance dos seus posts
+      </p>
+
+      <div class="tool-header-meta">
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">⭐</span>
+          4.7 avaliação
+        </span>
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">💡</span>
+          3.5k gerações
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+      <!-- Form Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">Configure suas Hashtags</h3>
+        </div>
+
+        <div class="tool-card-body">
+
+          <!-- Selected Counter -->
+          <div class="tool-badge tool-badge-info tool-mb-md" *ngIf="getSelectedCount > 0">
+            ✅ {{ getSelectedCount }}/30 hashtags selecionadas
+          </div>
+
+          <div class="tool-form-group">
+            <label class="tool-label">Descreva seu post</label>
+            <app-textarea-ai
+              [placeholder]="'Ex: Foto de um treino intenso na academia'"
+              [maxLength]="500"
+              [minLength]="10"
+              [(ngModel)]="form.description"
+              (onGenerate)="generateHashtags()"
+              [loading]="isLoading">
+            </app-textarea-ai>
+          </div>
+
+          <div class="tool-grid tool-grid-2">
+            <div class="tool-form-group">
+              <label class="tool-label">Nicho</label>
+              <select class="tool-select" [(ngModel)]="form.niche">
+                <option *ngFor="let niche of niches" [value]="niche.value">
+                  {{ niche.label }}
+                </option>
+              </select>
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Status</label>
+              <div class="tool-badge tool-badge-success">
+                💰 0.5 crédito
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="tool-btn tool-btn-primary"
+            [disabled]="!form.description.trim() || isLoading"
+            (click)="generateHashtags()">
+            <span class="tool-btn-icon">#️⃣</span>
+            {{ isLoading ? 'Gerando Hashtags...' : 'Gerar 30 Hashtags' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="tool-loading" *ngIf="isLoading">
+        <div class="tool-loading-spinner"></div>
+        <p class="tool-loading-text">Analisando conteúdo e gerando hashtags...</p>
+      </div>
+
+      <!-- Results Section -->
+      <div class="tool-results" *ngIf="results.length > 0 && !isLoading">
+
+        <!-- Copy Actions -->
+        <div class="tool-card">
+          <div class="tool-card-body">
+            <div class="tool-grid tool-grid-2">
+              <button
+                class="tool-btn tool-btn-success"
+                [disabled]="!canCopySelected"
+                (click)="copySelectedHashtags()">
+                <span class="tool-btn-icon">✅</span>
+                Copiar Selecionadas ({{ getSelectedCount }})
+              </button>
+              <button
+                class="tool-btn tool-btn-secondary"
+                (click)="copyAllHashtags()">
+                <span class="tool-btn-icon">📋</span>
+                Copiar Todas
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Competition Filter Tabs -->
+        <div class="tool-card">
+          <div class="tool-card-body">
+            <div class="tool-grid tool-grid-4">
+              <button
+                class="tool-btn"
+                [class.tool-btn-primary]="form.competition === 'all'"
+                [class.tool-btn-secondary]="form.competition !== 'all'"
+                (click)="form.competition = 'all'">
+                Todas ({{ results.length }})
+              </button>
+              <button
+                class="tool-btn"
+                [class.tool-btn-primary]="form.competition === 'high'"
+                [class.tool-btn-secondary]="form.competition !== 'high'"
+                (click)="form.competition = 'high'">
+                🔥 Alta ({{ getHighCompetitionHashtags.length }})
+              </button>
+              <button
+                class="tool-btn"
+                [class.tool-btn-primary]="form.competition === 'medium'"
+                [class.tool-btn-secondary]="form.competition !== 'medium'"
+                (click)="form.competition = 'medium'">
+                ⚡ Média ({{ getMediumCompetitionHashtags.length }})
+              </button>
+              <button
+                class="tool-btn"
+                [class.tool-btn-primary]="form.competition === 'low'"
+                [class.tool-btn-secondary]="form.competition !== 'low'"
+                (click)="form.competition = 'low'">
+                🌱 Baixa ({{ getLowCompetitionHashtags.length }})
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hashtags Grid -->
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <h3 class="tool-card-title">Hashtags Geradas</h3>
+            <button
+              class="tool-btn tool-btn-secondary"
+              [disabled]="!canRegenerate()"
+              (click)="regenerateHashtags()">
+              <span class="tool-btn-icon">🔄</span>
+              Gerar Novas
+            </button>
+          </div>
+
+          <div class="tool-card-body">
+            <div class="tool-grid tool-grid-3">
+              <div
+                class="hashtag-item"
+                *ngFor="let result of getFilteredHashtags()"
+                [class.selected]="isHashtagSelected(result.hashtag)">
+
+                <div class="hashtag-content">
+                  <span class="hashtag-text">{{ result.hashtag }}</span>
+                  <div class="hashtag-meta">
+                    <span class="volume">{{ result.volume }} posts</span>
+                    <span class="relevance">⭐ {{ result.relevance }}/10</span>
+                  </div>
+                </div>
+
+                <div class="hashtag-actions">
+                  <button
+                    class="tool-btn tool-btn-secondary"
+                    [class.tool-btn-success]="isHashtagSelected(result.hashtag)"
+                    (click)="toggleHashtagSelection(result.hashtag)"
+                    [disabled]="!isHashtagSelected(result.hashtag) && getSelectedCount >= 30">
+                    <span class="tool-btn-icon">✓</span>
+                  </button>
+                  <button
+                    class="tool-btn tool-btn-secondary"
+                    (click)="toggleFavorite(result)"
+                    [class.tool-btn-success]="result.isFavorite">
+                    <span class="tool-btn-icon">❤️</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="tool-empty-state" *ngIf="results.length === 0 && !isLoading">
+        <div class="tool-empty-icon">#️⃣</div>
+        <h3 class="tool-empty-title">Nenhuma hashtag gerada ainda</h3>
+        <p class="tool-empty-text">
+          Descreva seu post acima e clique em gerar para ver as hashtags
+        </p>
+      </div>
+
+      <!-- Tips Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">💡 Dicas para usar hashtags</h3>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-grid tool-grid-2">
+            <div class="tip-item">
+              <strong>🔥 Misture níveis:</strong> Use hashtags de alta, média e baixa concorrência
+            </div>
+            <div class="tip-item">
+              <strong>📊 Limite de 30:</strong> Instagram permite no máximo 30 hashtags por post
+            </div>
+            <div class="tip-item">
+              <strong>🎯 Relevância:</strong> Escolha hashtags relacionadas ao seu conteúdo
+            </div>
+            <div class="tip-item">
+              <strong>🌱 Baixa concorrência:</strong> Ideais para contas menores crescerem
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <app-credits-modal #creditsModal></app-credits-modal>
+  </div>
+</div>

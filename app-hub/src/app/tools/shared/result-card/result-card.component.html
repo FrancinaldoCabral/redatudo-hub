@@ -1,0 +1,46 @@
+<div class="tool-result-card">
+  <div class="tool-result-header">
+    <h4 class="tool-result-title">{{ title || 'Resultado ' + (index + 1) }}</h4>
+
+    <div class="tool-result-actions">
+      <button
+        class="tool-btn tool-btn-secondary"
+        [class.tool-btn-success]="copySuccess"
+        (click)="onCopy()"
+        [disabled]="isLoading">
+        <i class="tool-btn-icon bi bi-check-lg" *ngIf="copySuccess"></i>
+        <i class="tool-btn-icon bi bi-clipboard" *ngIf="!copySuccess"></i>
+        <span *ngIf="copySuccess">Copiado!</span>
+        <span *ngIf="!copySuccess">Copiar</span>
+      </button>
+
+      <button
+        class="tool-btn tool-btn-secondary"
+        (click)="onFavorite()"
+        [disabled]="isLoading">
+        <span class="tool-btn-icon">❤️</span>
+        Favoritar
+      </button>
+
+      <button
+        class="tool-btn tool-btn-primary"
+        *ngIf="showRegenerate"
+        (click)="onRegenerate()"
+        [disabled]="isLoading">
+        <span class="tool-btn-icon">🔄</span>
+        Refazer
+      </button>
+    </div>
+  </div>
+
+  <div class="tool-result-content">
+    <div *ngIf="!isLoading; else loadingTemplate" [innerHTML]="formatContent(content)"></div>
+
+    <ng-template #loadingTemplate>
+      <div class="tool-loading">
+        <div class="tool-loading-spinner"></div>
+        <p class="tool-loading-text">Carregando...</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

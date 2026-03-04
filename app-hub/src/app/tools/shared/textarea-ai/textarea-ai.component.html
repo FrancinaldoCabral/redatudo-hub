@@ -1,0 +1,44 @@
+<div class="textarea-ai-container">
+  <div class="textarea-wrapper" [class.focused]="isFocused" [class.error]="error" [class.disabled]="disabled">
+    <textarea
+      class="textarea-ai"
+      [class.loading]="loading"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      [maxLength]="maxLength"
+      [(ngModel)]="value"
+      (input)="onValueChange($any($event.target).value)"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      [attr.aria-invalid]="!isValid"
+      [attr.aria-describedby]="error ? 'error-message' : null">
+    </textarea>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" *ngIf="loading">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- Character counter -->
+    <div class="character-counter" *ngIf="showCounter" [class]="counterClass">
+      {{ counterText }}
+    </div>
+  </div>
+
+  <!-- Error message -->
+  <div class="error-message" *ngIf="error" id="error-message">
+    <i class="bi bi-exclamation-triangle"></i>
+    {{ error }}
+  </div>
+
+  <!-- Generate button -->
+  <button
+    class="btn-generate"
+    type="button"
+    [disabled]="!isValid || disabled || loading"
+    (click)="handleGenerate()"
+    *ngIf="!loading">
+    <i class="bi bi-magic"></i>
+    Gerar
+  </button>
+</div>

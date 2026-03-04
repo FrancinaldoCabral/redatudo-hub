@@ -1,0 +1,102 @@
+<div class="result-grid-container">
+  <!-- Loading state -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="loading-grid">
+      <div class="loading-item" *ngFor="let item of [1,2,3,4,5,6]">
+        <div class="loading-card">
+          <div class="loading-title"></div>
+          <div class="loading-content"></div>
+          <div class="loading-content"></div>
+          <div class="loading-actions"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error state -->
+  <div class="error-container" *ngIf="error && !loading">
+    <div class="error-message">
+      <i class="bi bi-exclamation-triangle"></i>
+      {{ error }}
+    </div>
+    <button class="btn-retry" (click)="handleRegenerate()">
+      <i class="bi bi-arrow-repeat"></i>
+      Tentar Novamente
+    </button>
+  </div>
+
+  <!-- Results grid -->
+  <div class="results-grid" *ngIf="!loading && !error && results.length > 0"
+       [style.grid-template-columns]="gridTemplateColumns"
+       [style.max-height]="containerMaxHeight">
+
+    <div class="result-item" *ngFor="let result of results; let i = index">
+      <div class="result-card">
+        <!-- Title -->
+        <div class="result-title" *ngIf="showTitle && result.title">
+          <h4>{{ result.title }}</h4>
+        </div>
+
+        <!-- Content -->
+        <div class="result-content">
+          {{ result.content }}
+        </div>
+
+        <!-- Quality indicator -->
+        <div class="result-quality" *ngIf="showQuality && result.quality">
+          <div class="quality-stars">
+            <i class="bi bi-star-fill"
+               *ngFor="let star of getQualityStars(result.quality)"
+               [style.color]="getQualityColor(result.quality)"></i>
+            <i class="bi bi-star"
+               *ngFor="let star of getQualityStars(100 - (result.quality || 0))"
+               style="color: #dee2e6;"></i>
+          </div>
+          <span class="quality-score">{{ result.quality }}%</span>
+        </div>
+
+        <!-- Actions -->
+        <div class="result-actions">
+          <button class="action-btn copy-btn"
+                  *ngIf="hasAction('copy')"
+                  (click)="handleCopy(result)"
+                  title="Copiar">
+            <i class="bi bi-clipboard"></i>
+          </button>
+
+          <button class="action-btn favorite-btn"
+                  *ngIf="hasAction('favorite')"
+                  (click)="handleFavorite(result)"
+                  [class.active]="result.isFavorite"
+                  title="Favoritar">
+            <i class="bi bi-heart" [class.filled]="result.isFavorite"></i>
+          </button>
+
+          <button class="action-btn download-btn"
+                  *ngIf="hasAction('download')"
+                  (click)="handleDownload(result)"
+                  title="Baixar">
+            <i class="bi bi-download"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty-container" *ngIf="!loading && !error && results.length === 0">
+    <div class="empty-message">
+      <i class="bi bi-lightbulb"></i>
+      <p>Nenhum resultado gerado ainda.</p>
+      <small>Preencha os campos acima e clique em "Gerar" para começar.</small>
+    </div>
+  </div>
+
+  <!-- Regenerate button -->
+  <div class="regenerate-container" *ngIf="!loading && results.length > 0">
+    <button class="btn-regenerate" (click)="handleRegenerate()">
+      <i class="bi bi-arrow-repeat"></i>
+      Gerar Novas Variações
+    </button>
+  </div>
+</div>

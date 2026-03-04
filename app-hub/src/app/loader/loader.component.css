@@ -1,0 +1,115 @@
+.redatudo-loader-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(ellipse at 50% 40%, #171727 60%, #0d0d13 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.7s;
+  }
+  
+  .redatudo-loader-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 1.2s cubic-bezier(.4,0,.2,1);
+    max-width: 92vw;
+    width: 100%;
+  }
+  
+  .redatudo-logo {
+    width: 160px;
+    height: 160px;
+    user-select: none;
+    pointer-events: none;
+    animation: floatLogo 3.5s ease-in-out infinite alternate;
+  }
+  
+  @keyframes floatLogo {
+    0% { transform: translateY(0px);}
+    100% { transform: translateY(-12px);}
+  }
+  
+  .redatudo-loader-title {
+    font-family: 'Orbitron', Arial, sans-serif;
+    font-weight: 700;
+    font-size: 2.2rem;
+    letter-spacing: 0.12em;
+    margin-top: 1.5rem;
+    background: linear-gradient(90deg, #7f00ff, #00bfff 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    text-shadow: 0 2px 12px #0008;
+    transition: color 0.3s;
+    max-width: 90vw;
+    text-align: center;
+    word-break: break-word;
+  }
+  
+  .redatudo-loader-copy {
+    margin-top: 1.2rem;
+    font-family: 'Orbitron', Arial, sans-serif;
+    font-size: 1.1rem;
+    color: #b8e6ff;
+    text-align: center;
+    max-width: 90vw;
+    width: 100%;
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    opacity: 0.92;
+    text-shadow: 0 1px 8px #0006;
+    min-height: 3.2em;
+    word-break: break-word;
+    hyphens: auto;
+  }
+  
+  .redatudo-loader-typing {
+    display: inline-block;
+    border-right: 2px solid #00ffd0;
+    white-space: nowrap;
+    overflow: hidden;
+    font-weight: 700;
+    color: #00ffd0;
+    font-size: 1.08em;
+    letter-spacing: 0.04em;
+    box-sizing: border-box;
+    transition: width 2.2s steps(27, end);
+  }
+  @media (max-width: 600px) {
+    .redatudo-loader-typing {
+      font-size: 1em;
+    }
+  }
+  @keyframes blink-caret {
+    0%, 100% { border-color: #00ffd0; }
+    50% { border-color: transparent; }
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.96);}
+    to { opacity: 1; transform: scale(1);}
+  }
+  
+  /* Responsividade para telas pequenas */
+  @media (max-width: 600px) {
+    .redatudo-logo {
+      width: 90px;
+      height: 90px;
+    }
+    .redatudo-loader-title {
+      font-size: 1.3rem;
+      margin-top: 1rem;
+    }
+    .redatudo-loader-copy {
+      font-size: 0.98rem;
+      min-height: 2.2em;
+    }
+    .redatudo-loader-content {
+      max-width: 98vw;
+    }
+  }

@@ -1,0 +1,170 @@
+<div class="tool-page">
+  <div class="tool-container">
+
+    <app-tool-header [toolName]="'Gerador de Username'" (creditClicked)="creditsModal.open()"></app-tool-header>
+
+    <!-- Tool Header -->
+    <header class="tool-header">
+      <span class="tool-header-badge">📱 REDES SOCIAIS</span>
+      <h1 class="tool-header-title">Gerador de Username</h1>
+      <p class="tool-header-description">
+        Crie usernames únicos para Instagram e outras plataformas
+      </p>
+
+      <div class="tool-header-meta">
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">⭐</span>
+          4.6 avaliação
+        </span>
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">💡</span>
+          2.4k gerações
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+      <!-- Form Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">Configure seu Username</h3>
+        </div>
+
+        <div class="tool-card-body">
+          <form (ngSubmit)="generateUsernames()">
+
+            <div class="tool-form-group">
+              <label class="tool-label">Palavras-chave</label>
+              <input
+                type="text"
+                class="tool-input"
+                [(ngModel)]="form.keywords"
+                name="keywords"
+                placeholder="Ex: fitness, tech, food, travel"
+                maxlength="100"
+                required>
+              <small class="form-text">Separe as palavras-chave por vírgula</small>
+            </div>
+
+            <div class="tool-grid tool-grid-2">
+              <div class="tool-form-group">
+                <label class="tool-label">Estilo do Username</label>
+                <select class="tool-select" [(ngModel)]="form.style" name="style">
+                  <option *ngFor="let style of styles" [value]="style.value">
+                    {{ style.label }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="tool-form-group">
+                <label class="tool-label">Plataforma</label>
+                <select class="tool-select" [(ngModel)]="form.platform" name="platform">
+                  <option *ngFor="let platform of platforms" [value]="platform.value">
+                    {{ platform.label }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <button
+              class="tool-btn tool-btn-primary"
+              [disabled]="isLoading || !form.keywords.trim()"
+              (click)="generateUsernames()">
+              <span class="tool-btn-icon">@</span>
+              {{ isLoading ? 'Gerando usernames...' : 'Gerar Usernames' }}
+              <span class="credit-cost">(0.5 crédito)</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="tool-loading" *ngIf="isLoading">
+        <div class="tool-loading-spinner"></div>
+        <p class="tool-loading-text">Gerando usernames únicos...</p>
+      </div>
+
+      <!-- Results Section -->
+      <div class="tool-results" *ngIf="results.length > 0 && !isLoading">
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <h3 class="tool-card-title">{{ results.length }} Usernames Gerados</h3>
+          </div>
+
+          <div class="tool-card-body">
+            <div class="tool-grid tool-grid-2">
+              <div
+                class="username-item"
+                *ngFor="let result of results; let i = index"
+                [class.available]="result.available">
+
+                <div class="username-content">
+                  <div class="username-text">
+                    <span class="username">{{ result.username }}</span>
+                    <span class="platform">{{ form.platform }}</span>
+                  </div>
+
+                  <div class="username-meta">
+                    <div class="availability" [class.available]="result.available">
+                      <span class="availability-icon" [class]="result.available ? '✅' : '❌'"></span>
+                      {{ result.available ? 'Disponível' : 'Indisponível' }}
+                    </div>
+
+                    <div class="score">
+                      <span class="score-icon">⭐</span>
+                      Score: {{ result.score }}/100
+                    </div>
+                  </div>
+                </div>
+
+                <div class="username-actions">
+                  <app-copy-button
+                    [text]="result.username"
+                    [showLabel]="true">
+                  </app-copy-button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="tool-empty-state" *ngIf="results.length === 0 && !isLoading">
+        <div class="tool-empty-icon">@</div>
+        <h3 class="tool-empty-title">Nenhum username gerado ainda</h3>
+        <p class="tool-empty-text">
+          Digite suas palavras-chave e clique em gerar para ver os usernames
+        </p>
+      </div>
+
+      <!-- Tips Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">💡 Dicas para Usernames Incríveis</h3>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-grid tool-grid-2">
+            <div class="tip-item">
+              <strong>📏 Curto e Memorável:</strong> Usernames com 8-12 caracteres são ideais
+            </div>
+            <div class="tip-item">
+              <strong>🔑 Palavras-chave:</strong> Use termos relacionados ao seu nicho
+            </div>
+            <div class="tip-item">
+              <strong>✅ Disponibilidade:</strong> Verifique se o username está disponível na plataforma
+            </div>
+            <div class="tip-item">
+              <strong>🎯 Marca pessoal:</strong> Escolha algo que represente sua identidade
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <app-credits-modal #creditsModal></app-credits-modal>
+  </div>
+</div>

@@ -1,0 +1,90 @@
+@import "~@ng-select/ng-select/themes/default.theme.css";
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  /* Fundos */
+  --color-bg-main: #101022;         /* Fundo principal: azul escuro quase preto */
+  --color-bg-secondary: #171727;    /* Fundo secundário: roxo-azulado escuro */
+  --color-bg-card: #221841e0;       /* Cards: roxo escuro translúcido */
+  --color-bg-glass: rgba(34, 24, 65, 0.85); /* Glass effect */
+
+  /* Textos */
+  --color-text-main: #f4f6fa;       /* Texto principal: quase branco, suave */
+  --color-text-secondary: #b8c2d1;  /* Texto secundário: cinza-azulado claro */
+  --color-text-muted: #7a8599;      /* Texto desabilitado/muted: cinza frio */
+  --color-link: #b8e6ff;            /* Links: azul claro, discreto */
+  --color-link-hover: #7f9fff;      /* Hover: azul levemente mais forte */
+
+  /* Bordas e Divisores */
+  --color-border: #23243a;          /* Bordas: azul escuro */
+  --color-divider: #23243a;         /* Divisores: igual borda */
+
+  /* Acentos e Destaques */
+  --color-accent-blue: #3a7bd5;     /* Azul acento, não vibrante */
+  --color-accent-purple: #7f6fff;   /* Roxo acento, suave */
+  --color-accent-green: #1efeb7;    /* Verde acento, bem claro e discreto */
+  --color-badge-highlight: linear-gradient(90deg, #7f6fff 0%, #3a7bd5 100%); /* Badge highlight */
+
+  /* Sombra/Glow */
+  --color-glow-blue: rgba(58, 123, 213, 0.25);   /* Glow azul */
+  --color-glow-purple: rgba(127, 111, 255, 0.18);/* Glow roxo */
+}
+
+body {
+  background: var(--color-bg-main);
+  color: var(--color-text-main);
+}
+
+.navbar {
+  background: var(--color-bg-main);
+}
+
+.card {
+  background: var(--color-bg-card);
+  color: var(--color-text-main);
+  border-radius: 20px;
+  box-shadow: 0 0 24px 0 var(--color-glow-blue), 0 0 8px 0 var(--color-glow-purple);
+  border: 1px solid var(--color-border);
+}
+
+a, .nav-link {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+a:hover, .nav-link:hover {
+  color: var(--color-link-hover);
+}
+
+.badge-highlight {
+  background: var(--color-badge-highlight);
+  color: var(--color-text-main);
+  font-weight: bold;
+  border-radius: 16px;
+  padding: 0.25em 0.75em;
+  letter-spacing: 0.05em;
+}
+
+input, textarea, select {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-main);
+  border: 1px solid var(--color-border);
+}
+
+hr, .divider {
+  border-color: var(--color-divider);
+}
+
+.modal-backdrop {
+  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 1 !important;
+}
+
+.cursor {
+  cursor: pointer;
+}
+
+#loginModal {
+  z-index: 11000;
+}

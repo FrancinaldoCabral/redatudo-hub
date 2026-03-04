@@ -1,0 +1,110 @@
+.tap-card {
+  background: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tap-card:hover {
+  border-color: #4f46e5;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+  transform: translateY(-2px);
+}
+
+.tap-card-copied {
+  border-color: #10b981;
+  background: #f0fdf4;
+}
+
+.tap-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.tap-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.tap-card-icon {
+  font-size: 20px;
+  color: #6b7280;
+  transition: color 0.3s;
+}
+
+.tap-card-copied .tap-card-icon {
+  color: #10b981;
+}
+
+.tap-card-content {
+  flex: 1;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #1f2937;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  margin-bottom: 12px;
+}
+
+.tap-card-hint,
+.tap-card-success {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px;
+  border-radius: 6px;
+  margin-top: auto;
+}
+
+.tap-card-hint {
+  color: #6b7280;
+  background: #f9fafb;
+  animation: pulse-hint 2s ease-in-out infinite;
+}
+
+.tap-card-success {
+  color: #10b981;
+  background: #d1fae5;
+  animation: fade-in 0.3s ease-out;
+}
+
+@keyframes pulse-hint {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tap-card {
+    padding: 16px;
+  }
+
+  .tap-card-content {
+    font-size: 14px;
+  }
+}

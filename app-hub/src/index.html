@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Redatudo - AI Assistant</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  
+  <!-- Fontes Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Design System RedaTudo Tools -->
+  <link rel="stylesheet" href="assets/css/tools-design-system.css">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9848635946946970"
+  crossorigin="anonymous"></script>
+  <script>
+      const queryString = window.location.search
+      const urlParams = new URLSearchParams(queryString)
+      const token = urlParams.get('token')
+      const logout = urlParams.get('logout')
+      if(token){
+        const user = { token }
+        if(token) window.localStorage.setItem('user', JSON.stringify(user))
+        const currentUrl = window.location.href
+        // Criar um objeto URL
+        const urlObj = new URL(currentUrl)
+
+        // Obter a parte da URL sem os parâmetros
+        const urlWithoutParams = urlObj.origin + urlObj.pathname
+        window.location.href = urlWithoutParams
+      }
+
+      if(logout) {
+        window.localStorage.clear()
+        window.location = 'https://redatudo.online/minha-conta/?login_app=chat'
+      }
+  </script>
+</head>
+<body data-bs-theme="dark">
+  <app-root></app-root>
+  
+</body>
+</html>

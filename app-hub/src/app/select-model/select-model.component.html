@@ -1,0 +1,39 @@
+<!-- <div class="mb-1">
+  <label for="selected" class="form-label">
+    Select the power/cost of your AI assistant.
+  </label>
+
+  <div class="position-relative">
+    <input #inpSearch
+        name="search"
+        type="text" 
+        class="form-control position-absolute"
+        placeholder="Filtrar modelos..." 
+        [(ngModel)]="search"
+        (input)="filterModels()"
+        (blur)="isOpen=false"
+        [ngClass]="{'up':isOpen}"
+    >
+    <select 
+        name="selected" 
+        id="selected" 
+        [ngModel]="selected"
+        class="form-control position-absolute"
+        aria-describedby="modelHelp"
+        (focus)="focusSelect(); search=selected; inpSearch.focus()"
+        (ngModelChange)="setModelInSelect($event); isOpen=false"
+    >
+        <option *ngFor="let model of filteredModels" 
+        [ngValue]="model.id">
+        {{ model.id }}
+        </option>
+    </select>
+      
+  </div>
+</div> -->
+<div class="mt-2 mb-3">
+
+
+
+
+</div>

@@ -1,0 +1,75 @@
+<!-- TOOLS -->
+<a class="nav-link cursor" data-bs-toggle="tooltip" data-bs-title="Tools"
+    data-bs-target="#toolsModal" data-bs-toggle="modal" aria-label="Close" 
+    (click)="fetchToolsAndAgents()">
+    <i class="bi bi-tools"></i>
+    <br>Tools
+</a>
+
+<div class="modal fade" id="toolsModal" tabindex="-1"  style="z-index: 11000;"
+  aria-labelledby="toolsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="toolsModalLabel">Tools</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="list-group" *ngIf="!waitSpinner">
+            <a *ngFor="let tool of tools; let i=index"
+             href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+              <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
+              <div class="d-flex gap-2 w-100 justify-content-between">
+                <div>
+                  <h6 class="mb-0">{{tool.title}}</h6>
+                  <p class="mb-0 opacity-75">{{tool.description}}</p>
+                </div>
+                <small class="opacity-50 text-nowrap">
+                  <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked disabled>
+                      <label class="form-check-label" for="flexSwitchCheckChecked">Checked switch checkbox input</label>
+                  </div>
+                </small>
+              </div>
+            </a>
+        </div>
+        <span *ngIf="waitSpinner" class="text-center">
+          <div class="spinner-grow spinner-grow-sm m-1" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          Loading...
+        </span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- TOOL -->
+<!-- <button class="btn btn-primary">Use <i class="bi bi-arrow-right-circle"></i></button> -->
+<div class="modal fade" [attr.id]="id+'-toolModal'" tabindex="-1"  style="z-index: 10001;"
+  [attr.aria-labelledby]="id+'-toolModalLabel'" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="{{id}}-toolModalLabel">Tool</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h1>{{tool.title}}</h1>
+        <p>{{tool.description}}</p>
+        <pre>
+            <code lang="json">
+                {{tool.schema}}
+            </code>
+        </pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

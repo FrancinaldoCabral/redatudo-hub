@@ -1,0 +1,242 @@
+/* ABNT Corrector - Using Design System */
+
+/* Componente usa classes do design system globalmente */
+/* Apenas estilos específicos desta ferramenta aqui */
+
+/* Checkboxes Group */
+.checkboxes-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.9375rem;
+}
+
+.checkbox-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary-purple);
+  cursor: pointer;
+}
+
+/* Quality Overview */
+.quality-overview {
+  padding: var(--spacing-lg);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--border-radius-lg);
+}
+
+.quality-score {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.score-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.score-value {
+  font-size: 1.25rem;
+}
+
+.score-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  flex: 1;
+}
+
+.compliance-status {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.compliance-icon {
+  font-size: 1.25rem;
+}
+
+/* Corrections List */
+.corrections-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.correction-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+}
+
+.correction-item:hover {
+  border-color: var(--border-secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.correction-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.correction-type {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.type-icon {
+  font-size: 1.125rem;
+}
+
+.type-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-primary);
+}
+
+.correction-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.correction-content {
+  padding: var(--spacing-md);
+}
+
+.original-text,
+.suggested-text,
+.explanation {
+  margin-bottom: var(--spacing-sm);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.original-text strong,
+.suggested-text strong,
+.explanation strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.original-text {
+  color: var(--danger-red);
+}
+
+.suggested-text {
+  color: var(--success-green);
+}
+
+.explanation {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Bulk Actions */
+.bulk-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid var(--electric-blue);
+  border-radius: var(--border-radius-md);
+  margin-top: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.bulk-actions span {
+  font-size: 0.9375rem;
+  color: var(--electric-blue);
+  font-weight: 600;
+}
+
+/* Success Message */
+.success-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  text-align: center;
+  padding: var(--spacing-2xl);
+}
+
+.success-icon {
+  font-size: 3.5rem;
+  color: var(--success-green);
+}
+
+.success-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.success-text {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+  max-width: 500px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .quality-score {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-md);
+  }
+
+  .correction-header {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    align-items: stretch;
+  }
+
+  .correction-actions {
+    width: 100%;
+  }
+
+  .correction-actions .tool-btn {
+    flex: 1;
+  }
+
+  .bulk-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bulk-actions .tool-grid {
+    width: 100%;
+  }
+}

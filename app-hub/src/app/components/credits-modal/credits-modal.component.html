@@ -1,0 +1,63 @@
+<div class="modal-overlay" *ngIf="isVisible" (click)="onOverlayClick($event)">
+  <div class="modal-content">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2>Seus Créditos</h2>
+      <button class="modal-close" (click)="close()">×</button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      <!-- Balance Section -->
+      <div class="balance-section" *ngIf="!isLoading">
+        <div class="balance-display">
+          <span class="balance-label">Saldo Disponível</span>
+          <span class="balance-value">{{ balance | number: '1.0-2' }}</span>
+          <span class="balance-unit">CRÉDITOS</span>
+        </div>
+
+        <button class="btn-buy-credits" (click)="buyCredits()">
+          💳 Comprar Créditos
+        </button>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading" *ngIf="isLoading">
+        <div class="spinner"></div>
+        <p>Carregando...</p>
+      </div>
+
+      <!-- History Section -->
+      <div class="history-section" *ngIf="!isLoading">
+        <h3>Histórico de Uso (últimas 30 operações)</h3>
+
+        <div class="history-table" *ngIf="history.length > 0">
+          <div class="history-header">
+            <div class="history-col-action">Ferramenta/Ação</div>
+            <div class="history-col-credits">Créditos</div>
+            <div class="history-col-date">Data</div>
+          </div>
+
+          <div class="history-row" *ngFor="let entry of history">
+            <div class="history-col-action">{{ entry.description }}</div>
+            <div class="history-col-credits">
+              <span class="credit-value" [class.credit-in]="entry.total > 0">
+                {{ entry.total > 0 ? '+' : '' }}{{ entry.total | number: '1.0-2' }}
+              </span>
+            </div>
+            <div class="history-col-date">{{ entry.createdAt }}</div>
+          </div>
+        </div>
+
+        <div class="no-history" *ngIf="history.length === 0">
+          <p>Nenhum uso de créditos nos últimos 30 dias</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <button class="modal-dismiss-btn" (click)="close()">Fechar</button>
+    </div>
+  </div>
+</div>

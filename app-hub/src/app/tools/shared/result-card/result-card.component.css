@@ -1,0 +1,177 @@
+/* Result Card - Magical and Beautiful Styling */
+.tool-result-card {
+  background: linear-gradient(135deg, rgba(31, 41, 55, 0.8) 0%, rgba(17, 24, 39, 0.9) 100%);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(167, 139, 250, 0.3);
+  border-radius: var(--border-radius-2xl);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
+  position: relative;
+  transition: all var(--transition-normal);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.tool-result-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-purple), var(--electric-blue), var(--success-green));
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.tool-result-card:hover {
+  border-color: var(--primary-purple);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(124, 58, 237, 0.2);
+}
+
+.tool-result-card:hover::before {
+  opacity: 1;
+}
+
+.tool-result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid rgba(167, 139, 250, 0.2);
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.tool-result-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.tool-result-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+  align-items: center;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.tool-result-actions .tool-btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 0.875rem;
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  min-width: fit-content;
+}
+
+.tool-result-actions .tool-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.tool-result-content {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.7;
+  word-wrap: break-word;
+  position: relative;
+}
+
+.tool-result-content h1,
+.tool-result-content h2,
+.tool-result-content h3,
+.tool-result-content h4,
+.tool-result-content h5,
+.tool-result-content h6 {
+  color: var(--text-primary);
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+  font-family: var(--font-display);
+}
+
+.tool-result-content p {
+  margin-bottom: var(--spacing-md);
+}
+
+.tool-result-content ul,
+.tool-result-content ol {
+  margin-bottom: var(--spacing-md);
+  padding-left: var(--spacing-lg);
+}
+
+.tool-result-content li {
+  margin-bottom: var(--spacing-xs);
+  position: relative;
+}
+
+.tool-result-content blockquote {
+  border-left: 4px solid var(--primary-purple);
+  padding-left: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+  font-style: italic;
+  color: var(--text-accent);
+  background: rgba(167, 139, 250, 0.1);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-md);
+}
+
+.tool-result-content code {
+  background: rgba(59, 130, 246, 0.2);
+  padding: 0.2em 0.4em;
+  border-radius: var(--border-radius-sm);
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+  color: var(--cyan-bright);
+}
+
+.tool-result-content pre {
+  background: var(--bg-secondary);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  overflow-x: auto;
+  margin: var(--spacing-md) 0;
+  border: 1px solid rgba(167, 139, 250, 0.2);
+}
+
+.tool-result-content pre code {
+  background: none;
+  padding: 0;
+  color: var(--text-primary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .tool-result-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-md);
+  }
+
+  .tool-result-title {
+    text-align: center;
+  }
+
+  .tool-result-actions {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .tool-result-card {
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .tool-result-actions .tool-btn {
+    flex: 1;
+    min-width: 0;
+  }
+}

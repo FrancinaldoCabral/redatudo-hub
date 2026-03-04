@@ -1,0 +1,230 @@
+<div class="tool-page">
+  <div class="tool-container">
+
+    <app-tool-header [toolName]="'Corretor ABNT'" (creditClicked)="creditsModal.open()"></app-tool-header>
+
+    <!-- Tool Header -->
+    <header class="tool-header">
+      <span class="tool-header-badge">🎓 ACADÊMICO</span>
+      <h1 class="tool-header-title">Corretor de Texto ABNT</h1>
+      <p class="tool-header-description">
+        Corrija ortografia, gramática e formatação ABNT
+      </p>
+
+      <div class="tool-header-meta">
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">⭐</span>
+          4.6 avaliação
+        </span>
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">💡</span>
+          4.9k gerações
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+      <!-- Form Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">Texto para Corrigir</h3>
+        </div>
+
+        <div class="tool-card-body">
+          <div class="tool-form-group">
+            <label class="tool-label">Texto para corrigir</label>
+            <app-textarea-ai
+              [placeholder]="'Cole aqui o texto que deseja corrigir segundo as normas ABNT...'"
+              [maxLength]="5000"
+              [minLength]="50"
+              [(ngModel)]="form.text"
+              (onGenerate)="correctText()"
+              [loading]="isLoading">
+            </app-textarea-ai>
+          </div>
+
+          <div class="tool-grid tool-grid-2">
+            <div class="tool-form-group">
+              <label class="tool-label">Modo de correção</label>
+              <select class="tool-select" [(ngModel)]="form.mode">
+                <option *ngFor="let mode of modes" [value]="mode.value">
+                  {{ mode.label }} - {{ mode.description }}
+                </option>
+              </select>
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Tipos de verificação</label>
+              <div class="checkboxes-group">
+                <label class="checkbox-item">
+                  <input type="checkbox" [(ngModel)]="form.checkGrammar">
+                  <span>Ortografia e Gramática</span>
+                </label>
+                <label class="checkbox-item">
+                  <input type="checkbox" [(ngModel)]="form.checkCitations">
+                  <span>Citações ABNT</span>
+                </label>
+                <label class="checkbox-item">
+                  <input type="checkbox" [(ngModel)]="form.checkFormatting">
+                  <span>Formatação</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="tool-btn tool-btn-primary"
+            [disabled]="!form.text.trim() || isLoading"
+            (click)="correctText()">
+            <span class="tool-btn-icon">✅</span>
+            {{ isLoading ? 'Corrigindo...' : 'Corrigir Texto' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="tool-loading" *ngIf="isLoading">
+        <div class="tool-loading-spinner"></div>
+        <p class="tool-loading-text">Analisando texto e aplicando correções ABNT...</p>
+      </div>
+
+      <!-- Results Section -->
+      <div class="tool-results" *ngIf="result && !isLoading">
+
+        <!-- Quality Overview -->
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <h3 class="tool-card-title">📊 Qualidade do Texto</h3>
+          </div>
+          <div class="tool-card-body">
+            <div class="quality-overview">
+              <div class="quality-score">
+                <div class="score-circle" [style.background-color]="qualityColor">
+                  <span class="score-value">{{ result.qualityScore }}</span>
+                </div>
+                <div class="score-details">
+                  <div class="compliance-status">
+                    <span class="compliance-icon" [class]="complianceIcon" [style.color]="complianceColor"></span>
+                    {{ complianceText }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comparison View -->
+        <div class="tool-grid tool-grid-2">
+          <!-- Original Text -->
+          <div class="tool-card">
+            <div class="tool-card-header">
+              <h3 class="tool-card-title">📄 Texto Original</h3>
+            </div>
+            <div class="tool-card-body">
+              <div class="tool-result-content">
+                {{ form.text }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Corrected Text -->
+          <div class="tool-card">
+            <div class="tool-card-header">
+              <h3 class="tool-card-title">✨ Texto Corrigido</h3>
+              <div class="tool-result-actions">
+                <app-copy-button [text]="result.correctedText" [showLabel]="true"></app-copy-button>
+                <button class="tool-btn tool-btn-secondary" (click)="toggleFavorite()">
+                  <span class="tool-btn-icon">❤️</span>
+                </button>
+              </div>
+            </div>
+            <div class="tool-card-body">
+              <div class="tool-result-content">
+                <markdown [data]="result.correctedText"></markdown>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Corrections List -->
+        <div class="tool-card" *ngIf="result.errors.length > 0">
+          <div class="tool-card-header">
+            <h3 class="tool-card-title">🔧 Correções Realizadas ({{ errorCount }})</h3>
+          </div>
+          <div class="tool-card-body">
+            <div class="corrections-list">
+              <div class="correction-item" *ngFor="let correction of result.errors">
+
+                <div class="correction-header">
+                  <div class="correction-type">
+                    <span class="type-icon" [class]="getErrorIcon(correction.type)" [style.color]="getErrorColor(correction.type)"></span>
+                    <span class="type-label">{{ correction.type | titlecase }}</span>
+                  </div>
+                </div>
+
+                <div class="correction-content">
+                  <div class="original-text">
+                    <strong>Original:</strong> "{{ correction.original }}"
+                  </div>
+                  <div class="suggested-text">
+                    <strong>Corrigido para:</strong> "{{ correction.suggestion }}"
+                  </div>
+                  <div class="explanation">
+                    <strong>Explicação:</strong> {{ correction.explanation }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- No Corrections -->
+        <div class="tool-card" *ngIf="result.errors.length === 0">
+          <div class="tool-card-body">
+            <div class="success-message">
+              <div class="success-icon">✅</div>
+              <h4 class="success-title">Texto perfeito!</h4>
+              <p class="success-text">
+                Não foram encontradas correções necessárias. Seu texto está em conformidade com as normas ABNT.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="tool-grid tool-grid-3">
+          <button class="tool-btn tool-btn-success" (click)="copyToClipboard(result.correctedText)">
+            <span class="tool-btn-icon">📋</span>
+            Copiar Corrigido
+          </button>
+          <button class="tool-btn tool-btn-secondary" (click)="toggleFavorite()">
+            <span class="tool-btn-icon">❤️</span>
+            {{ result.isFavorite ? 'Nos Favoritos' : 'Adicionar Favorito' }}
+          </button>
+          <button
+            class="tool-btn tool-btn-secondary"
+            [disabled]="!canRegenerate()"
+            (click)="regenerateText()">
+            <span class="tool-btn-icon">🔄</span>
+            Corrigir Novamente
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Empty State -->
+      <div class="tool-empty-state" *ngIf="!result && !isLoading">
+        <div class="tool-empty-icon">📝</div>
+        <h3 class="tool-empty-title">Nenhuma correção realizada ainda</h3>
+        <p class="tool-empty-text">
+          Cole um texto acima e clique em corrigir para ver as sugestões
+        </p>
+      </div>
+
+    </main>
+
+    <app-credits-modal #creditsModal></app-credits-modal>
+  </div>
+</div>

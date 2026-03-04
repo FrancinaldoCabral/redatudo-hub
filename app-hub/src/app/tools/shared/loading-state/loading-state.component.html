@@ -1,0 +1,43 @@
+<div class="loading-container" [class]="containerClass">
+
+  <!-- Spinner Type -->
+  <div class="spinner-type" *ngIf="type === 'spinner'">
+    <div class="spinner" [class]="size"></div>
+    <div class="loading-message" *ngIf="showMessage">
+      {{ defaultMessage }}
+    </div>
+  </div>
+
+  <!-- Skeleton Type -->
+  <div class="skeleton-type" *ngIf="type === 'skeleton'">
+    <div class="skeleton-lines">
+      <div class="skeleton-line" [class]="size" *ngFor="let line of [1,2,3]"></div>
+    </div>
+    <div class="loading-message" *ngIf="showMessage">
+      {{ defaultMessage }}
+    </div>
+  </div>
+
+  <!-- Pulse Type -->
+  <div class="pulse-type" *ngIf="type === 'pulse'">
+    <div class="pulse-content">
+      <div class="pulse-item" [class]="size" *ngFor="let item of [1,2,3,4]"></div>
+    </div>
+    <div class="loading-message" *ngIf="showMessage">
+      {{ defaultMessage }}
+    </div>
+  </div>
+
+  <!-- Dots Type -->
+  <div class="dots-type" *ngIf="type === 'dots'">
+    <div class="dots-container">
+      <div class="dot" [class]="size"></div>
+      <div class="dot" [class]="size"></div>
+      <div class="dot" [class]="size"></div>
+    </div>
+    <div class="loading-message" *ngIf="showMessage">
+      {{ defaultMessage }}
+    </div>
+  </div>
+
+</div>

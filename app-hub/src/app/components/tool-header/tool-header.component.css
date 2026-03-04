@@ -1,0 +1,32 @@
+/* Tool Header Component - Shared Navigation */
+
+.credits-button {
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  border: none;
+  background: var(--gradient-cta);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all var(--transition-normal);
+}
+
+.credits-button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.credits-button.low-balance {
+  background: linear-gradient(135deg, #f59e0b, #dc2626);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}

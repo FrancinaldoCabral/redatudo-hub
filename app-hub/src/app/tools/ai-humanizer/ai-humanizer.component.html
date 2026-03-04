@@ -1,0 +1,215 @@
+<div class="tool-page">
+  <div class="tool-container">
+
+    <app-tool-header [toolName]="'Humanizador de Texto'" (creditClicked)="creditsModal.open()"></app-tool-header>
+
+    <!-- Tool Header -->
+    <header class="tool-header">
+      <span class="tool-header-badge">✍️ TEXTO</span>
+      <h1 class="tool-header-title">Humanizador de Texto IA</h1>
+      <p class="tool-header-description">
+        Transforme textos gerados por IA em conteúdo natural e humano
+      </p>
+
+      <div class="tool-header-meta">
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">⭐</span>
+          4.9 avaliação
+        </span>
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">💡</span>
+          5.8k gerações
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+      <!-- Form Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">Texto para Humanizar</h3>
+        </div>
+
+        <div class="tool-card-body">
+          <div class="tool-form-group">
+            <label class="tool-label">Texto gerado por IA</label>
+            <app-textarea-ai
+              [placeholder]="'Cole aqui o texto que deseja humanizar...'"
+              [maxLength]="5000"
+              [minLength]="50"
+              [(ngModel)]="form.originalText"
+              (onGenerate)="humanizeText()"
+              [loading]="isLoading">
+            </app-textarea-ai>
+          </div>
+
+          <div class="tool-grid tool-grid-2">
+            <div class="tool-form-group">
+              <label class="tool-label">Nível de Humanização</label>
+              <select class="tool-select" [(ngModel)]="form.level">
+                <option *ngFor="let level of levels" [value]="level.value">
+                  {{ level.label }} - {{ level.description }}
+                </option>
+              </select>
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Opções</label>
+              <label class="checkbox-wrapper">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="form.keepTechnicalTerms">
+                <span>Manter termos técnicos</span>
+              </label>
+            </div>
+          </div>
+
+          <button
+            class="tool-btn tool-btn-primary"
+            [disabled]="!form.originalText.trim() || isLoading"
+            (click)="humanizeText()">
+            <span class="tool-btn-icon">✨</span>
+            {{ isLoading ? 'Humanizando...' : 'Humanizar Texto' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="tool-loading" *ngIf="isLoading">
+        <div class="tool-loading-spinner"></div>
+        <p class="tool-loading-text">Analisando e humanizando texto...</p>
+      </div>
+
+      <!-- Results Section -->
+      <div class="tool-results" *ngIf="result && !isLoading">
+
+        <!-- Metrics Section -->
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <h3 class="tool-card-title">📊 Análise de Detecção IA</h3>
+          </div>
+          <div class="tool-card-body">
+            <div class="tool-grid tool-grid-2">
+
+              <!-- Before/After Comparison -->
+              <div class="metric-item">
+                <h4 class="metric-title">Antes vs Depois</h4>
+                <div class="detection-bars">
+                  <div class="detection-bar">
+                    <span class="bar-label">Antes</span>
+                    <div class="bar-container">
+                      <div class="bar-fill before" [style.width.%]="result.aiDetectionBefore"></div>
+                      <span class="bar-value">{{ result.aiDetectionBefore }}%</span>
+                    </div>
+                  </div>
+                  <div class="detection-bar">
+                    <span class="bar-label">Depois</span>
+                    <div class="bar-container">
+                      <div class="bar-fill after" [style.width.%]="result.aiDetectionAfter"></div>
+                      <span class="bar-value">{{ result.aiDetectionAfter }}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Improvement Summary -->
+              <div class="metric-item">
+                <h4 class="metric-title">Melhoria</h4>
+                <div class="improvement-badge">{{ improvementText }}</div>
+                <div class="improvement-details">
+                  <div class="improvement-item">
+                    <span class="improvement-icon">✅</span>
+                    <span>{{ similarityPercentage }}% mais humano</span>
+                  </div>
+                  <div class="improvement-item">
+                    <span class="improvement-icon">📝</span>
+                    <span>{{ result.wordsChanged }} palavras modificadas</span>
+                  </div>
+                  <div class="improvement-item">
+                    <span class="improvement-icon">📄</span>
+                    <span>{{ result.totalWords }} palavras totais</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Comparison View -->
+        <div class="tool-grid tool-grid-2">
+          <!-- Original Text -->
+          <div class="tool-card">
+            <div class="tool-card-header">
+              <h3 class="tool-card-title">🤖 Texto Original (IA)</h3>
+            </div>
+            <div class="tool-card-body">
+              <div class="tool-result-content">
+                {{ form.originalText }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Humanized Text -->
+          <div class="tool-card">
+            <div class="tool-card-header">
+              <h3 class="tool-card-title">✨ Texto Humanizado</h3>
+              <div class="tool-result-actions">
+                <app-copy-button
+                  [text]="result.humanizedText"
+                  [showLabel]="true">
+                </app-copy-button>
+                <button class="tool-btn tool-btn-secondary" (click)="toggleFavorite()">
+                  <span class="tool-btn-icon">❤️</span>
+                </button>
+              </div>
+            </div>
+            <div class="tool-card-body">
+              <div class="tool-result-content">
+                <markdown [data]="result.humanizedText"></markdown>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="tool-card">
+          <div class="tool-card-body">
+            <div class="tool-grid tool-grid-3">
+              <button class="tool-btn tool-btn-success" (click)="copyToClipboard(result.humanizedText)">
+                <span class="tool-btn-icon">📋</span>
+                Copiar Humanizado
+              </button>
+              <button class="tool-btn tool-btn-secondary" (click)="toggleFavorite()">
+                <span class="tool-btn-icon">❤️</span>
+                {{ result.isFavorite ? 'Nos Favoritos' : 'Adicionar Favorito' }}
+              </button>
+              <button
+                class="tool-btn tool-btn-secondary"
+                [disabled]="!canRegenerate()"
+                (click)="regenerateText()">
+                <span class="tool-btn-icon">🔄</span>
+                Humanizar Novamente
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Empty State -->
+      <div class="tool-empty-state" *ngIf="!result && !isLoading">
+        <div class="tool-empty-icon">🤖</div>
+        <h3 class="tool-empty-title">Nenhum texto humanizado ainda</h3>
+        <p class="tool-empty-text">
+          Cole um texto gerado por IA acima e clique em humanizar para ver o resultado
+        </p>
+      </div>
+
+    </main>
+
+    <app-credits-modal #creditsModal></app-credits-modal>
+  </div>
+</div>

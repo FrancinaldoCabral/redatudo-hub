@@ -1,0 +1,222 @@
+/* Motivational Quotes - Using Design System */
+
+/* Componente já usa classes do design system globalmente */
+/* Apenas estilos específicos desta ferramenta aqui */
+
+/* Navigation Bar - Específico desta ferramenta */
+.tool-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) 0;
+  margin-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.nav-back-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: transparent;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--border-radius-md);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  font-size: 0.9375rem;
+}
+
+.nav-back-btn:hover {
+  border-color: var(--primary-purple);
+  color: var(--text-primary);
+  background: rgba(124, 58, 237, 0.1);
+}
+
+.nav-back-icon {
+  font-size: 1.125rem;
+}
+
+.nav-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.breadcrumb-item {
+  color: var(--text-muted);
+}
+
+.breadcrumb-item.active {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.breadcrumb-separator {
+  color: var(--text-muted);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.credits-display {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--border-radius-md);
+  font-size: 0.9375rem;
+}
+
+.credits-label {
+  color: var(--text-muted);
+}
+
+.credits-value {
+  color: var(--success-green);
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.credits-recharge-btn,
+.credits-upgrade-btn {
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all var(--transition-normal);
+}
+
+.credits-recharge-btn {
+  background: var(--gradient-cta);
+  color: var(--text-primary);
+}
+
+.credits-recharge-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.credits-upgrade-btn {
+  background: var(--gradient-premium);
+  color: var(--text-primary);
+}
+
+.credits-upgrade-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Quotes Container - Grid customizado */
+.quotes-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+/* Quote Number Badge */
+.quote-number-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--gradient-purple);
+  border-radius: 50%;
+}
+
+.quote-number {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Theme Indicator */
+.quote-theme-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.theme-emoji {
+  font-size: 1.125rem;
+}
+
+.theme-label {
+  font-weight: 500;
+}
+
+/* Style Badge */
+.style-badge {
+  padding: 0.25rem 0.625rem;
+  background: rgba(124, 58, 237, 0.15);
+  color: #C4B5FD;
+  border: 1px solid rgba(167, 139, 250, 0.3);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Decorative Elements */
+.quote-decoration {
+  position: absolute;
+  top: 0;
+  right: 0;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.decoration-line {
+  width: 100px;
+  height: 2px;
+  background: var(--gradient-purple);
+  margin-bottom: var(--spacing-xs);
+}
+
+.decoration-quote {
+  font-size: 4rem;
+  color: var(--primary-purple);
+  line-height: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .tool-navigation {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+
+  .nav-left,
+  .nav-right {
+    width: 100%;
+  }
+
+  .credits-display {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .quotes-container {
+    grid-template-columns: 1fr;
+  }
+}

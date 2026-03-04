@@ -1,0 +1,18 @@
+<button
+  class="favorite-button"
+  [class]="buttonClass"
+  [disabled]="disabled || isLoading"
+  (click)="toggleFavorite()"
+  [title]="titleText"
+  [attr.aria-pressed]="isFavorite"
+  type="button">
+
+  <i [class]="iconClass"></i>
+
+  <span *ngIf="variant === 'button' && buttonText" class="button-text">
+    {{ buttonText }}
+  </span>
+
+  <!-- Pulse animation for new favorites -->
+  <div class="pulse-animation" *ngIf="isFavorite && !isLoading"></div>
+</button>

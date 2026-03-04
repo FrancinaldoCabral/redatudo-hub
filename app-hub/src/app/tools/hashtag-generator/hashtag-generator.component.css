@@ -1,0 +1,34 @@
+/* Hashtag Generator - Using Design System */
+
+/* Componente usa classes do design system globalmente */
+/* Apenas estilos específicos desta ferramenta aqui */
+
+/* Estilos específicos já cobertos pelo design system */
+/* .hashtag-item, .hashtag-text, .hashtag-meta já estão no design system */
+
+/* Volume e Relevance - Específicos desta ferramenta */
+.volume,
+.relevance {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.relevance {
+  color: var(--warning-orange);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hashtag-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hashtag-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

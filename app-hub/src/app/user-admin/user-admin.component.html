@@ -1,0 +1,84 @@
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <form>
+              <div class="input-group mb-3">
+                <input type="email" class="form-control" placeholder="User email"
+                aria-label="Recipient's username" aria-describedby="emailSearch" #userSearch>
+                <button class="btn btn-outline-secondary" (click)="fetchUserByEmail(userSearch.value)"
+                type="button" id="emailSearch">
+                  <span *ngIf="!spinner">
+                    <i class="bi bi-search"></i>
+                  </span>
+                  <span *ngIf="spinner" class="text-center">
+                    <div class="spinner-grow spinner-grow-sm m-1" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </span>
+                </button>
+              </div>
+            </form>
+            <hr>
+            <span *ngIf="spinner" class="text-center">
+              <div class="spinner-grow spinner-grow-sm m-1" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              Loading...
+            </span>
+            <h3 *ngIf="!spinner && userId && userEmail">Usage</h3>
+            <form class="form-floating mb-2" *ngIf="!spinner && userId && userEmail">
+              <input type="text" class="form-control" id="floatingInputInfo" 
+              placeholder="'Id.: {{userId}} - Email: {{userEmail}}'" 
+              value="Id.: {{userId}} - Email: {{userEmail}}" disabled>
+              <label for="floatingInputInfo">User info.</label>
+            </form>
+            <form class="mb-2" *ngIf="!spinner && userId && userEmail balance">
+              <div class="input-group mb-1">
+                <div class="input-group-text">
+                  <input class="form-check-input mt-0" type="checkbox" 
+                  value="false" #isEdit aria-label="Checkbox for following text input">
+                </div>
+                <div class="form-floating">
+                  <input type="number" class="form-control" id="floatingInputBalance" 
+                  step="0.01"
+                  name="balance" [(ngModel)]="balance" [disabled]="!isEdit.checked">
+                  <label for="floatingInputBalance">Update user credits.</label>
+                </div>
+                <button class="btn btn-primary" [disabled]="!isEdit.checked || !balance"
+                  (click)="setBalance(userId, balance, creditDescription)">
+                  <i class="bi bi-save"></i>
+                </button>
+              </div>
+              <div class="form-floating mb-1" *ngIf="isEdit.checked">
+                <textarea name="creditDescription" class="form-control" 
+                  [(ngModel)]="creditDescription" id="creditDescription"
+                  ></textarea>
+                <label for="creditDescription">Credit description. (optional)</label>
+              </div>
+            </form>
+            <form class="form-floating mb-2" *ngIf="!spinner && userId && userEmail && historicData.length === 0">
+              <input type="text" class="form-control" id="floatingInputInfo" 
+              placeholder="'Empty'" value="Empty" disabled>
+              <label for="floatingInputInfo">User Historic.</label>
+            </form>
+            <ul class="list-group" *ngIf="historicData.length > 0">
+                <li class="list-group-item bg-dark text-light" *ngFor="let h of historicData; let i=index">
+                    {{h.description | uppercase}} <br>
+                    <span [ngClass]="{'text-warning':h.operation==='debit', 
+                    'text-success':h.operation==='credit'}">{{h.total}}</span><br>
+                    {{dateFormat(h.createdAt)}}
+                </li>
+            </ul>
+            <nav aria-label="Page navigation example" *ngIf="userId && userEmail">
+              <ul class="pagination justify-content-center mt-2 text-center">
+                <li class="page-item" [class.disabled]="currentPage === 1">
+                  <button class="btn btn-outline-secondary" (click)="goToPage(currentPage - 1)">Previous</button>
+                </li>
+                <li class="page-item" [class.disabled]="currentPage === getTotalPages()">
+                  <button class="btn btn-outline-secondary" (click)="goToPage(currentPage + 1)">Next</button>
+                </li>
+              </ul>
+            </nav>            
+        </div>
+    </div>
+</div>

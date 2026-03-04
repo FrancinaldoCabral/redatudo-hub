@@ -1,0 +1,196 @@
+<div class="tool-page">
+  <div class="tool-container">
+
+    <app-tool-header [toolName]="'Legendas Instagram'" (creditClicked)="creditsModal.open()"></app-tool-header>
+
+    <!-- Tool Header -->
+    <header class="tool-header">
+      <span class="tool-header-badge">📱 REDES SOCIAIS</span>
+      <h1 class="tool-header-title">Gerador de Legendas Instagram</h1>
+      <p class="tool-header-description">
+        Crie legendas profissionais com hashtags e CTAs
+      </p>
+
+      <div class="tool-header-meta">
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">⭐</span>
+          4.8 avaliação
+        </span>
+        <span class="tool-meta-item">
+          <span class="tool-meta-icon">💡</span>
+          8.9k gerações
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+      <!-- Form Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">Configure sua Legenda</h3>
+        </div>
+
+        <div class="tool-card-body">
+          <form (ngSubmit)="generateCaptions()">
+
+            <!-- Character Counter -->
+            <div class="tool-badge tool-badge-info tool-mb-md" *ngIf="form.topic.length > 0">
+              🔤 {{ form.topic.length }}/500 caracteres
+            </div>
+
+            <div class="tool-form-group">
+              <label class="tool-label">Tema da Postagem</label>
+              <textarea
+                class="tool-textarea"
+                [(ngModel)]="form.topic"
+                name="topic"
+                placeholder="Ex: 'Meu novo produto fitness que ajuda as pessoas a emagrecerem de forma saudável...'"
+                rows="3"
+                maxlength="500"
+                required>
+              </textarea>
+            </div>
+
+            <div class="tool-grid tool-grid-3">
+              <div class="tool-form-group">
+                <label class="tool-label">Nicho</label>
+                <select class="tool-select" [(ngModel)]="form.niche" name="niche">
+                  <option *ngFor="let niche of niches" [value]="niche.value">
+                    {{ niche.label }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="tool-form-group">
+                <label class="tool-label">Tom da Legenda</label>
+                <select class="tool-select" [(ngModel)]="form.tone" name="tone">
+                  <option *ngFor="let tone of tones" [value]="tone.value">
+                    {{ tone.label }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="tool-form-group">
+                <label class="tool-label">Número de Legendas</label>
+                <select class="tool-select" [(ngModel)]="form.numberOfCaptions" name="numberOfCaptions">
+                  <option value="1">1 legenda</option>
+                  <option value="3">3 legendas</option>
+                  <option value="5">5 legendas</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Checkboxes -->
+            <div class="tool-grid tool-grid-2 tool-mb-md">
+              <label class="tool-form-group">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="form.includeHashtags"
+                  name="includeHashtags">
+                <span class="tool-label">Incluir hashtags relevantes</span>
+              </label>
+
+              <label class="tool-form-group">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="form.includeCTA"
+                  name="includeCTA">
+                <span class="tool-label">Incluir chamada para ação (CTA)</span>
+              </label>
+            </div>
+
+            <div class="tool-form-group">
+              <button
+                type="submit"
+                class="tool-btn tool-btn-primary"
+                [disabled]="isLoading || !form.topic.trim()">
+                <span class="tool-btn-icon">📸</span>
+                {{ isLoading ? 'Gerando legendas...' : 'Gerar ' + form.numberOfCaptions + ' Legenda' + (form.numberOfCaptions > 1 ? 's' : '') }}
+                <span class="credit-cost">(1 crédito)</span>
+              </button>
+
+              <button
+                type="button"
+                class="tool-btn tool-btn-secondary"
+                *ngIf="results.length > 0"
+                (click)="regenerateCaptions()"
+                [disabled]="!canRegenerate()">
+                <span class="tool-btn-icon">🔄</span>
+                Gerar Novamente
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="tool-loading" *ngIf="isLoading">
+        <div class="tool-loading-spinner"></div>
+        <p class="tool-loading-text">Gerando suas legendas personalizadas...</p>
+      </div>
+
+      <!-- Results Section -->
+      <div class="tool-results" *ngIf="results.length > 0 && !isLoading">
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <h3 class="tool-card-title">{{ results.length }} Legenda{{ results.length > 1 ? 's' : '' }} Gerada{{ results.length > 1 ? 's' : '' }}</h3>
+            <button
+              class="tool-btn tool-btn-secondary"
+              [disabled]="!canRegenerate()"
+              (click)="regenerateCaptions()">
+              <span class="tool-btn-icon">🔄</span>
+              Gerar Novas
+            </button>
+          </div>
+
+          <div class="tool-card-body">
+            <div class="tool-grid tool-grid-2">
+              <app-tap-to-copy-card
+                *ngFor="let result of results; let i = index"
+                [content]="result.content"
+                [title]="'Legenda ' + (i + 1)">
+              </app-tap-to-copy-card>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="tool-empty-state" *ngIf="results.length === 0 && !isLoading">
+        <div class="tool-empty-icon">📝</div>
+        <h3 class="tool-empty-title">Nenhuma legenda gerada ainda</h3>
+        <p class="tool-empty-text">
+          Preencha o formulário acima e clique em gerar para ver as legendas
+        </p>
+      </div>
+
+      <!-- Tips Section -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <h3 class="tool-card-title">💡 Dicas para Legendas Incríveis</h3>
+        </div>
+        <div class="tool-card-body">
+          <div class="tool-grid tool-grid-2">
+            <div class="tip-item">
+              <strong>😊 Emojis:</strong> Use emojis para tornar suas legendas mais atrativas
+            </div>
+            <div class="tip-item">
+              <strong>❓ Perguntas:</strong> Faça perguntas para engajar seus seguidores
+            </div>
+            <div class="tip-item">
+              <strong>#️⃣ Hashtags:</strong> Use hashtags relevantes ao seu nicho
+            </div>
+            <div class="tip-item">
+              <strong>👆 CTAs:</strong> Inclua CTAs claros para direcionar ações
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <app-credits-modal #creditsModal></app-credits-modal>
+  </div>
+</div>
