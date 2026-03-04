@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "module": "CommonJS",
+    "target": "es2019",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "rootDir": "src",
+    "baseUrl": "src",
+    "skipLibCheck": true,
+    "noImplicitAny": false, // Permite tipos implícitos 'any'
+    "strictNullChecks": false, // Desabilita verificações rígidas de null
+    "strict": false // Desabilita todas as verificações de tipo rigorosas
+  },
+  "include": [
+    "src",
+  ],
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
+}

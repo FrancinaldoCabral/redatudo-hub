@@ -1,0 +1,1843 @@
+/**
+ * Templates CSS Base para Ebooks
+ * Cada template combina Gênero × Tom de Escrita
+ * 
+ * Estrutura:
+ * - CSS base fixo (não muda)
+ * - Variáveis customizáveis (personalizadas pelo LLM)
+ * - Configurações avançadas por formato (Puppeteer, EPUB, etc.)
+ */
+
+export interface BaseTemplate {
+  genre: string;
+  tone: string;
+  description: string;
+  
+  // CSS base com placeholders para variáveis
+  baseCSS: string;
+  
+  // Variáveis customizáveis pelo LLM
+  defaultVars: DesignVariables;
+  
+  // Configurações avançadas de exportação
+  puppeteerConfig: PuppeteerConfig;
+  epubConfig: EPUBConfig;
+}
+
+export interface DesignVariables {
+  // Cores
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+  backgroundColor: string;
+  textColor: string;
+  
+  // Tipografia
+  fontPrimary: string;
+  fontHeadings: string;
+  fontCode: string;
+  googleFontsImport?: string;
+  
+  // Espaçamento e ritmo
+  lineHeight: string;
+  paragraphMargin: string;
+  headingMarginTop: string;
+  headingMarginBottom: string;
+  
+  // Elementos decorativos
+  chapterDropCap: boolean;
+  chapterDivider: string;
+  pageNumbersStyle: 'classic' | 'modern' | 'minimal' | 'none';
+}
+
+export interface PuppeteerConfig {
+  printBackground: boolean;
+  preferCSSPageSize: boolean;
+  displayHeaderFooter: boolean;
+  headerTemplate?: string;
+  footerTemplate?: string;
+  margin: {
+    top: string;
+    bottom: string;
+    left: string;
+    right: string;
+  };
+}
+
+export interface EPUBConfig {
+  tocDepth: number;
+  chapterLevel: number;
+  embedFonts: boolean;
+  css?: string;
+}
+
+/**
+ * CSS base universal - usado em TODOS os templates
+ * Contém estrutura sólida de impressão, responsividade, etc.
+ */
+const UNIVERSAL_BASE_CSS = `
+/* ============================================
+   CONFIGURAÇÃO DE PÁGINAS PARA IMPRESSÃO
+   ============================================ */
+@page {
+  size: A4;
+  margin: var(--page-margin-top, 2.5cm) var(--page-margin-right, 2cm) var(--page-margin-bottom, 2.5cm) var(--page-margin-left, 2cm);
+}
+
+@page :first {
+  margin: 0;
+}
+
+@page chapter {
+  margin: var(--chapter-margin-top, 3cm) var(--chapter-margin-right, 2.5cm) var(--chapter-margin-bottom, 2.5cm) var(--chapter-margin-left, 2.5cm);
+}
+
+/* ============================================
+   VARIÁVEIS CSS CUSTOMIZÁVEIS
+   ============================================ */
+:root {
+  --color-primary: {{primaryColor}};
+  --color-secondary: {{secondaryColor}};
+  --color-accent: {{accentColor}};
+  --color-background: {{backgroundColor}};
+  --color-text: {{textColor}};
+  
+  --font-primary: {{fontPrimary}};
+  --font-headings: {{fontHeadings}};
+  --font-code: {{fontCode}};
+  
+  --line-height: {{lineHeight}};
+  --paragraph-margin: {{paragraphMargin}};
+  --heading-margin-top: {{headingMarginTop}};
+  --heading-margin-bottom: {{headingMarginBottom}};
+}
+
+/* ============================================
+   RESET E BASE
+   ============================================ */
+* { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+}
+
+html { 
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-primary);
+  line-height: var(--line-height);
+  color: var(--color-text);
+  background: var(--color-background);
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+}
+
+/* ============================================
+   CAPA - 100% LARGURA E ALTURA
+   ============================================ */
+[data-section-type="cover"] {
+  page-break-after: always;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+[data-section-type="cover"] img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+[data-section-type="cover"] .content {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================
+   QUEBRAS DE PÁGINA PARA SEÇÕES
+   ============================================ */
+[data-section-type="chapter"],
+[data-section-type="introduction"],
+[data-section-type="conclusion"],
+[data-section-type="foreword"],
+[data-section-type="preface"],
+[data-section-type="appendix"],
+[data-section-type="bibliography"] {
+  page-break-before: always;
+  page: chapter;
+}
+
+[data-section-type="title-page"],
+[data-section-type="copyright"],
+[data-section-type="dedication"],
+[data-section-type="table-of-contents"] {
+  page-break-after: always;
+}
+
+/* ============================================
+   TIPOGRAFIA
+   ============================================ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-headings);
+  font-weight: bold;
+  margin-top: var(--heading-margin-top);
+  margin-bottom: var(--heading-margin-bottom);
+  line-height: 1.2;
+  color: var(--color-primary);
+  page-break-after: avoid;
+  page-break-inside: avoid;
+}
+
+h1 { 
+  font-size: 2.5em; 
+  text-align: center; 
+  margin-bottom: 1em;
+  margin-top: 0;
+}
+
+h2 { 
+  font-size: 2em; 
+  border-bottom: 2px solid var(--color-secondary); 
+  padding-bottom: 0.3em; 
+}
+
+h3 { font-size: 1.5em; }
+h4 { font-size: 1.25em; }
+h5 { font-size: 1.1em; }
+h6 { font-size: 1em; }
+
+p {
+  margin: var(--paragraph-margin) 0;
+  text-align: justify;
+  text-indent: 2em;
+  orphans: 3;
+  widows: 3;
+}
+
+/* Primeiro parágrafo sem indentação */
+h1 + p, h2 + p, h3 + p, h4 + p,
+.chapter > .content > p:first-of-type { 
+  text-indent: 0; 
+}
+
+/* ============================================
+   ÊNFASE E FORMATAÇÃO
+   ============================================ */
+strong, b { font-weight: bold; }
+em, i { font-style: italic; }
+u { text-decoration: underline; }
+s, del { text-decoration: line-through; }
+mark { background-color: #fff3cd; padding: 0.1em 0.2em; }
+small { font-size: 0.85em; }
+sub { vertical-align: sub; font-size: 0.75em; }
+sup { vertical-align: super; font-size: 0.75em; }
+
+/* ============================================
+   LISTAS
+   ============================================ */
+ul, ol {
+  margin: 1em 0;
+  padding-left: 2em;
+  page-break-inside: avoid;
+}
+
+li { 
+  margin: 0.5em 0;
+  line-height: 1.5;
+}
+
+ul ul, ol ol, ul ol, ol ul {
+  margin: 0.5em 0;
+}
+
+/* ============================================
+   CITAÇÕES
+   ============================================ */
+blockquote {
+  margin: 1.5em 2em;
+  padding: 1em 1.5em;
+  border-left: 4px solid var(--color-accent);
+  background: rgba(0, 0, 0, 0.03);
+  font-style: italic;
+  page-break-inside: avoid;
+}
+
+blockquote p:first-child {
+  text-indent: 0;
+}
+
+blockquote footer,
+blockquote cite {
+  display: block;
+  margin-top: 0.5em;
+  font-size: 0.9em;
+  text-align: right;
+  font-style: normal;
+}
+
+/* ============================================
+   CÓDIGO
+   ============================================ */
+code {
+  font-family: var(--font-code);
+  background: #f4f4f4;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+  border: 1px solid #e0e0e0;
+}
+
+pre {
+  margin: 1em 0;
+  padding: 1em;
+  background: #f4f4f4;
+  border-radius: 5px;
+  overflow-x: auto;
+  page-break-inside: avoid;
+  border: 1px solid #ddd;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  border: none;
+}
+
+/* ============================================
+   TABELAS
+   ============================================ */
+table {
+  width: 100%;
+  margin: 1.5em 0;
+  border-collapse: collapse;
+  page-break-inside: avoid;
+}
+
+th, td {
+  padding: 0.75em;
+  border: 1px solid #ddd;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: var(--color-secondary);
+  color: white;
+  font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+caption {
+  margin-bottom: 0.5em;
+  font-weight: bold;
+  text-align: left;
+}
+
+/* ============================================
+   IMAGENS E FIGURAS
+   ============================================ */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.5em auto;
+}
+
+figure {
+  margin: 1.5em 0;
+  text-align: center;
+  page-break-inside: avoid;
+}
+
+figure img {
+  margin: 0 auto 0.5em;
+}
+
+figcaption {
+  font-style: italic;
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 0.5em;
+}
+
+/* ============================================
+   LINKS
+   ============================================ */
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+a:hover { 
+  text-decoration: underline; 
+}
+
+/* ============================================
+   LINHA HORIZONTAL
+   ============================================ */
+hr {
+  border: none;
+  border-top: 1px solid var(--color-secondary);
+  margin: 2em 0;
+  page-break-after: avoid;
+}
+
+/* ============================================
+   CONTAINERS DO LIVRO
+   ============================================ */
+.book {
+  background: var(--color-background);
+}
+
+.chapter {
+  margin-bottom: 3em;
+}
+
+.content {
+  padding: 0 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+[data-section-type="cover"] .content {
+  padding: 0;
+  max-width: none;
+}
+
+/* ============================================
+   ESTILOS DE IMPRESSÃO
+   ============================================ */
+@media print {
+  html {
+    font-size: 12pt;
+  }
+  
+  body {
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .content {
+    padding: 0;
+    max-width: 100%;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    page-break-inside: avoid;
+  }
+  
+  p, li {
+    orphans: 3;
+    widows: 3;
+  }
+  
+  blockquote, figure, table, pre {
+    page-break-inside: avoid;
+  }
+  
+  img {
+    page-break-inside: avoid;
+    page-break-after: avoid;
+  }
+  
+  a {
+    color: #000;
+    text-decoration: none;
+  }
+  
+  a[href^="http"]:after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    font-style: italic;
+  }
+  
+  nav, .no-print {
+    display: none;
+  }
+}
+
+/* ============================================
+   ESTILOS DE TELA
+   ============================================ */
+@media screen {
+  body {
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  [data-section-type="cover"] {
+    min-height: 100vh;
+  }
+}
+`;
+
+/**
+ * Templates organizados por gênero e tom
+ * Cada entrada define valores padrão que podem ser personalizados pelo LLM
+ */
+export const BASE_TEMPLATES: Record<string, BaseTemplate> = {
+  // ============================================
+  // ROMANCE
+  // ============================================
+  'romance-profissional': {
+    genre: 'Romance',
+    tone: 'Profissional',
+    description: 'Design elegante e sofisticado para romances profissionais',
+    baseCSS: UNIVERSAL_BASE_CSS + `
+/* Drop cap especial para romances */
+[data-section-type="chapter"] .content > p:first-of-type::first-letter {
+  font-size: 3.5em;
+  line-height: 0.85;
+  float: left;
+  margin: 0.1em 0.15em 0 0;
+  font-weight: bold;
+  font-family: var(--font-headings);
+  color: var(--color-primary);
+}
+`,
+    defaultVars: {
+      primaryColor: '#8B4789',
+      secondaryColor: '#D4A5D4',
+      accentColor: '#FF69B4',
+      backgroundColor: '#FFFFFF',
+      textColor: '#2C2C2C',
+      fontPrimary: 'Georgia, "Times New Roman", serif',
+      fontHeadings: 'Georgia, serif',
+      fontCode: '"Courier New", Courier, monospace',
+      lineHeight: '1.8',
+      paragraphMargin: '1.2em',
+      headingMarginTop: '2em',
+      headingMarginBottom: '0.8em',
+      chapterDropCap: true,
+      chapterDivider: '❤',
+      pageNumbersStyle: 'classic'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2.5cm', bottom: '2.5cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  'romance-casual': {
+    genre: 'Romance',
+    tone: 'Casual',
+    description: 'Design leve e acessível para romances casuais',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#FF6B9D',
+      secondaryColor: '#FFB6C1',
+      accentColor: '#FFA07A',
+      backgroundColor: '#FFF9FC',
+      textColor: '#333333',
+      fontPrimary: 'Arial, Helvetica, sans-serif',
+      fontHeadings: 'Arial, sans-serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.7',
+      paragraphMargin: '1em',
+      headingMarginTop: '1.5em',
+      headingMarginBottom: '0.6em',
+      chapterDropCap: false,
+      chapterDivider: '♥',
+      pageNumbersStyle: 'modern'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2cm', bottom: '2cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  // ============================================
+  // TÉCNICO
+  // ============================================
+  'tecnico-profissional': {
+    genre: 'Técnico',
+    tone: 'Profissional',
+    description: 'Design corporativo e clean para conteúdo técnico',
+    baseCSS: UNIVERSAL_BASE_CSS + `
+/* Melhorias para código em livros técnicos */
+pre {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  border-left: 4px solid var(--color-accent);
+}
+
+pre code {
+  color: #d4d4d4;
+}
+`,
+    defaultVars: {
+      primaryColor: '#2C3E50',
+      secondaryColor: '#34495E',
+      accentColor: '#3498DB',
+      backgroundColor: '#FFFFFF',
+      textColor: '#2C3E50',
+      fontPrimary: '"Segoe UI", Arial, sans-serif',
+      fontHeadings: '"Segoe UI", Arial, sans-serif',
+      fontCode: '"Fira Code", "Courier New", monospace',
+      lineHeight: '1.6',
+      paragraphMargin: '1em',
+      headingMarginTop: '2em',
+      headingMarginBottom: '0.5em',
+      chapterDropCap: false,
+      chapterDivider: '---',
+      pageNumbersStyle: 'modern'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: true,
+      margin: { top: '3cm', bottom: '3cm', left: '2.5cm', right: '2.5cm' }
+    },
+    epubConfig: {
+      tocDepth: 3,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  // ============================================
+  // THRILLER
+  // ============================================
+  'thriller-profissional': {
+    genre: 'Thriller',
+    tone: 'Profissional',
+    description: 'Design dark e impactante para thrillers',
+    baseCSS: UNIVERSAL_BASE_CSS + `
+/* Atmosfera dark para thrillers */
+body {
+  background: linear-gradient(to bottom, #1a1a1a 0%, #2d2d2d 100%);
+}
+`,
+    defaultVars: {
+      primaryColor: '#8B0000',
+      secondaryColor: '#4A0000',
+      accentColor: '#DC143C',
+      backgroundColor: '#1A1A1A',
+      textColor: '#E0E0E0',
+      fontPrimary: '"Crimson Text", Georgia, serif',
+      fontHeadings: '"Bebas Neue", Impact, sans-serif',
+      fontCode: '"Courier New", monospace',
+      googleFontsImport: 'https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;700&family=Bebas+Neue&display=swap',
+      lineHeight: '1.7',
+      paragraphMargin: '1em',
+      headingMarginTop: '2.5em',
+      headingMarginBottom: '0.7em',
+      chapterDropCap: true,
+      chapterDivider: '***',
+      pageNumbersStyle: 'minimal'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2.5cm', bottom: '2.5cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: true
+    }
+  },
+
+  // ============================================
+  // ROMANCE - Templates Adicionais
+  // ============================================
+  'romance-inspiracional': {
+    genre: 'Romance',
+    tone: 'Inspiracional',
+    description: 'Design edificante e aspiracional para romances inspiracionais',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#9B59B6',
+      secondaryColor: '#C39BD3',
+      accentColor: '#F1948A',
+      backgroundColor: '#FFFFFF',
+      textColor: '#2C2C2C',
+      fontPrimary: 'Georgia, "Times New Roman", serif',
+      fontHeadings: 'Georgia, serif',
+      fontCode: '"Courier New", Courier, monospace',
+      lineHeight: '1.9',
+      paragraphMargin: '1.5em',
+      headingMarginTop: '2.5em',
+      headingMarginBottom: '1em',
+      chapterDropCap: true,
+      chapterDivider: '✿',
+      pageNumbersStyle: 'modern'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2.5cm', bottom: '2.5cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  'romance-academico': {
+    genre: 'Romance',
+    tone: 'Acadêmico',
+    description: 'Design sóbrio e refinado para romances acadêmicos',
+    baseCSS: UNIVERSAL_BASE_CSS + `
+/* Notas acadêmicas discretas */
+.chapter .content {
+  letter-spacing: 0.02em;
+}
+`,
+    defaultVars: {
+      primaryColor: '#5B2C6F',
+      secondaryColor: '#8E44AD',
+      accentColor: '#CB4335',
+      backgroundColor: '#FAFAFA',
+      textColor: '#2C2C2C',
+      fontPrimary: 'Georgia, "Times New Roman", serif',
+      fontHeadings: 'Georgia, serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.55',
+      paragraphMargin: '1.2em',
+      headingMarginTop: '2em',
+      headingMarginBottom: '0.6em',
+      chapterDropCap: true,
+      chapterDivider: '◆',
+      pageNumbersStyle: 'classic'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: true,
+      margin: { top: '3cm', bottom: '3cm', left: '2.5cm', right: '2.5cm' }
+    },
+    epubConfig: {
+      tocDepth: 3,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  'romance-serio': {
+
+    genre: 'Romance',
+    tone: 'Sério',
+    description: 'Design grave e impactante para romances sérios',
+    baseCSS: UNIVERSAL_BASE_CSS + `
+/* Drop cap sério para romance */
+[data-section-type="chapter"] .content > p:first-of-type::first-letter {
+  font-size: 3.5em;
+  line-height: 0.85;
+  float: left;
+  margin: 0.1em 0.15em 0 0;
+  font-weight: bold;
+  font-family: var(--font-headings);
+  color: var(--color-primary);
+}
+`,
+    defaultVars: {
+      primaryColor: '#4A4A4A',
+      secondaryColor: '#757575',
+      accentColor: '#8E24AA',
+      backgroundColor: '#FFFFFF',
+      textColor: '#212121',
+      fontPrimary: 'Georgia, "Times New Roman", serif',
+      fontHeadings: 'Georgia, serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.6',
+      paragraphMargin: '1.2em',
+      headingMarginTop: '2em',
+      headingMarginBottom: '0.6em',
+      chapterDropCap: true,
+      chapterDivider: '~',
+      pageNumbersStyle: 'minimal'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2.5cm', bottom: '2.5cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  'romance-formal': {
+    genre: 'Romance',
+    tone: 'Formal',
+    description: 'Design tradicional e cerimônico para romances formais',
+    baseCSS: UNIVERSAL_BASE_CSS + `
+/* Drop cap elegante formal */
+[data-section-type="chapter"] .content > p:first-of-type::first-letter {
+  font-size: 3.5em;
+  line-height: 0.85;
+  float: left;
+  margin: 0.1em 0.15em 0 0;
+  font-weight: bold;
+  font-family: var(--font-headings);
+  color: var(--color-primary);
+}
+`,
+    defaultVars: {
+      primaryColor: '#800020',
+      secondaryColor: '#A05A5A',
+      accentColor: '#D4AF37',
+      backgroundColor: '#FFFFFF',
+      textColor: '#2C2C2C',
+      fontPrimary: 'Georgia, "Times New Roman", serif',
+      fontHeadings: 'Georgia, serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.5',
+      paragraphMargin: '1em',
+      headingMarginTop: '2em',
+      headingMarginBottom: '0.5em',
+      chapterDropCap: true,
+      chapterDivider: '❤',
+      pageNumbersStyle: 'classic'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2.5cm', bottom: '2.5cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  'romance-humoristico': {
+    genre: 'Romance',
+    tone: 'Humorístico',
+    description: 'Design divertido e acolhedor para romances com humor leve',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#FF6B9D',
+      secondaryColor: '#FFD1DC',
+      accentColor: '#FFC107',
+      backgroundColor: '#FFF6F9',
+      textColor: '#2C2C2C',
+      fontPrimary: 'Trebuchet MS, "Segoe UI", sans-serif',
+      fontHeadings: 'Georgia, serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.8',
+      paragraphMargin: '1.2em',
+      headingMarginTop: '2em',
+      headingMarginBottom: '0.6em',
+      chapterDropCap: false,
+      chapterDivider: '💌',
+      pageNumbersStyle: 'modern'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2cm', bottom: '2cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  'romance-conversacional': {
+    genre: 'Romance',
+    tone: 'Conversacional',
+    description: 'Design caloroso e íntimo para romances conversacionais',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#E91E63',
+      secondaryColor: '#F8BBD0',
+      accentColor: '#00BCD4',
+      backgroundColor: '#FFF9FB',
+      textColor: '#2C2C2C',
+      fontPrimary: 'Georgia, "Times New Roman", serif',
+      fontHeadings: 'Georgia, serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.75',
+      paragraphMargin: '1.3em',
+      headingMarginTop: '2.2em',
+      headingMarginBottom: '0.7em',
+      chapterDropCap: false,
+      chapterDivider: '☆',
+      pageNumbersStyle: 'modern'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2cm', bottom: '2cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  // ============================================
+  // FICÇÃO CIENTÍFICA
+  // ============================================
+
+  'ficcao-cientifica-profissional': {
+    genre: 'Ficção Científica',
+    tone: 'Profissional',
+    description: 'Design sofisticado e futurista para ficção científica profissional',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#2C3E50',
+      secondaryColor: '#34495E',
+      accentColor: '#00BCD4',
+      backgroundColor: '#FFFFFF',
+      textColor: '#2C3E50',
+      fontPrimary: 'Arial, Helvetica, sans-serif',
+      fontHeadings: 'Arial, sans-serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.6',
+      paragraphMargin: '1.2em',
+      headingMarginTop: '2em',
+      headingMarginBottom: '0.6em',
+      chapterDropCap: false,
+      chapterDivider: '★',
+      pageNumbersStyle: 'modern'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2.5cm', bottom: '2.5cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  'ficcao-cientifica-casual': {
+    genre: 'Ficção Científica',
+    tone: 'Casual',
+    description: 'Design acessível e moderno para ficção científica casual',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#3498DB',
+      secondaryColor: '#5DADE2',
+      accentColor: '#1ABC9C',
+      backgroundColor: '#FFFFFF',
+      textColor: '#2C3E50',
+      fontPrimary: 'Arial, Helvetica, sans-serif',
+      fontHeadings: 'Arial, sans-serif',
+      fontCode: '"Courier New", Courier, monospace',
+      lineHeight: '1.7',
+      paragraphMargin: '1.2em',
+      headingMarginTop: '1.8em',
+      headingMarginBottom: '0.7em',
+      chapterDropCap: false,
+      chapterDivider: '★',
+      pageNumbersStyle: 'modern'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2cm', bottom: '2cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  // ============================================
+  // FANTASIA
+  // ============================================
+  'fantasia-profissional': {
+    genre: 'Fantasia',
+    tone: 'Profissional',
+    description: 'Design sofisticado e profissional para fantasia épica',
+    baseCSS: UNIVERSAL_BASE_CSS + `
+/* Drop cap ornamentada para fantasia */
+[data-section-type="chapter"] .content > p:first-of-type::first-letter {
+  font-size: 3.8em;
+  line-height: 0.85;
+  float: left;
+  margin: 0.1em 0.18em 0 0;
+  font-weight: bold;
+  font-family: var(--font-headings);
+  color: var(--color-primary);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.08);
+}
+`,
+    defaultVars: {
+      primaryColor: '#4A148C',
+      secondaryColor: '#7B1FA2',
+      accentColor: '#D4AF37',
+      backgroundColor: '#FFFFFF',
+      textColor: '#2C2C2C',
+      fontPrimary: 'Georgia, "Times New Roman", serif',
+      fontHeadings: 'Georgia, serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.7',
+      paragraphMargin: '1.3em',
+      headingMarginTop: '2.2em',
+      headingMarginBottom: '0.8em',
+      chapterDropCap: true,
+      chapterDivider: '✦',
+      pageNumbersStyle: 'classic'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2.5cm', bottom: '2.5cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  'fantasia-inspiracional': {
+    genre: 'Fantasia',
+    tone: 'Inspiracional',
+    description: 'Design épico e motivador para fantasia inspiracional',
+    baseCSS: UNIVERSAL_BASE_CSS + `
+/* Drop cap épica para fantasia */
+[data-section-type="chapter"] .content > p:first-of-type::first-letter {
+  font-size: 4em;
+  line-height: 0.8;
+  float: left;
+  margin: 0.1em 0.2em 0 0;
+  font-weight: bold;
+  font-family: var(--font-headings);
+  color: var(--color-primary);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+`,
+    defaultVars: {
+      primaryColor: '#9C27B0',
+      secondaryColor: '#BA68C8',
+      accentColor: '#FFD700',
+      backgroundColor: '#FFFFFF',
+      textColor: '#2C2C2C',
+      fontPrimary: 'Georgia, "Times New Roman", serif',
+      fontHeadings: 'Georgia, serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.9',
+      paragraphMargin: '1.4em',
+      headingMarginTop: '2.5em',
+      headingMarginBottom: '1em',
+      chapterDropCap: true,
+      chapterDivider: '✦',
+      pageNumbersStyle: 'classic'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2.5cm', bottom: '2.5cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  'fantasia-casual': {
+    genre: 'Fantasia',
+    tone: 'Casual',
+    description: 'Design acessível e envolvente para fantasia casual',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#8E44AD',
+      secondaryColor: '#9B59B6',
+      accentColor: '#1ABC9C',
+      backgroundColor: '#FFFFFF',
+      textColor: '#2C2C2C',
+      fontPrimary: 'Arial, Helvetica, sans-serif',
+      fontHeadings: 'Georgia, serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.75',
+      paragraphMargin: '1.2em',
+      headingMarginTop: '1.8em',
+      headingMarginBottom: '0.7em',
+      chapterDropCap: false,
+      chapterDivider: '※',
+      pageNumbersStyle: 'modern'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2cm', bottom: '2cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  // ============================================
+  // AUTOAJUDA
+  // ============================================
+  'autoajuda-profissional': {
+    genre: 'Autoajuda',
+    tone: 'Profissional',
+    description: 'Design confiável e motivador para autoajuda profissional',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#1565C0',
+      secondaryColor: '#1976D2',
+      accentColor: '#FF9800',
+      backgroundColor: '#FFFFFF',
+      textColor: '#263238',
+      fontPrimary: 'Arial, Helvetica, sans-serif',
+      fontHeadings: 'Arial, sans-serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.6',
+      paragraphMargin: '1.2em',
+      headingMarginTop: '2em',
+      headingMarginBottom: '0.7em',
+      chapterDropCap: false,
+      chapterDivider: '★',
+      pageNumbersStyle: 'modern'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2.5cm', bottom: '2.5cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  'autoajuda-inspiracional': {
+    genre: 'Autoajuda',
+    tone: 'Inspiracional',
+    description: 'Design edificante e energizante para autoajuda inspiracional',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#FFA000',
+      secondaryColor: '#FFB74D',
+      accentColor: '#7B1FA2',
+      backgroundColor: '#FFFFFF',
+      textColor: '#263238',
+      fontPrimary: 'Arial, Helvetica, sans-serif',
+      fontHeadings: 'Arial, sans-serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.8',
+      paragraphMargin: '1.4em',
+      headingMarginTop: '2.5em',
+      headingMarginBottom: '0.9em',
+      chapterDropCap: false,
+      chapterDivider: '✓',
+      pageNumbersStyle: 'modern'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2.5cm', bottom: '2.5cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  'autoajuda-academico': {
+    genre: 'Autoajuda',
+    tone: 'Acadêmico',
+    description: 'Design erudito e fundamentado para autoajuda acadêmica',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#2E7D32',
+      secondaryColor: '#66BB6A',
+      accentColor: '#1565C0',
+      backgroundColor: '#FFFFFF',
+      textColor: '#263238',
+      fontPrimary: 'Georgia, "Times New Roman", serif',
+      fontHeadings: 'Georgia, serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.5',
+      paragraphMargin: '1em',
+      headingMarginTop: '2em',
+      headingMarginBottom: '0.6em',
+      chapterDropCap: false,
+      chapterDivider: '◆',
+      pageNumbersStyle: 'classic'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: true,
+      margin: { top: '3cm', bottom: '3cm', left: '2.5cm', right: '2.5cm' }
+    },
+    epubConfig: {
+      tocDepth: 3,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  // ============================================
+  // TÉCNICO
+  // ============================================
+  'tecnico-humoristico': {
+    genre: 'Técnico',
+    tone: 'Humorístico',
+    description: 'Design leve e divertido para conteúdo técnico com humor',
+    baseCSS: UNIVERSAL_BASE_CSS + `
+/* Blocos de código coloridos e amigáveis */
+pre {
+  background: #F1F8E9;
+  color: #33691E;
+  border-left: 4px solid var(--color-accent);
+  border-radius: 8px;
+}
+
+pre code {
+  color: #33691E;
+}
+`,
+    defaultVars: {
+      primaryColor: '#66BB6A',
+      secondaryColor: '#81C784',
+      accentColor: '#FF9800',
+      backgroundColor: '#FFFFFF',
+      textColor: '#263238',
+      fontPrimary: 'Arial, Helvetica, sans-serif',
+      fontHeadings: 'Arial, sans-serif',
+      fontCode: '"Courier New", Courier, monospace',
+      lineHeight: '1.8',
+      paragraphMargin: '1.2em',
+      headingMarginTop: '2em',
+      headingMarginBottom: '0.7em',
+      chapterDropCap: false,
+      chapterDivider: '▪',
+      pageNumbersStyle: 'modern'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2.5cm', bottom: '2.5cm', left: '2.5cm', right: '2.5cm' }
+    },
+    epubConfig: {
+      tocDepth: 3,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  // ============================================
+  // NEGÓCIOS
+  // ============================================
+  'negocios-serio': {
+    genre: 'Negócios',
+    tone: 'Sério',
+    description: 'Design autoritário e impactante para negócios sérios',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#263238',
+      secondaryColor: '#455A64',
+      accentColor: '#1565C0',
+      backgroundColor: '#FFFFFF',
+      textColor: '#212121',
+      fontPrimary: 'Arial, Helvetica, sans-serif',
+      fontHeadings: 'Arial, sans-serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.5',
+      paragraphMargin: '1em',
+      headingMarginTop: '2em',
+      headingMarginBottom: '0.5em',
+      chapterDropCap: false,
+      chapterDivider: '■',
+      pageNumbersStyle: 'minimal'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: true,
+      margin: { top: '3cm', bottom: '3cm', left: '2.5cm', right: '2.5cm' }
+    },
+    epubConfig: {
+      tocDepth: 3,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  // ============================================
+  // MISTÉRIO
+  // ============================================
+  'misterio-conversacional': {
+    genre: 'Mistério',
+    tone: 'Conversacional',
+    description: 'Design envolvente e pessoal para mistério conversacional',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#546E7A',
+      secondaryColor: '#78909C',
+      accentColor: '#FF8F00',
+      backgroundColor: '#FFFFFF',
+      textColor: '#263238',
+      fontPrimary: 'Georgia, "Times New Roman", serif',
+      fontHeadings: 'Georgia, serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.75',
+      paragraphMargin: '1.2em',
+      headingMarginTop: '2em',
+      headingMarginBottom: '0.7em',
+      chapterDropCap: true,
+      chapterDivider: '◇',
+      pageNumbersStyle: 'classic'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2.5cm', bottom: '2.5cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  // ============================================
+  // HORROR
+  // ============================================
+  'horror-formal': {
+    genre: 'Horror',
+    tone: 'Formal',
+    description: 'Design tradicional e sombrio para horror formal',
+    baseCSS: UNIVERSAL_BASE_CSS + `
+/* Atmosfera fúnebre */
+[data-section-type="chapter"] .content > p:first-of-type::first-letter {
+  font-size: 3.5em;
+  line-height: 0.85;
+  float: left;
+  margin: 0.1em 0.15em 0 0;
+  font-weight: bold;
+  font-family: var(--font-headings);
+  color: var(--color-primary);
+}
+`,
+    defaultVars: {
+      primaryColor: '#4A0000',
+      secondaryColor: '#6D1414',
+      accentColor: '#8B0000',
+      backgroundColor: '#FFFFFF',
+      textColor: '#1C1C1C',
+      fontPrimary: 'Georgia, "Times New Roman", serif',
+      fontHeadings: 'Georgia, serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.5',
+      paragraphMargin: '1em',
+      headingMarginTop: '2.5em',
+      headingMarginBottom: '0.6em',
+      chapterDropCap: true,
+      chapterDivider: '†',
+      pageNumbersStyle: 'classic'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2.5cm', bottom: '2.5cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  // ============================================
+  // BIOGRAFIA
+  // ============================================
+  'biografia-profissional': {
+    genre: 'Biografia',
+    tone: 'Profissional',
+    description: 'Design clássico e respeitoso para biografias profissionais',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#795548',
+      secondaryColor: '#A1887F',
+      accentColor: '#5D4037',
+      backgroundColor: '#FFFEF7',
+      textColor: '#3E2723',
+      fontPrimary: 'Georgia, "Times New Roman", serif',
+      fontHeadings: 'Georgia, serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.6',
+      paragraphMargin: '1.2em',
+      headingMarginTop: '2em',
+      headingMarginBottom: '0.7em',
+      chapterDropCap: true,
+      chapterDivider: '※',
+      pageNumbersStyle: 'classic'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2.5cm', bottom: '2.5cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  // ============================================
+  // HISTÓRIA
+  // ============================================
+  'historia-casual': {
+    genre: 'História',
+    tone: 'Casual',
+    description: 'Design acessível e envolvente para história casual',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#8D6E63',
+      secondaryColor: '#BCAAA4',
+      accentColor: '#6D4C41',
+      backgroundColor: '#FFFFFF',
+      textColor: '#3E2723',
+      fontPrimary: 'Arial, Helvetica, sans-serif',
+      fontHeadings: 'Georgia, serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.7',
+      paragraphMargin: '1.2em',
+      headingMarginTop: '1.8em',
+      headingMarginBottom: '0.7em',
+      chapterDropCap: false,
+      chapterDivider: '◆',
+      pageNumbersStyle: 'modern'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2cm', bottom: '2cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  // ============================================
+  // POESIA
+  // ============================================
+  'poesia-inspiracional': {
+    genre: 'Poesia',
+    tone: 'Inspiracional',
+    description: 'Design lírico e edificante para poesia inspiracional',
+    baseCSS: UNIVERSAL_BASE_CSS + `
+/* Muito espaço em branco para poesia */
+.content {
+  max-width: 600px;
+}
+p {
+  text-align: left;
+  text-indent: 0;
+}
+`,
+    defaultVars: {
+      primaryColor: '#AB47BC',
+      secondaryColor: '#CE93D8',
+      accentColor: '#F48FB1',
+      backgroundColor: '#FFFFFF',
+      textColor: '#424242',
+      fontPrimary: 'Georgia, "Times New Roman", serif',
+      fontHeadings: 'Georgia, serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '2.0',
+      paragraphMargin: '2em',
+      headingMarginTop: '3em',
+      headingMarginBottom: '1.5em',
+      chapterDropCap: false,
+      chapterDivider: '~',
+      pageNumbersStyle: 'minimal'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '3cm', bottom: '3cm', left: '3cm', right: '3cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  // ============================================
+  // DRAMA
+  // ============================================
+  'drama-academico': {
+    genre: 'Drama',
+    tone: 'Acadêmico',
+    description: 'Design analítico e crítico para drama acadêmico',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#455A64',
+      secondaryColor: '#78909C',
+      accentColor: '#7B1FA2',
+      backgroundColor: '#FFFFFF',
+      textColor: '#263238',
+      fontPrimary: 'Georgia, "Times New Roman", serif',
+      fontHeadings: 'Georgia, serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.5',
+      paragraphMargin: '1em',
+      headingMarginTop: '2em',
+      headingMarginBottom: '0.6em',
+      chapterDropCap: false,
+      chapterDivider: '◆',
+      pageNumbersStyle: 'classic'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: true,
+      margin: { top: '3cm', bottom: '3cm', left: '2.5cm', right: '2.5cm' }
+    },
+    epubConfig: {
+      tocDepth: 3,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  // ============================================
+  // AVENTURA
+  // ============================================
+  'aventura-humoristico': {
+    genre: 'Aventura',
+    tone: 'Humorístico',
+    description: 'Design animado e divertido para aventura humorística',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#FF6F00',
+      secondaryColor: '#FF8F00',
+      accentColor: '#8BC34A',
+      backgroundColor: '#FFFFFF',
+      textColor: '#263238',
+      fontPrimary: 'Arial, Helvetica, sans-serif',
+      fontHeadings: 'Arial, sans-serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.8',
+      paragraphMargin: '1.2em',
+      headingMarginTop: '2em',
+      headingMarginBottom: '0.7em',
+      chapterDropCap: false,
+      chapterDivider: '→',
+      pageNumbersStyle: 'modern'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2cm', bottom: '2cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  // ============================================
+  // THRILLER
+  // ============================================
+  'thriller-serio': {
+    genre: 'Thriller',
+    tone: 'Sério',
+    description: 'Design grave e intenso para thriller sério',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#000000',
+      secondaryColor: '#424242',
+      accentColor: '#B71C1C',
+      backgroundColor: '#FFFFFF',
+      textColor: '#212121',
+      fontPrimary: 'Arial, Helvetica, sans-serif',
+      fontHeadings: 'Arial, sans-serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.6',
+      paragraphMargin: '1em',
+      headingMarginTop: '2.5em',
+      headingMarginBottom: '0.6em',
+      chapterDropCap: true,
+      chapterDivider: '▬',
+      pageNumbersStyle: 'minimal'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2.5cm', bottom: '2.5cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  // ============================================
+  // INFANTIL
+  // ============================================
+  'infantil-conversacional': {
+    genre: 'Infantil',
+    tone: 'Conversacional',
+    description: 'Design caloroso e envolvente para infantil conversacional',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#EC407A',
+      secondaryColor: '#F48FB1',
+      accentColor: '#42A5F5',
+      backgroundColor: '#FFFFFF',
+      textColor: '#212121',
+      fontPrimary: 'Arial, Helvetica, sans-serif',
+      fontHeadings: 'Arial, sans-serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.8',
+      paragraphMargin: '1.3em',
+      headingMarginTop: '2em',
+      headingMarginBottom: '0.8em',
+      chapterDropCap: false,
+      chapterDivider: '♥',
+      pageNumbersStyle: 'modern'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2cm', bottom: '2cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  },
+
+  // ============================================
+  // OUTRO
+  // ============================================
+  'outro-formal': {
+    genre: 'Outro',
+    tone: 'Formal',
+    description: 'Design tradicional e respeitoso para documentos formais',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#263238',
+      secondaryColor: '#455A64',
+      accentColor: '#1565C0',
+      backgroundColor: '#FFFFFF',
+      textColor: '#212121',
+      fontPrimary: '"Times New Roman", Times, serif',
+      fontHeadings: '"Times New Roman", serif',
+      fontCode: '"Courier New", monospace',
+      lineHeight: '1.5',
+      paragraphMargin: '1em',
+      headingMarginTop: '2em',
+      headingMarginBottom: '0.5em',
+      chapterDropCap: false,
+      chapterDivider: '***',
+      pageNumbersStyle: 'classic'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: true,
+      margin: { top: '2.5cm', bottom: '2.5cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  }
+};
+
+/**
+ * Normaliza chave de template (genre-tone)
+ */
+export function normalizeTemplateKey(genre: string, tone: string): string {
+  const normalizeStr = (str: string) => str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+  
+  return `${normalizeStr(genre)}-${normalizeStr(tone)}`;
+}
+
+/**
+ * Obtém template base por gênero e tom
+ */
+export function getBaseTemplate(genre: string, tone: string): BaseTemplate | null {
+  const key = normalizeTemplateKey(genre, tone);
+  return BASE_TEMPLATES[key] || null;
+}
+
+/**
+ * Obtém template base ou fallback genérico
+ */
+export function getBaseTemplateOrFallback(genre: string, tone: string): BaseTemplate {
+  const template = getBaseTemplate(genre, tone);
+  
+  if (template) {
+    return template;
+  }
+  
+  // Fallback genérico
+  return {
+    genre: 'Outro',
+    tone: 'Profissional',
+    description: 'Design genérico padrão',
+    baseCSS: UNIVERSAL_BASE_CSS,
+    defaultVars: {
+      primaryColor: '#2C3E50',
+      secondaryColor: '#7F8C8D',
+      accentColor: '#3498DB',
+      backgroundColor: '#FFFFFF',
+      textColor: '#333333',
+      fontPrimary: 'Georgia, "Times New Roman", serif',
+      fontHeadings: 'Arial, Helvetica, sans-serif',
+      fontCode: '"Courier New", Courier, monospace',
+      lineHeight: '1.6',
+      paragraphMargin: '1em',
+      headingMarginTop: '2em',
+      headingMarginBottom: '0.6em',
+      chapterDropCap: false,
+      chapterDivider: '***',
+      pageNumbersStyle: 'classic'
+    },
+    puppeteerConfig: {
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: false,
+      margin: { top: '2.5cm', bottom: '2.5cm', left: '2cm', right: '2cm' }
+    },
+    epubConfig: {
+      tocDepth: 2,
+      chapterLevel: 2,
+      embedFonts: false
+    }
+  };
+}
+
+/**
+ * Aplica variáveis personalizadas ao CSS base
+ */
+export function applyVariablesToCSS(baseCSS: string, vars: DesignVariables): string {
+  let css = baseCSS;
+  
+  // Substituir placeholders
+  css = css.replace(/\{\{primaryColor\}\}/g, vars.primaryColor);
+  css = css.replace(/\{\{secondaryColor\}\}/g, vars.secondaryColor);
+  css = css.replace(/\{\{accentColor\}\}/g, vars.accentColor);
+  css = css.replace(/\{\{backgroundColor\}\}/g, vars.backgroundColor);
+  css = css.replace(/\{\{textColor\}\}/g, vars.textColor);
+  css = css.replace(/\{\{fontPrimary\}\}/g, vars.fontPrimary);
+  css = css.replace(/\{\{fontHeadings\}\}/g, vars.fontHeadings);
+  css = css.replace(/\{\{fontCode\}\}/g, vars.fontCode);
+  css = css.replace(/\{\{lineHeight\}\}/g, vars.lineHeight);
+  css = css.replace(/\{\{paragraphMargin\}\}/g, vars.paragraphMargin);
+  css = css.replace(/\{\{headingMarginTop\}\}/g, vars.headingMarginTop);
+  css = css.replace(/\{\{headingMarginBottom\}\}/g, vars.headingMarginBottom);
+  
+  // Adicionar Google Fonts se especificado
+  if (vars.googleFontsImport) {
+    css = `@import url('${vars.googleFontsImport}');\n\n` + css;
+  }
+  
+  // Adicionar drop cap se habilitado
+  if (vars.chapterDropCap && !css.includes('first-letter')) {
+    css += `\n\n/* Drop Cap */
+[data-section-type="chapter"] .content > p:first-of-type::first-letter {
+  font-size: 3.5em;
+  line-height: 0.85;
+  float: left;
+  margin: 0.1em 0.15em 0 0;
+  font-weight: bold;
+  font-family: var(--font-headings);
+  color: var(--color-primary);
+}
+`;
+  }
+  
+  return css;
+}
+
+/**
+ * Lista todos os templates disponíveis
+ */
+export function listAvailableTemplates(): Array<{ key: string; genre: string; tone: string; description: string }> {
+  return Object.entries(BASE_TEMPLATES).map(([key, template]) => ({
+    key,
+    genre: template.genre,
+    tone: template.tone,
+    description: template.description
+  }));
+}
