@@ -75,6 +75,10 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
+    labels:
+      - "coolify.managed=true"
+      - "coolify.type=application"
+      - "coolify.name=api"
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: 5000
@@ -149,8 +153,12 @@ services:
       - "80:80"
     networks:
       - redatudo-network
+    labels:
+      - "coolify.managed=true"
+      - "coolify.type=application"
+      - "coolify.name=frontend"
     environment:
-      API_URL: ${API_URL:-http://api:5000}
+      API_URL: ${API_URL:-}
 
 networks:
   redatudo-network:
