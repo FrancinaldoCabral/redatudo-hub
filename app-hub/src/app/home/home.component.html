@@ -11,8 +11,8 @@
         </p>
       </div>
 
-      <!-- Credit Bar -->
-      <div class="credit-bar">
+      <!-- Credit Bar (desktop) -->
+      <div class="credit-bar d-none d-md-flex align-items-center gap-3">
         <div class="credit-info-container">
           <div class="credit-info-main">
             <div class="credit-basic">
@@ -29,6 +29,71 @@
           </button>
         </div>
       </div>
+
+      <!-- Hamburger (mobile) -->
+      <button
+        class="d-flex d-md-none align-items-center justify-content-center hamburger-btn"
+        type="button"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#mobileMenu"
+        aria-controls="mobileMenu"
+        aria-label="Menu">
+        <i class="bi bi-list fs-2"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Offcanvas Menu (mobile) -->
+<div class="offcanvas offcanvas-end mobile-offcanvas" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+  <div class="offcanvas-header border-bottom border-secondary">
+    <h5 class="offcanvas-title text-white fw-bold" id="mobileMenuLabel">
+      <span class="gradient-text">RedaTudo</span> Hub
+    </h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+  </div>
+  <div class="offcanvas-body d-flex flex-column">
+
+    <!-- Créditos (mobile) -->
+    <div class="mobile-credit-box mb-4 p-3 rounded-3">
+      <p class="mb-1 text-secondary small">Créditos Disponíveis</p>
+      <p class="mb-2 fs-4 text-white fw-bold">{{ balance | number }}</p>
+      <button class="btn-reload w-100" (click)="openReloadModal()" data-bs-dismiss="offcanvas">
+        <i class="bi bi-plus-circle me-1"></i> Comprar Créditos
+      </button>
+    </div>
+
+    <!-- Navegação -->
+    <nav class="flex-grow-1">
+      <ul class="list-unstyled mobile-nav-list">
+        <li>
+          <a class="mobile-nav-link" [routerLink]="['/']" data-bs-dismiss="offcanvas">
+            <i class="bi bi-house-door me-2"></i> Início
+          </a>
+        </li>
+        <li>
+          <a class="mobile-nav-link" [routerLink]="['/chat']" data-bs-dismiss="offcanvas">
+            <i class="bi bi-chat-dots me-2"></i> Chat IA
+          </a>
+        </li>
+        <li>
+          <a class="mobile-nav-link" [routerLink]="['/ebook']" data-bs-dismiss="offcanvas">
+            <i class="bi bi-book me-2"></i> eBook Studio
+          </a>
+        </li>
+        <li>
+          <a class="mobile-nav-link" [routerLink]="['/editor-imagens']" data-bs-dismiss="offcanvas">
+            <i class="bi bi-image me-2"></i> Editor de Imagens
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Sair -->
+    <div class="mt-auto pt-3 border-top border-secondary">
+      <a class="mobile-nav-link text-danger" href="https://redatudo.online/minha-conta" target="_blank">
+        <i class="bi bi-person-circle me-2"></i> Minha Conta
+      </a>
     </div>
   </div>
 </div>

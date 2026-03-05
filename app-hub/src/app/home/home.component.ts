@@ -234,8 +234,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Sempre buscar dados de pricing para mostrar planos
-    this.fetchPricingData();
+    // fetchPricingData removido — endpoint api/products não é mais necessário
 
     // Observar mudanças no saldo
     this.balanceSubscription = this.balanceService.balance$.subscribe(

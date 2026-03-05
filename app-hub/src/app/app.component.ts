@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core'
+import { ActivatedRoute, Router } from '@angular/router'
 import { AuthService } from './services/auth.service'
 import { SocketService } from './services/socket.service'
 import { NgxSpinnerService } from 'ngx-spinner'
-//declare var hljs: any
 
 @Component({
   selector: 'app-root',
@@ -11,42 +11,42 @@ import { NgxSpinnerService } from 'ngx-spinner'
 })
 export class AppComponent implements OnInit {
   constructor(
-    private auth: AuthService, 
+    private auth: AuthService,
     private socketService: SocketService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private route: ActivatedRoute,
+    private router: Router
   ){}
+
   ngOnInit(): void {
+    // Se vier um token via query param ?token=..., salvar no localStorage e limpar URL
+    const tokenParam = this.route.snapshot.queryParams['token']
+    if (tokenParam) {
+      window.localStorage.setItem('user', JSON.stringify({ token: tokenParam }))
+      this.router.navigate([], { queryParams: {}, replaceUrl: true })
+    }
+
     this.fetchUser()
-    /* 
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9848635946946970"
-     crossorigin="anonymous"></script>
-
-     <ng-adsense [adClient]="'ca-pub-9848635946946970'" [pageLevelAds]="true"></ng-adsense>
-    
-    */
-
   }
-  
+
   fetchUser(): void {
     this.spinner.show()
     this.auth.fetchUser()
       .then(success => {
-        //this.pubService.insertPub()
-        if(success) {
+        if (success) {
           this.socketService.setupSocketConnection()
           this.spinner.hide()
-        }else{
+        } else {
           this.spinner.hide()
         }
       })
-      .catch(error=>{
+      .catch(_error => {
         this.spinner.hide()
-        // Não chama auth.login() para evitar o modal legado
-        // O modal de upgrade será mostrado no home component
+        // Token inválido ou ausente → redirecionar para login externo
+        window.location.href = 'https://redatudo.online/minha-conta?app_login=hub'
       })
-      .finally(()=>{
+      .finally(() => {
         this.spinner.hide()
-        //this.ngxSpinner.hide('autenticate')
       })
   }
 }

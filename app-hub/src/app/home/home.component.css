@@ -1840,3 +1840,60 @@
 .avaliacao-card:nth-child(4) { --animation-delay: 3; }
 .avaliacao-card:nth-child(5) { --animation-delay: 4; }
 .avaliacao-card:nth-child(6) { --animation-delay: 5; }
+
+/* =====================
+   HAMBURGER / MOBILE MENU
+   ===================== */
+
+.hamburger-btn {
+  background: rgba(167, 139, 250, 0.12);
+  border: 1px solid rgba(167, 139, 250, 0.3);
+  border-radius: 10px;
+  color: #C4B5FD;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  line-height: 1;
+}
+
+.hamburger-btn:hover {
+  background: rgba(167, 139, 250, 0.25);
+  border-color: rgba(167, 139, 250, 0.6);
+}
+
+.mobile-offcanvas {
+  background: #0F0F1A;
+  border-left: 1px solid rgba(75, 85, 99, 0.4);
+  max-width: 300px;
+  width: 85vw;
+}
+
+.mobile-credit-box {
+  background: rgba(167, 139, 250, 0.08);
+  border: 1px solid rgba(167, 139, 250, 0.25);
+}
+
+.mobile-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  color: #E5E7EB;
+  text-decoration: none;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  transition: background 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+}
+
+.mobile-nav-link:hover {
+  background: rgba(167, 139, 250, 0.12);
+  color: #C4B5FD;
+  text-decoration: none;
+}
