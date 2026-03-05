@@ -6,8 +6,8 @@ services:
       context: ./app-hub-server
       dockerfile: Dockerfile
     restart: unless-stopped
-    ports:
-      - "5000:5000"
+    expose:
+      - "5000"
     volumes:
       - ./app-hub-server/tmp:/app/tmp
 
@@ -18,5 +18,5 @@ services:
     restart: unless-stopped
     depends_on:
       - api
-    ports:
-      - "80:80"
+    expose:
+      - "80"
