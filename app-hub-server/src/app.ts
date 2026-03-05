@@ -34,7 +34,8 @@ const io = new Server(server, {
             'https://localhost:55061/',
             process.env.CLIENT_URL,
             process.env.FRONTEND_URL,
-            'https://chat.redatudo.online'
+            'https://chat.redatudo.online',
+            'https://hub.redatudo.online'
         ].filter(Boolean); // Remove valores undefined
 
         if (allowedOrigins.includes(origin)) {

@@ -21,7 +21,8 @@ const corsOptions = {
             'https://localhost:3001/',
             process.env.CLIENT_URL,
             process.env.FRONTEND_URL,
-            'https://chat.redatudo.online'
+            'https://chat.redatudo.online',
+            'https://hub.redatudo.online'
         ].filter(Boolean); // Remove valores undefined
 
         if (allowedOrigins.includes(origin)) {
