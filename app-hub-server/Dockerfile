@@ -67,5 +67,8 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 # Expose port
 EXPOSE 5000
 
-# Start command (will be overridden for worker)
-CMD ["node", "dist/server.js"]
+# Startup script: run web server + worker in the same container.
+# `wait` keeps the container alive; if either exits Docker restarts the whole container.
+RUN printf '#!/bin/sh\nnode dist/server.js &\nnode dist/worker.js &\nwait\n' > /app/start.sh && chmod +x /app/start.sh
+
+CMD ["/bin/sh", "/app/start.sh"]
