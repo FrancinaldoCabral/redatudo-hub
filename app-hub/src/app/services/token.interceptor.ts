@@ -25,17 +25,13 @@ export class TokenInterceptor implements HttpInterceptor {
             return next.handle(authReq).pipe(
                 catchError((errorResponse: HttpErrorResponse) => {
                   if(errorResponse.status === 401 && errorResponse.error.code === 'auth') {
-                    // Aqui você pode redirecionar para a página de login
-                    this.auth.login()
-                    // Ou realizar outra ação, como limpar tokens, mostrar uma mensagem, etc.
-                    //console.log('Error 401: Unauthorized. Redirecting to login.');
-                    return throwError(() => console.log(errorResponse.error.msg))
+                    window.location.href = 'https://redatudo.online/minha-conta?login_app=hub'
+                    return throwError(() => errorResponse.error.msg)
                   }else if(errorResponse.status === 401 && errorResponse.error.code === 'email'){
                     this.auth.emailShow()
-                    //console.log('Error 401: Email not confirmed. Redirecting to email confirmation.');
-                    return throwError(() => console.log(errorResponse.error.msg))
+                    return throwError(() => errorResponse.error.msg)
                   }else{
-                    return throwError(() => console.log(errorResponse.error.msg))
+                    return throwError(() => errorResponse.error.msg)
                   }
                 })
             )

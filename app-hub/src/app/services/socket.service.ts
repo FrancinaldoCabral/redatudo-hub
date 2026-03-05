@@ -80,7 +80,9 @@ export class SocketService {
   }
 
   setupSocketConnection(): void {
-    this.socket = io(env.apiHost, {
+    // Em produção env.apiHost é '' — socket.io deve usar a origem atual (via proxy nginx)
+    const socketUrl = env.apiHost || window.location.origin
+    this.socket = io(socketUrl, {
       //withCredentials: true,
       auth: {
         token: this.auth.getToken()
