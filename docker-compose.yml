@@ -10,6 +10,16 @@ services:
       - "5000"
     volumes:
       - ./app-hub-server/tmp:/app/tmp
+    labels:
+      # Route /socket.io/* directly from Traefik -> api, bypassing nginx.
+      # Priority 200 > frontend priority 100 so this rule wins.
+      - "traefik.enable=true"
+      - "traefik.http.routers.api-socket.rule=Host(`hub.redatudo.online`) && PathPrefix(`/socket.io`)"
+      - "traefik.http.routers.api-socket.priority=200"
+      - "traefik.http.routers.api-socket.entrypoints=https"
+      - "traefik.http.routers.api-socket.tls=true"
+      - "traefik.http.routers.api-socket.tls.certresolver=letsencrypt"
+      - "traefik.http.services.api-socket.loadbalancer.server.port=5000"
 
   frontend:
     build:

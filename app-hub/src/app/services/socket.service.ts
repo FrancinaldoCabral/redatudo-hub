@@ -88,8 +88,10 @@ export class SocketService {
         token: this.auth.getToken()
       },
       reconnection: true,
-      reconnectionAttempts: Infinity,
-      timeout: 600000 // 10 minutos
+      reconnectionAttempts: 5,
+      reconnectionDelay: 3000,
+      reconnectionDelayMax: 15000,
+      timeout: 20000
     })
 
     this.socket.on('connect', ()=>{ 
