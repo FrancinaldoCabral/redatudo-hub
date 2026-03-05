@@ -60,67 +60,71 @@ export class AuthService {
     return this.user?.token
   }
 
+  /** Decodifica o payload do JWT sem verificar assinatura (apenas leitura local) */
+  private decodeJwtPayload(token: string): any {
+    try {
+      const payload = token.split('.')[1]
+      return JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')))
+    } catch {
+      return null
+    }
+  }
+
   async fetchUser(): Promise<boolean> {
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve, reject) => {
       try {
         const storageUser = window.localStorage.getItem('user')
-        if(!storageUser) {
-          reject(new Error('No user found in localStorage'))
+        if (!storageUser) {
+          reject(new Error('no_token'))
           return
         }
 
         let user: any = null
         try {
           user = JSON.parse(storageUser)
-        } catch (parseError) {
-          console.error('Error parsing user from localStorage:', parseError)
+        } catch {
           window.localStorage.removeItem('user')
-          reject(new Error('Invalid user data in localStorage'))
+          reject(new Error('no_token'))
           return
         }
 
-        if(!user || !user.token) {
-          reject(new Error('No token found'))
+        if (!user || !user.token) {
+          reject(new Error('no_token'))
           return
         }
 
-        // Valida o token
-        this.isValidate(user.token).subscribe({
-          next: (validationResult) => {
-            if(validationResult && validationResult.code === 'jwt_auth_valid_token'){
-              // Token válido, busca dados do usuário
-              this.me(user.token).subscribe({
-                next: (userUpdate) => {
-                  try {
-                    userUpdate.token = user.token
-                    this.setUser(userUpdate)
-                    this.setAuthenticate(true)
-                    resolve(true)
-                  } catch (error) {
-                    console.error('Error setting user data:', error)
-                    reject(new Error('Error processing user data'))
-                  }
-                },
-                error: (error) => {
-                  console.error('Error fetching user data:', error)
-                  // Se não conseguir buscar dados do usuário mesmo com token válido, ainda considera autenticado
-                  this.setUser(user)
-                  this.setAuthenticate(true)
-                  resolve(true)
-                }
-              })
-            } else {
-              console.error('Token validation failed:', validationResult)
-              reject(new Error('Token validation failed'))
-            }
+        // Valida localmente — sem chamada cross-origin ao WordPress.
+        // O backend fará a validação real em cada requisição; se inválido retorna 401
+        // e o TokenInterceptor redireciona para o login.
+        const payload = this.decodeJwtPayload(user.token)
+        const nowSec = Math.floor(Date.now() / 1000)
+        if (payload && payload.exp && payload.exp < nowSec) {
+          // Token visivelmente expirado
+          window.localStorage.removeItem('user')
+          reject(new Error('token_expired'))
+          return
+        }
+
+        // Token presente e não expirado — autenticar e buscar dados do usuário
+        this.setUser(user)
+        this.setAuthenticate(true)
+
+        // Tentar enriquecer os dados via /wp-json/api/v1/me (não bloqueia o fluxo)
+        this.me(user.token).subscribe({
+          next: (userUpdate) => {
+            try {
+              userUpdate.token = user.token
+              this.setUser(userUpdate)
+            } catch { /* mantém user original */ }
+            resolve(true)
           },
-          error: (error) => {
-            console.error('Token validation error:', error)
-            reject(new Error('Token validation error'))
+          error: () => {
+            // me() falhou mas o token pode ainda ser válido para o backend
+            resolve(true)
           }
         })
+
       } catch (error) {
-        console.error('Unexpected error in fetchUser:', error)
         reject(error)
       }
     })

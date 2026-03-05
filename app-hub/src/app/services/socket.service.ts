@@ -83,7 +83,7 @@ export class SocketService {
     // Em produção env.apiHost é '' — socket.io deve usar a origem atual (via proxy nginx)
     const socketUrl = env.apiHost || window.location.origin
     this.socket = io(socketUrl, {
-      //withCredentials: true,
+      transports: ['websocket'], // forçar websocket; evita erros 400 de polling via proxy
       auth: {
         token: this.auth.getToken()
       },

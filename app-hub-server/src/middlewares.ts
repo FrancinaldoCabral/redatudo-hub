@@ -1,5 +1,6 @@
 import { Request } from 'express'
 import jwt from 'jsonwebtoken'
+import axios from 'axios'
 import { emailVerify } from './services/email-verification.service'
 import crypto from 'crypto'
 
@@ -9,28 +10,47 @@ export class CustomRequest extends Request {
   token?: any
 }
 
-export function authWebMiddleware(req, res, next) {
+async function validateViaWordPress(token: string): Promise<any | null> {
+  try {
+    await axios.post('https://redatudo.online/wp-json/jwt-auth/v1/token/validate', {}, {
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
+    })
+    // WordPress confirmed the token is valid — decode payload without re-verifying
+    const decoded: any = jwt.decode(token)
+    return decoded?.data ? decoded.data : null
+  } catch {
+    return null
+  }
+}
+
+export async function authWebMiddleware(req, res, next) {
   const authHeader: string | undefined = req.headers['authorization']
   let token: string | undefined
-  //console.log(authHeader.replace('Bearer ', ''))
   if (authHeader) token = authHeader.replace('Bearer ', '')
   else return res.status(401).json({code: 'auth', msg: 'An authorization is required.'})
 
   if (!token) return res.status(401).json({code: 'auth', msg: 'An authorization is required.'})
 
-  jwt.verify(token, JWT_SECRET, (err: any, decoded: any) => {
-    if (err) {
-      return res.status(401).json({code: 'auth', msg: 'An authorization is required.'})
-    }
- 
-    if (decoded?.data) {
-      req.user = decoded.data
-      req.token = token
-      next()
-    } else {
-      return res.status(401).json({code: 'auth', msg: 'An authorization is required.'})
-    }
-  })
+  // Try local JWT verification first (fast path)
+  const localDecoded: any = await new Promise(resolve =>
+    jwt.verify(token!, JWT_SECRET, (err: any, decoded: any) => resolve(err ? null : decoded))
+  )
+
+  if (localDecoded?.data) {
+    req.user = localDecoded.data
+    req.token = token
+    return next()
+  }
+
+  // Fallback: validate against WordPress API (handles cases where JWT_SECRET differs)
+  const wpUser = await validateViaWordPress(token)
+  if (wpUser) {
+    req.user = wpUser
+    req.token = token
+    return next()
+  }
+
+  return res.status(401).json({code: 'auth', msg: 'An authorization is required.'})
 }
 
 export async function userParamToReqUser(req, res, next){
@@ -71,18 +91,30 @@ export async function allowedFunction(req, res, next, permissions) {
   //console.log('USER: ', user)
   if(permissions.includes(user.role)) next()
   else return res.status(401).json({ code:'auth', msg: 'Admin Unauthorized' })
-}export function authSocketMiddleware(socket, next) {
-  if (socket.handshake.auth && socket.handshake.auth.token) {
-    jwt.verify(socket.handshake.auth.token, JWT_SECRET, (err: any, decoded: any) => {
-      if (err || !decoded?.data) {
-        next(new Error('Authentication error'))
-      } else {
-        socket.user = decoded.data
-        socket.token = socket.handshake.auth.token
-        next()
-      }
-    })
-  } else {
-    next(new Error('Authentication error'))
+}
+
+export async function authSocketMiddleware(socket, next) {
+  const token: string | undefined = socket.handshake.auth?.token
+  if (!token) return next(new Error('Authentication error'))
+
+  // Try local JWT verification first
+  const localDecoded: any = await new Promise(resolve =>
+    jwt.verify(token, JWT_SECRET, (err: any, decoded: any) => resolve(err ? null : decoded))
+  )
+
+  if (localDecoded?.data) {
+    socket.user = localDecoded.data
+    socket.token = token
+    return next()
   }
+
+  // Fallback: validate against WordPress API
+  const wpUser = await validateViaWordPress(token)
+  if (wpUser) {
+    socket.user = wpUser
+    socket.token = token
+    return next()
+  }
+
+  next(new Error('Authentication error'))
 }

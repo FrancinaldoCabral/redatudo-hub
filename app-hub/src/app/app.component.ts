@@ -40,10 +40,14 @@ export class AppComponent implements OnInit {
           this.spinner.hide()
         }
       })
-      .catch(_error => {
+      .catch((error: any) => {
         this.spinner.hide()
-        // Token inválido ou ausente → redirecionar para login externo
-        window.location.href = 'https://redatudo.online/minha-conta?login_app=hub'
+        const msg = error?.message || ''
+        // Redirecionar apenas quando não há token (primeira visita ou token removido).
+        // Tokens inválidos ainda presentes são tratados pelo TokenInterceptor (401 do backend).
+        if (msg === 'no_token' || msg === 'token_expired') {
+          window.location.href = 'https://redatudo.online/minha-conta?login_app=hub'
+        }
       })
       .finally(() => {
         this.spinner.hide()
