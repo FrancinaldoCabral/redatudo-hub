@@ -43,7 +43,7 @@ export class AppComponent implements OnInit {
       .catch(_error => {
         this.spinner.hide()
         // Token inválido ou ausente → redirecionar para login externo
-        window.location.href = 'https://redatudo.online/minha-conta?app_login=hub'
+        window.location.href = 'https://redatudo.online/minha-conta?login_app=hub'
       })
       .finally(() => {
         this.spinner.hide()
