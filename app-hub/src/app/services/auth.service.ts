@@ -148,7 +148,7 @@ export class AuthService {
     this.user = null
     this.authenticate.next(false)
     window.localStorage.clear()
-    this.login()
+    window.location.href = 'https://redatudo.online/minha-conta?login_app=hub'
   }
 
   loginWithCredentials(email: string, password: string, rememberMe: boolean = false): Observable<any> {

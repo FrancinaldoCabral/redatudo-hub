@@ -27,6 +27,9 @@
             <i class="bi bi-plus-circle"></i>
             Comprar Créditos
           </button>
+          <button class="btn-logout" (click)="authService.logout()" title="Sair">
+            <i class="bi bi-box-arrow-right"></i>
+          </button>
         </div>
       </div>
 
@@ -91,9 +94,12 @@
 
     <!-- Sair -->
     <div class="mt-auto pt-3 border-top border-secondary">
-      <a class="mobile-nav-link text-danger" href="https://redatudo.online/minha-conta?login_app=hub" target="_blank">
+      <a class="mobile-nav-link" href="https://redatudo.online/minha-conta" target="_blank" data-bs-dismiss="offcanvas">
         <i class="bi bi-person-circle me-2"></i> Minha Conta
       </a>
+      <button class="mobile-nav-link text-danger border-0 bg-transparent w-100 text-start" (click)="authService.logout()" data-bs-dismiss="offcanvas">
+        <i class="bi bi-box-arrow-right me-2"></i> Sair
+      </button>
     </div>
   </div>
 </div>
