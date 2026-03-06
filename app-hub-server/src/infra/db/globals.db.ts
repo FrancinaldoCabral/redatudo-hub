@@ -167,14 +167,16 @@ gpt-4-0125-preview                  $10.00 / 1M tokens	        $30.00 / 1M token
 claude-3-sonnet-20240229            $3.00 / 1M tokens           $15.00 / 1M tokens
 gpt-3.5-turbo-0125                  $0.50 / 1M tokens	        $1.50 / 1M tokens 
 claude-3-haiku-20240307             $0.25 / 1M tokens           $1.25 / 1M tokens
+gpt-4o                              $2.50 / 1M input tokens     $10.00 / 1M output tokens
+gpt-4o-mini                         $0.15 / 1M input tokens     $0.60 / 1M output tokens
 */
 export enum SystemLlmModel {
-    full= 'openai/gpt-5',
-    mini='openai/gpt-5-mini',
-    nano='openai/gpt-5-nano',
+    full= 'openai/gpt-4o',
+    mini='openai/gpt-4o-mini',
+    nano='openai/gpt-4o-mini',
 }
 
-export const SYSTEM_LLM_MODEL:SystemLlmModel = SystemLlmModel.nano
+export const SYSTEM_LLM_MODEL:SystemLlmModel = SystemLlmModel.mini
 
 export function getLlmModels(): SystemLlmModel[] {
     const objects = Object.values(SystemLlmModel)

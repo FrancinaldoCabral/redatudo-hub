@@ -48,7 +48,7 @@ const instagramCaptionsTool: Tool = {
     const prompt = `Gere ${args.number || 5} legendas para Instagram sobre ${args.theme}. Tom: ${args.tone || ''}. Emojis: ${args.emojis || false}.`;
 
     const response = await openai.createCompletion({
-      model: metadata.model || 'openai/gpt-5-nano',
+      model: metadata.model || 'openai/gpt-4o-mini',
       max_tokens: 64000,
       messages: [{ role: 'user', content: prompt }],
       tools: tools,

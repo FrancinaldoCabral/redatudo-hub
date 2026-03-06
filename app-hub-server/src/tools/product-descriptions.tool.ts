@@ -64,7 +64,7 @@ Crie:
 4. 5 bullet points com benefícios`;
 
     const response = await openai.createCompletion({
-      model: metadata.model || 'openai/gpt-5-nano',
+      model: metadata.model || 'openai/gpt-4o-mini',
       max_tokens: 64000,
       messages: [{ role: 'user', content: prompt }],
       tools: tools,
