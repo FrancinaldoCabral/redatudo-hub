@@ -45,7 +45,7 @@ const academicAssistantTool: Tool = {
     const prompt = `Como assistente acadêmico, gere conteúdo acadêmico do tipo "${args.type}" sobre o tema: "${args.theme}". ${args.context ? `Contexto: ${args.context}` : ''} ${args.keywords ? `Palavras-chave: ${args.keywords}` : ''}`;
 
     const response = await openai.createCompletion({
-      model: metadata.model || 'openai/gpt-5-nano',
+      model: metadata.model || 'google/gemini-2.5-flash-lite-preview-09-2025',
       max_tokens: 64000,
       messages: [{ role: 'user', content: prompt }],
       tools: tools,

@@ -57,7 +57,7 @@ ${args.keywords ? `Mantenha as seguintes palavras-chave: ${args.keywords}` : ''}
 Mantenha o significado original, mas torne o texto único e natural.`;
 
     const response = await openai.createCompletion({
-      model: metadata.model || 'openai/gpt-5-nano',
+      model: metadata.model || 'google/gemini-2.5-flash-lite-preview-09-2025',
       max_tokens: 64000,
       messages: [{ role: 'user', content: prompt }],
       tools: tools,

@@ -171,7 +171,7 @@ claude-3-haiku-20240307             $0.25 / 1M tokens           $1.25 / 1M token
 export enum SystemLlmModel {
     full= 'openai/gpt-5',
     mini='openai/gpt-5-mini',
-    nano='openai/gpt-5-nano',
+    nano='google/gemini-2.5-flash-lite-preview-09-2025',
 }
 
 export const SYSTEM_LLM_MODEL:SystemLlmModel = SystemLlmModel.nano

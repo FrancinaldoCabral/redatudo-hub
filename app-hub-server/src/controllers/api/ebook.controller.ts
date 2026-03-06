@@ -1974,7 +1974,7 @@ SYNOPSIS PLANEJADA:`;
             const inputTokens = Math.ceil((prompt.length) / 4);
             const outputTokens = Math.ceil(synopsis.length / 4);
             
-            // openai/gpt-5-nano: $0.050 / 1M input tokens, $0.400 / 1M output tokens
+            // google/gemini-2.5-flash-lite-preview-09-2025: $0.050 / 1M input tokens, $0.400 / 1M output tokens
             const inputCost = (inputTokens / 1_000_000) * 0.050;
             const outputCost = (outputTokens / 1_000_000) * 0.400;
             const cost = inputCost + outputCost;
@@ -2168,7 +2168,7 @@ Crie um resumo conciso (50-100 palavras) focando nos pontos principais.`
         const inputTokens = Math.ceil((contentPreview.length + 500) / 4); // Conteúdo + prompt
         const outputTokens = Math.ceil(synopsis.length / 4);
         
-        // openai/gpt-5-nano: $0.150 / 1M input tokens, $0.600 / 1M output tokens
+        // google/gemini-2.5-flash-lite-preview-09-2025: $0.150 / 1M input tokens, $0.600 / 1M output tokens
         const inputCost = (inputTokens / 1_000_000) * 0.050;
         const outputCost = (outputTokens / 1_000_000) * 0.400;
         const totalCost = inputCost + outputCost;
