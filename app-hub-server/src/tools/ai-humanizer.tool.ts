@@ -46,7 +46,7 @@ const aiHumanizerTool: Tool = {
     const prompt = `Humanize o seguinte texto de IA: ${args.text}. Torne-o mais natural e humano.`;
 
     const response = await openai.createCompletion({
-      model: metadata.model || 'openai/gpt-4o-mini',
+      model: metadata.model || 'openai/gpt-5-nano',
       max_tokens: 64000,
       messages: [{ role: 'user', content: prompt }],
       tools: tools,
@@ -57,13 +57,33 @@ const aiHumanizerTool: Tool = {
 
     // O LLM deve retornar uma tool_call com os parâmetros corretos
     const message = response.choices[0].message as any;
-    const toolCall = message.tool_calls?.[0];
+    let toolCall = message.tool_calls?.[0];
+
+    // Fallback: se não houver tool_calls, tenta extrair JSON do content
+    if (!toolCall && message.content) {
+      try {
+        const jsonMatch = message.content.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          toolCall = {
+            function: {
+              name: 'ai_humanizer_result',
+              arguments: JSON.stringify(parsed)
+            }
+          };
+        }
+      } catch (e) {
+        // Fallback falhou, continuar para erro
+      }
+    }
 
     if (!toolCall) {
       throw new Error('INVALID_TOOL_RESPONSE_FORMAT: No tool call generated');
     }
 
-    const jsonResponse = JSON.parse(toolCall.function.arguments);
+    const jsonResponse = typeof toolCall.function.arguments === 'string' 
+      ? JSON.parse(toolCall.function.arguments) 
+      : toolCall.function.arguments;
 
     if (!jsonResponse.humanizedText) {
       throw new Error('INVALID_TOOL_RESPONSE_FORMAT: Missing humanizedText');

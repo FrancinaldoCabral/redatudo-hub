@@ -37,7 +37,7 @@ Responda APENAS com um JSON válido no formato:
 }`;
 
     const response = await openai.createCompletion({
-      model: metadata.model || 'openai/gpt-4o-mini',
+      model: metadata.model || 'openai/gpt-5-nano',
       max_tokens: 64000,
       messages: [{ role: 'user', content: prompt }],
       toolName: 'title-generator',

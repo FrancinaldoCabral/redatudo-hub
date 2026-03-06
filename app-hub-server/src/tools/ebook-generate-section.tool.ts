@@ -267,7 +267,25 @@ Gere o conteúdo completo agora:`;
     });
 
     const message = response.choices[0].message as any;
-    const toolCall = message?.tool_calls?.[0];
+    let toolCall = message?.tool_calls?.[0];
+
+    // Fallback: se não houver tool_calls, tenta extrair JSON do content
+    if (!toolCall && message.content) {
+      try {
+        const jsonMatch = message.content.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          toolCall = {
+            function: {
+              name: 'ebook_generate_section_result',
+              arguments: JSON.stringify(parsed)
+            }
+          };
+        }
+      } catch (e) {
+        // Fallback falhou, continuar para erro
+      }
+    }
 
     if (!toolCall) {
         throw new Error('INVALID_TOOL_RESPONSE_FORMAT: No tool call generated');

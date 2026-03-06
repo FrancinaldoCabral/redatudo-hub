@@ -64,7 +64,7 @@ const ebookExpandTextTool: Tool = {
       }];
 
     const response = await openai.createCompletion({
-      model: metadata.model || 'openai/gpt-4o-mini',
+      model: metadata.model || 'openai/gpt-5-nano',
       max_tokens: 64000,
       messages: [{ role: 'user', content: fullPrompt }],
       tools: tools,
@@ -73,7 +73,25 @@ const ebookExpandTextTool: Tool = {
     });
 
     const message = response.choices[0].message as any;
-    const toolCall = message?.tool_calls?.[0];
+    let toolCall = message?.tool_calls?.[0];
+
+    // Fallback: se não houver tool_calls, tenta extrair JSON do content
+    if (!toolCall && message.content) {
+      try {
+        const jsonMatch = message.content.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          toolCall = {
+            function: {
+              name: 'ebook_expand_text_result',
+              arguments: JSON.stringify(parsed)
+            }
+          };
+        }
+      } catch (e) {
+        // Fallback falhou, continuar para erro
+      }
+    }
 
     if (!toolCall) {
         throw new Error('INVALID_TOOL_RESPONSE_FORMAT: No tool call generated');
