@@ -2,6 +2,7 @@ import { badRequest, successRequest } from "../protocols"
 import { addLog } from "../../services/audit.service"
 import { errorToText } from "../../services/axios-errors.service"
 import { codeVerify, confirmEmail, sendUniqueCodeEmail } from "../../services/email-verification.service"
+import axios from "axios"
 
 //https://redachat-a3ec00118015.herokuapp.com/webhook-email-verify
 export async function sendEmailVerifyController(req, res, next) {
@@ -27,6 +28,45 @@ export async function resendEmailVerifyController(req, res, next) {
     } catch (error) {
         const errorMessage = errorToText(error)
     //    console.log(errorMessage)
+        await addLog(userId, errorMessage, {})
+        badRequest(res, 500, error)
+    }
+}
+
+/**
+ * Resend verification code via n8n webhook
+ * Calls https://n8n.redatudo.online/webhook/resend with Bearer token
+ */
+export async function resendCodeViaWebhookController(req, res, next) {
+    const userId = req.user.id
+    try {
+        const email = req.user.email
+        const n8nToken = '#&rdTudoIsPecial4087fhejjhsyipskejehhhdk'
+        
+        // First, generate/update the verification code in database
+        const response = await sendUniqueCodeEmail(email)
+        
+        // Then, call n8n webhook to send the code
+        try {
+            await axios.post(
+                'https://n8n.redatudo.online/webhook/resend',
+                { email, userId },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${n8nToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    timeout: 10000
+                }
+            )
+        } catch (webhookError) {
+            console.error('N8n webhook error:', errorToText(webhookError))
+            // Don't fail if webhook fails, the code was already generated
+        }
+        
+        successRequest(res, 200, { result: response, message: 'Verification code resent' })
+    } catch (error) {
+        const errorMessage = errorToText(error)
         await addLog(userId, errorMessage, {})
         badRequest(res, 500, error)
     }

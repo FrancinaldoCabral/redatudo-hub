@@ -12,7 +12,7 @@ import { errorToText } from '../services/axios-errors.service'
 import { getAgents, getTools  } from '../services/tools.service'
 import { markDownController } from '../controllers/api/markdown.controller'
 import { getBalanceController, getDetailedBalanceController, getHistoricController, initBalanceFree, removeCustomer, updateBalanceWebhook } from '../controllers/api/historic.controller'
-import { codeVerifyController, resendEmailVerifyController, sendEmailVerifyController } from '../controllers/api/email.controller'
+import { codeVerifyController, resendEmailVerifyController, sendEmailVerifyController, resendCodeViaWebhookController } from '../controllers/api/email.controller'
 import { getUserBalanceController, getUserByEmailController, getUserHistoricController, setUserBalanceController } from '../controllers/api/admin.controller'
 import { addProvider, getProvidersController, removeProvider } from '../controllers/api/providers.controller'
 import { getPricingEstimates, getFixedPrices, getToolUsageCostAverages, getProductPricing, getToolCostPreview, estimateGenerationCost, estimateImageCost, estimateSectionCost } from '../controllers/api/pricing.controller'
@@ -296,6 +296,7 @@ router.post('/user-by-email', middlewares.authWebMiddleware, (req, res, next)=>{
 
 //VERIFICAÇÃO E REENVIO DE EMAIL
 router.post('/resend-email', middlewares.authWebMiddleware, resendEmailVerifyController)
+router.post('/resend-code', middlewares.authWebMiddleware, resendCodeViaWebhookController)
 router.post('/code-verify', middlewares.authWebMiddleware, codeVerifyController)
 
 //WEBHOOKS WOOCOMMERCE/WORDPRESS

@@ -49,10 +49,10 @@ export class LanguageService {
   private initializeTranslations(): void {
     // Add all supported languages
     const langCodes = this.SUPPORTED_LANGUAGES.map(lang => lang.code)
-    this.translateService.addLanguages(langCodes)
+    this.translateService.addLangs(langCodes)
     
     // Set default language
-    this.translateService.setDefaultLanguage(this.DEFAULT_LANGUAGE)
+    this.translateService.setDefaultLang(this.DEFAULT_LANGUAGE)
     
     // Get stored language or use browser language
     const currentLang = this.getStoredLanguage()

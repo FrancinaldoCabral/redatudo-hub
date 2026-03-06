@@ -47,6 +47,10 @@ import { TruncateApiKeyPipe } from './truncate-api-key.pipe'
 import { PdfService } from './services/pdf.service'
 import { FavoritesService } from './services/favorites.service'
 import { AnalyticsService } from './services/analytics.service'
+import { EmailVerificationModalComponent } from './components/email-verification-modal/email-verification-modal.component'
+import { EmailVerificationInterceptor } from './interceptors/email-verification.interceptor'
+import { I18nModule } from './i18n/i18n.module'
+import { TranslateService } from '@ngx-translate/core'
 // import ngx-translate and the http loader
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { TranslateHttpLoader } from '@ngx-translate/http-loader'
@@ -152,7 +156,9 @@ export function markdownItFactory(): MarkdownIt {
     TapToCopyCardComponent,
     // Novos componentes de header e modal
     ToolHeaderComponent,
-    CreditsModalComponent
+    CreditsModalComponent,
+    // Email verification
+    EmailVerificationModalComponent
   ],
   imports: [
     BrowserModule,
@@ -183,7 +189,8 @@ export function markdownItFactory(): MarkdownIt {
     GoogleTagManagerModule.forRoot({
       id: 'GTM-WTCTSRT',
     }),
-    AdsenseModule.forRoot()
+    AdsenseModule.forRoot(),
+    I18nModule
   ],
   providers: [
     HighlightService,
@@ -192,6 +199,11 @@ export function markdownItFactory(): MarkdownIt {
     {
       provide: HTTP_INTERCEPTORS, 
       useClass: TokenInterceptor, 
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: EmailVerificationInterceptor,
       multi: true
     },
     SocketService,

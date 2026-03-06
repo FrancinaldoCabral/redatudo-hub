@@ -1,0 +1,79 @@
+<div class="email-verification-overlay" [class.visible]="isVisible" *ngIf="isVisible">
+  <div class="email-verification-modal">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2 class="modal-title">Verify Your Email</h2>
+      <p class="modal-subtitle">We sent a verification code to {{getMaskedEmail()}}</p>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      <!-- Code Input -->
+      <div class="code-input-group">
+        <label for="verificationCode" class="code-label">
+          Enter Verification Code
+        </label>
+        <input
+          type="text"
+          id="verificationCode"
+          placeholder="Paste the code from your email"
+          [(ngModel)]="verificationCode"
+          [disabled]="isLoading"
+          (keyup.enter)="submitCode()"
+          class="code-input"
+          autocomplete="off">
+        <small class="code-hint">
+          Look for a code like: 14296c6f-9817-4598-981d-e8f630080b55
+        </small>
+      </div>
+
+      <!-- Attempt Counter -->
+      <div class="attempt-counter" *ngIf="attemptCount > 0">
+        <span class="attempt-text">
+          {{getRemainingAttempts()}} attempt{{ getRemainingAttempts() !== 1 ? 's' : '' }} remaining
+        </span>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <!-- Submit Button -->
+      <button
+        class="btn-primary"
+        (click)="submitCode()"
+        [disabled]="!isCodeValid() || isLoading || isResending"
+        [class.loading]="isLoading">
+        <span *ngIf="!isLoading">Verify Email</span>
+        <span *ngIf="isLoading" class="spinner">
+          <i class="fas fa-spinner fa-spin"></i> Verifying...
+        </span>
+      </button>
+
+      <!-- Resend Button -->
+      <button
+        class="btn-secondary"
+        (click)="resendCode()"
+        [disabled]="!showResendButton || isResending"
+        [class.disabled]="!showResendButton || isResending">
+        <span *ngIf="showResendButton && !isResending">
+          <i class="fas fa-redo"></i> Resend Code
+        </span>
+        <span *ngIf="!showResendButton">
+          Resend in {{resendCountdown}}s
+        </span>
+        <span *ngIf="isResending">
+          <i class="fas fa-spinner fa-spin"></i> Sending...
+        </span>
+      </button>
+    </div>
+
+    <!-- Info Message -->
+    <div class="modal-info">
+      <p class="info-text">
+        <i class="fas fa-info-circle"></i>
+        Check your email (including spam folder) for the verification code.
+        If you don't see it, click "Resend Code" to send it again.
+      </p>
+    </div>
+  </div>
+</div>

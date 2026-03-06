@@ -44,6 +44,10 @@ export class AuthService {
     return this.user
   }
 
+  getEmail(): string {
+    return this.user?.email || ''
+  }
+
   getAuthenticate(): boolean {
     return this.authenticate.getValue()
   }

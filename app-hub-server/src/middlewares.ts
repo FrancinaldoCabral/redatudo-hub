@@ -61,8 +61,13 @@ export async function userParamToReqUser(req, res, next){
 export async function emailConfirmed(req, res, next) {
   const email = req.user.email
   const response = await emailVerify(email)
-  if(response) next()
-  else return res.status(401).json({code: 'email', msg: `The email ${email} has not yet been confirmed.`})
+  if(response) {
+    next()
+  } else {
+    // Return 401 with email code to indicate email verification needed
+    // Frontend should intercept this and show verification modal
+    return res.status(401).json({code: 'email_unverified', msg: `The email ${email} needs to be verified.`})
+  }
 }
 
 export async function woocommerceHook(req, res, next){

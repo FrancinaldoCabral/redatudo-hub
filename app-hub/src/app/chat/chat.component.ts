@@ -486,7 +486,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
     }
 
     getLanguages(): string[] {
-        return this.languageService.getLanguages()
+        return this.languageService.getSupportedLanguages().map(lang => lang.code)
     }
 
     setModel(model: string): void {
@@ -558,7 +558,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
     }
 
     getCurrentLanguage(): string {
-        return this.languageService.getCurrentLanguage()
+        return this.languageService.getCurrentLanguageCode()
     }
 
     setLanguage(language:string): void {
