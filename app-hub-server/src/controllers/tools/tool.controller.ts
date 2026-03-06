@@ -40,28 +40,11 @@ export class ToolController {
       args = this.extractArgsFromPrompt(userMessage, tool);
     }
 
-    // Estimar custo com base nos args quando aplicável
-    let estimatedCost = tool.costPreview || 0;
-    try {
-      if ((metadata.app === 'image-editor' || tool.schema?.function?.function?.name === 'image_editor') && args?.quality) {
-        const creditsMap = {
-          basic: 30,
-          balanced: 60,
-          advanced: 90
-        } as Record<string, number>;
-        const q = String(args.quality);
-        if (creditsMap[q]) estimatedCost = creditsMap[q];
-      }
-    } catch (err) {
-      // fallback para costPreview se algo falhar
-      estimatedCost = tool.costPreview || 0;
-    }
-
-    // 3. Verificar créditos (preço estimado)
+    // 3. Verificar créditos mínimos (1 crédito para executar)
     const userBalance = await this.creditsService.checkBalance(parseInt(metadata.userId));
     const balanceFloat = parseFloat(`${userBalance}`);
-    if (balanceFloat < estimatedCost) {
-      throw new Error(`no credit - Saldo insuficiente. Necessário: ${estimatedCost} créditos, Disponível: ${balanceFloat.toFixed(2)} créditos`);
+    if (balanceFloat < 1) {
+      throw new Error(`no credit - Saldo insuficiente. Necessário: 1 crédito mínimo, Disponível: ${balanceFloat.toFixed(2)} créditos`);
     }
 
     // 4. Enviar status ao frontend
@@ -83,6 +66,10 @@ export class ToolController {
       toolMetadata,
       'tool_direct_call' // tool_call_id
     );
+
+    // Se não há credits retornado, assume custo mínimo de 1
+    const creditsCost = result.credits || 1;
+    const roundedCost = Math.ceil(creditsCost);
 
     // If this is a cover generation, persist cover metadata to the project so frontend can consume print-ready URL
     try {
@@ -110,22 +97,22 @@ export class ToolController {
       console.error('Erro ao salvar metadata da capa no projeto:', err);
     }
 
-    // 5. Registrar histórico e cobrar créditos fixos
+    // 6. Registrar histórico com custo real arredondado pra cima
     await addHistoric({
       userId: metadata.userId,
       operation: 'debit',
       description: tool.title,
-      total: -result.credits,
+      total: -roundedCost,
       createdAt: new Date(),
     });
 
-    await this.creditsLib.subtractCredit(parseInt(metadata.userId), `${result.credits}`);
+    await this.creditsLib.subtractCredit(parseInt(metadata.userId), `${roundedCost}`);
 
-    // 6. Retornar resultado (objeto JSON já validado pela tool)
+    // 7. Retornar resultado (objeto JSON já validado pela tool)
     const finalResult = {
       content: result.content,
       toolUsed: tool.title,
-      creditsCharged: result.credits
+      creditsCharged: roundedCost
     };
 
 //    console.log('🔄 ToolController retornando:', finalResult);

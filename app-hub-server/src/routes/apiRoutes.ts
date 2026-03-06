@@ -69,7 +69,14 @@ router.get('/llm-models', async (req: Request, res: Response) => {
 router.get('/tools', async (req: Request, res: Response) => {
   try {
     const allTools = await getTools()
-    const result = allTools.map(t=>{return { title: t.title, description: t.description, icon:t.icon, schema:t.schema }})
+    const result = allTools.map(t=>{ 
+      return { 
+        title: t.title, 
+        description: t.description, 
+        icon: t.icon, 
+        schema: t.schema 
+      }
+    })
     res.status(200).json(result)
   } catch (error) {
     res.status(500).json({msg: errorToText(error)})

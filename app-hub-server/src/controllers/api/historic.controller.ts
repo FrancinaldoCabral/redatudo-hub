@@ -52,10 +52,9 @@ export async function getDetailedBalanceController(req, res, next) {
     try {
         const creditsService = new CreditsService()
         const balance = await creditsService.getBalance(userId)
-        const currentSubscription = await creditsService.getCurrentSubscription(userId)
 
         // Se não tem saldo, inicializa com free credit
-        if(!balance || (balance.total.toString() === '0' && !currentSubscription)) {
+        if(!balance || balance === 0) {
           await creditsService.initBalance(userId, '0.2')
           await addHistoric({
             userId: req.user.id,
@@ -67,17 +66,11 @@ export async function getDetailedBalanceController(req, res, next) {
 
           const newBalance = await creditsService.getBalance(userId)
           successRequest(res, 200, {
-            subscription_balance: newBalance.subscription.toString(),
-            recharge_balance: newBalance.recharge.toString(),
-            total_balance: newBalance.total.toString(),
-            current_subscription: null
+            total_balance: newBalance.toString()
           })
         } else {
           successRequest(res, 200, {
-            subscription_balance: balance.subscription.toString(),
-            recharge_balance: balance.recharge.toString(),
-            total_balance: balance.total.toString(),
-            current_subscription: currentSubscription
+            total_balance: balance.toString()
           })
         }
     } catch (error) {
