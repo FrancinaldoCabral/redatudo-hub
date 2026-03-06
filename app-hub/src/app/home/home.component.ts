@@ -62,7 +62,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       name: 'Gerador de Ebook',
       description: 'Crie ebooks completos com capítulos, imagens e formatação profissional em 10 minutos',
       icon: '📚',
-      route: 'https://ebook.redatudo.online',
+      route: `https://ebook.redatudo.online?token=${this.authService.getToken()}`,
       featured: true,
       category: 'Premium',
       creditCost: 0,
