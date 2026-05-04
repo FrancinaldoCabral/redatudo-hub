@@ -71,6 +71,59 @@ export class HomeComponent implements OnInit, OnDestroy {
       highlight: true
     },
     {
+      id: 'ebook-studio-tcc',
+      name: 'Gerador de TCC/Monografia',
+      description: 'Crie TCCs e monografias completas com capítulos organizados, formatação profissional e estrutura acadêmica pronta para revisão',
+      icon: '📚',
+      route: `https://ebook.redatudo.online?token=${this.authService.getToken()}`,
+      featured: true,
+      category: 'Acadêmico',
+      creditCost: 0,
+      isExternal: true,
+      badge: '🔥 Mais Usado'
+    },
+    {
+      id: 'tcc-themes',
+      name: 'Gerador de Temas TCC',
+      description: 'Encontre o tema perfeito com justificativa e relevância acadêmica',
+      icon: '📋',
+      route: '/gerador-temas-tcc',
+      featured: true,
+      category: 'Acadêmico',
+      creditCost: 1
+    },
+    {
+      id: 'academic-assistant',
+      name: 'Gerador de Introdução',
+      description: 'Introduções acadêmicas prontas para TCCs, artigos e trabalhos',
+      icon: '🎓',
+      route: '/assistente-academico',
+      featured: true,
+      category: 'Acadêmico',
+      creditCost: 2,
+      badge: '✨ Novo'
+    },
+    {
+      id: 'abnt-corrector',
+      name: 'Corretor ABNT',
+      description: 'Corrija e formate textos no padrão ABNT automaticamente',
+      icon: '✅',
+      route: '/corretor-texto-abnt',
+      featured: true,
+      category: 'Acadêmico',
+      creditCost: 1
+    },
+    {
+      id: 'academic-conclusion',
+      name: 'Gerador de Conclusão',
+      description: 'Conclusões acadêmicas estruturadas para TCCs e artigos',
+      icon: '🏁',
+      route: '/gerador-conclusao',
+      featured: true,
+      category: 'Acadêmico',
+      creditCost: 1
+    },
+    {
       id: 'title-generator',
       name: 'Gerador de Títulos',
       description: 'Títulos criativos para livros, vídeos, posts e TCCs que chamam atenção',
@@ -90,17 +143,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       featured: true,
       category: 'Redes Sociais',
       creditCost: 1
-    },
-    {
-      id: 'academic-assistant',
-      name: 'Gerador de Introdução',
-      description: 'Introduções acadêmicas prontas para TCCs, artigos e trabalhos',
-      icon: '🎓',
-      route: '/assistente-academico',
-      featured: true,
-      category: 'Acadêmico',
-      creditCost: 2,
-      badge: '✨ Novo'
     },
     {
       id: 'ai-humanizer',
@@ -124,16 +166,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       creditCost: 1
     },
     {
-      id: 'tcc-themes',
-      name: 'Gerador de Temas TCC',
-      description: 'Encontre o tema perfeito com justificativa e relevância acadêmica',
-      icon: '📋',
-      route: '/gerador-temas-tcc',
-      featured: true,
-      category: 'Acadêmico',
-      creditCost: 1
-    },
-    {
       id: 'text-rewriter',
       name: 'Reformulador',
       description: 'Reescreva textos mantendo a mensagem, evitando plágio',
@@ -154,16 +186,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       creditCost: 1
     },
     {
-      id: 'abnt-corrector',
-      name: 'Corretor ABNT',
-      description: 'Corrija e formate textos no padrão ABNT automaticamente',
-      icon: '✅',
-      route: '/corretor-texto-abnt',
-      featured: true,
-      category: 'Acadêmico',
-      creditCost: 1
-    },
-    {
       id: 'hashtag-generator',
       name: 'Gerador de Hashtags',
       description: 'Hashtags estratégicas para Instagram baseadas em análise de tendências',
@@ -172,16 +194,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       featured: true,
       category: 'Redes Sociais',
       creditCost: 0.5
-    },
-    {
-      id: 'academic-conclusion',
-      name: 'Gerador de Conclusão',
-      description: 'Conclusões acadêmicas estruturadas para TCCs e artigos',
-      icon: '🏁',
-      route: '/gerador-conclusao',
-      featured: true,
-      category: 'Acadêmico',
-      creditCost: 1
     },
     {
       id: 'motivational-quotes',
@@ -303,6 +315,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   getToolRating(toolId: string): string {
     const ratings: { [key: string]: string } = {
       'ebook-studio': '4.9',
+      'ebook-studio-tcc': '4.9',
       'title-generator': '4.9',
       'instagram-captions': '4.8',
       'academic-assistant': '4.8',
@@ -325,6 +338,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   getToolUsage(toolId: string): string {
     const usages: { [key: string]: string } = {
       'ebook-studio': '18.7k gerações hoje',
+      'ebook-studio-tcc': '18.7k gerações hoje',
       'title-generator': '12.4k gerações hoje',
       'instagram-captions': '8.9k gerações hoje',
       'academic-assistant': '7.2k gerações hoje',
