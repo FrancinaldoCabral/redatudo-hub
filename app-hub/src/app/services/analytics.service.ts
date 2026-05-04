@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
 
+declare global {
+  interface Window {
+    dataLayer: unknown[];
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
 export interface AnalyticsEvent {
   event: string;
   tool: string;
@@ -17,9 +24,27 @@ export class AnalyticsService {
   private sessionId: string;
   private storageKey = 'redatudo_analytics';
   private maxStoredEvents = 1000;
+  private ga4MeasurementId = '';
 
   constructor() {
     this.sessionId = this.generateSessionId();
+    this.ga4MeasurementId = this.resolveGa4MeasurementId();
+    this.initializeGa4();
+  }
+
+  /**
+   * Track de page_view para navegações SPA
+   */
+  trackPageView(path?: string): void {
+    const pagePath = path || window.location.pathname + window.location.search;
+    const payload = {
+      page_path: pagePath,
+      page_location: window.location.href,
+      page_title: document.title
+    };
+
+    this.pushToDataLayer({ event: 'page_view', ...payload });
+    this.sendGa4Event('page_view', payload);
   }
 
   /**
@@ -207,8 +232,88 @@ export class AnalyticsService {
 
     this.storeEvent(analyticsEvent);
 
+    const normalizedMetadata = this.normalizeMetadata(metadata);
+    const ga4Payload = {
+      tool,
+      session_id: this.sessionId,
+      ...normalizedMetadata
+    };
+
+    this.pushToDataLayer({ event, ...ga4Payload });
+    this.sendGa4Event(event, ga4Payload);
+
     // Log para debug (remover em produção)
     console.log('Analytics:', analyticsEvent);
+  }
+
+  /**
+   * Inicializa GA4 via gtag quando um measurement ID válido estiver definido.
+   */
+  private initializeGa4(): void {
+    if (!this.hasValidMeasurementId()) {
+      return;
+    }
+
+    window.dataLayer = window.dataLayer || [];
+
+    if (window.gtag) {
+      window.gtag('config', this.ga4MeasurementId, { send_page_view: false });
+      return;
+    }
+
+    const scriptId = 'ga4-gtag-script';
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${this.ga4MeasurementId}`;
+      document.head.appendChild(script);
+    }
+
+    window.gtag = (...args: unknown[]) => {
+      window.dataLayer.push(args);
+    };
+
+    window.gtag('js', new Date());
+    window.gtag('config', this.ga4MeasurementId, { send_page_view: false });
+  }
+
+  private sendGa4Event(eventName: string, params: Record<string, unknown>): void {
+    if (!this.hasValidMeasurementId() || !window.gtag) {
+      return;
+    }
+
+    window.gtag('event', eventName, params);
+  }
+
+  private pushToDataLayer(payload: Record<string, unknown>): void {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(payload);
+  }
+
+  private resolveGa4MeasurementId(): string {
+    const metaTag = document.querySelector('meta[name="ga4-measurement-id"]');
+    const rawValue = metaTag?.getAttribute('content') || '';
+    return rawValue.trim();
+  }
+
+  private hasValidMeasurementId(): boolean {
+    return /^G-[A-Z0-9]+$/i.test(this.ga4MeasurementId) && this.ga4MeasurementId !== 'G-XXXXXXXXXX';
+  }
+
+  private normalizeMetadata(metadata?: any): Record<string, string | number | boolean> {
+    if (!metadata || typeof metadata !== 'object') {
+      return {};
+    }
+
+    return Object.entries(metadata).reduce((acc, [key, value]) => {
+      if (['string', 'number', 'boolean'].includes(typeof value)) {
+        acc[key] = value as string | number | boolean;
+      } else if (value !== null && value !== undefined) {
+        acc[key] = JSON.stringify(value);
+      }
+      return acc;
+    }, {} as Record<string, string | number | boolean>);
   }
 
   /**

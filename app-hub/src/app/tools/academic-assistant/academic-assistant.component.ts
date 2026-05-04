@@ -5,6 +5,7 @@ import { HistoricService } from '../../services/historic.service';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
+import { AnalyticsService } from '../../services/analytics.service';
 
 interface AcademicResult {
   content: string;
@@ -84,7 +85,8 @@ export class AcademicAssistantComponent implements OnInit, OnDestroy {
     private socketService: SocketService,
     private historicService: HistoricService,
     private toastr: ToastrService,
-    private authService: AuthService
+    private authService: AuthService,
+    private analyticsService: AnalyticsService
   ) {
     this.setupSocketListener();
   }
@@ -103,6 +105,8 @@ export class AcademicAssistantComponent implements OnInit, OnDestroy {
         }
       }
     );
+
+    this.analyticsService.trackToolUsed('academic-assistant');
   }
 
   ngOnDestroy(): void {
@@ -162,6 +166,7 @@ export class AcademicAssistantComponent implements OnInit, OnDestroy {
     const prompt = this.buildIntroductionPrompt();
     const messages = [{ role: 'user', content: prompt }];
 
+    this.analyticsService.trackToolUsed('academic-assistant', { action: 'introduction' });
     this.socketService.sendMessage(messages, 'auto', 'academic-assistant');
   }
 
@@ -182,6 +187,7 @@ export class AcademicAssistantComponent implements OnInit, OnDestroy {
     const prompt = this.buildConclusionPrompt();
     const messages = [{ role: 'user', content: prompt }];
 
+    this.analyticsService.trackToolUsed('academic-assistant', { action: 'conclusion' });
     this.socketService.sendMessage(messages, 'auto', 'academic-assistant');
   }
 
@@ -202,6 +208,7 @@ export class AcademicAssistantComponent implements OnInit, OnDestroy {
     const prompt = this.buildFormatterPrompt();
     const messages = [{ role: 'user', content: prompt }];
 
+    this.analyticsService.trackToolUsed('academic-assistant', { action: 'formatter' });
     this.socketService.sendMessage(messages, 'auto', 'academic-assistant');
   }
 
@@ -297,6 +304,7 @@ export class AcademicAssistantComponent implements OnInit, OnDestroy {
       this.results = [newResult];
       this.toastr.success('Conteúdo acadêmico gerado com sucesso!');
     } else {
+      this.analyticsService.trackError('academic-assistant', 'Invalid response format');
       this.toastr.error('Formato de resposta inesperado');
     }
   }
@@ -327,11 +335,13 @@ export class AcademicAssistantComponent implements OnInit, OnDestroy {
       errorMessage = 'Erro na chave da API. Contate o suporte.';
     }
 
+    this.analyticsService.trackError('academic-assistant', errorMessage);
     this.toastr.error(errorMessage);
   }
 
   copyToClipboard(content: string): void {
     navigator.clipboard.writeText(content).then(() => {
+      this.analyticsService.trackResultCopied('academic-assistant', 0);
       this.toastr.success('Texto copiado para a área de transferência!');
     }).catch(() => {
       this.toastr.error('Erro ao copiar texto');

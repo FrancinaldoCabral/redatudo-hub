@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core'
-import { ActivatedRoute, Router } from '@angular/router'
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router'
+import { filter } from 'rxjs/operators'
 import { AuthService } from './services/auth.service'
 import { SocketService } from './services/socket.service'
 import { NgxSpinnerService } from 'ngx-spinner'
+import { AnalyticsService } from './services/analytics.service'
 
 @Component({
   selector: 'app-root',
@@ -15,10 +17,18 @@ export class AppComponent implements OnInit {
     private socketService: SocketService,
     private spinner: NgxSpinnerService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private analyticsService: AnalyticsService
   ){}
 
   ngOnInit(): void {
+    this.analyticsService.trackPageView(this.router.url)
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        this.analyticsService.trackPageView(event.urlAfterRedirects)
+      })
+
     // Se vier um token via query param ?token=..., salvar no localStorage e limpar URL
     const tokenParam = this.route.snapshot.queryParams['token']
     if (tokenParam) {

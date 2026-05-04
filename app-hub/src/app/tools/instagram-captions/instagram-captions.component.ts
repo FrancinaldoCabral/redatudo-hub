@@ -191,6 +191,7 @@ export class InstagramCaptionsComponent implements OnInit, OnDestroy {
 
       this.toastr.success(`${this.results.length} legendas geradas com sucesso!`);
     } else {
+      this.analyticsService.trackError('instagram-captions', 'Invalid response format');
       this.toastr.error('Formato de resposta inesperado');
     }
   }
@@ -208,6 +209,7 @@ export class InstagramCaptionsComponent implements OnInit, OnDestroy {
       errorMessage = 'Erro na chave da API. Contate o suporte.';
     }
 
+    this.analyticsService.trackError('instagram-captions', errorMessage);
     this.toastr.error(errorMessage);
   }
 
@@ -242,6 +244,7 @@ export class InstagramCaptionsComponent implements OnInit, OnDestroy {
 
   regenerateCaptions(): void {
     if (this.balance >= 1) {
+      this.analyticsService.trackRegeneration('instagram-captions');
       this.generateCaptions();
     } else {
       this.toastr.error('Créditos insuficientes para regenerar');

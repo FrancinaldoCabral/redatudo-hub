@@ -293,11 +293,6 @@ export class ChatComponent implements OnInit, AfterViewInit {
         this.selectLanguage = this.getCurrentLanguage()
         //this.selectedModel = this.getCurrentModel()
 
-        this.gtmService.pushTag({
-            event: 'page_view',
-            page_location: 'chat.redatudo.online'
-        })
-
         this.auth.getAuthenticateAsObservable().subscribe(
             success => { 
                 if(success) {

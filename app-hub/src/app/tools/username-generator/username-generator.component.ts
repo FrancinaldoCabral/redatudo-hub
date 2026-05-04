@@ -5,6 +5,7 @@ import { HistoricService } from '../../services/historic.service';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
+import { AnalyticsService } from '../../services/analytics.service';
 
 interface UsernameResult {
   username: string;
@@ -54,7 +55,8 @@ export class UsernameGeneratorComponent implements OnInit, OnDestroy {
     private socketService: SocketService,
     private historicService: HistoricService,
     private toastr: ToastrService,
-    private authService: AuthService
+    private authService: AuthService,
+    private analyticsService: AnalyticsService
   ) {
     this.setupSocketListener();
   }
@@ -73,6 +75,8 @@ export class UsernameGeneratorComponent implements OnInit, OnDestroy {
         }
       }
     );
+
+    this.analyticsService.trackToolUsed('username-generator');
   }
 
   ngOnDestroy(): void {
@@ -162,8 +166,10 @@ export class UsernameGeneratorComponent implements OnInit, OnDestroy {
         score: Math.floor(Math.random() * 40) + 60 // Score simulado
       }));
 
+      this.analyticsService.trackToolUsed('username-generator', { usernamesCount: this.results.length });
       this.toastr.success(`${this.results.length} usernames gerados com sucesso!`);
     } else {
+      this.analyticsService.trackError('username-generator', 'Invalid response format');
       this.toastr.error('Formato de resposta inesperado');
     }
   }
@@ -181,11 +187,13 @@ export class UsernameGeneratorComponent implements OnInit, OnDestroy {
       errorMessage = 'Erro na chave da API. Contate o suporte.';
     }
 
+    this.analyticsService.trackError('username-generator', errorMessage);
     this.toastr.error(errorMessage);
   }
 
   copyToClipboard(username: string): void {
     navigator.clipboard.writeText(username).then(() => {
+      this.analyticsService.trackResultCopied('username-generator', 0);
       this.toastr.success('Username copiado para a área de transferência!');
     }).catch(() => {
       this.toastr.error('Erro ao copiar username');

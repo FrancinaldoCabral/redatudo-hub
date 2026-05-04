@@ -3,6 +3,7 @@ import { SocketService } from '../../services/socket.service';
 import { HistoricService } from '../../services/historic.service';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
+import { AnalyticsService } from '../../services/analytics.service';
 
 interface CopyResult {
   content: string;
@@ -41,13 +42,15 @@ export class CopyAidaComponent implements OnInit, OnDestroy {
   constructor(
     private socketService: SocketService,
     private historicService: HistoricService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private analyticsService: AnalyticsService
   ) {
     this.setupSocketListener();
   }
 
   ngOnInit(): void {
     // Shared header handles balance loading
+    this.analyticsService.trackToolUsed('copy-aida');
   }
 
   ngOnDestroy(): void {
@@ -140,8 +143,10 @@ export class CopyAidaComponent implements OnInit, OnDestroy {
         title: section.title
       }));
 
+      this.analyticsService.trackToolUsed('copy-aida', { sectionsCount: this.results.length });
       this.toastr.success('Copy AIDA gerada com sucesso!');
     } else {
+      this.analyticsService.trackError('copy-aida', 'Invalid response format');
       this.toastr.error('Formato de resposta inesperado');
     }
   }
@@ -218,12 +223,14 @@ export class CopyAidaComponent implements OnInit, OnDestroy {
       errorMessage = 'Erro na chave da API. Contate o suporte.';
     }
 
+    this.analyticsService.trackError('copy-aida', errorMessage);
     this.toastr.error(errorMessage);
   }
 
   copyToClipboard(content: string): void {
     navigator.clipboard.writeText(content).then(() => {
-      this.toastr.success('Texto copiado para a área de transferência!');
+      this.analyticsService.trackResultCopied('copy-aida', 0);
+      this.toastr.success('Texto copiado para a área de transferência!');  
     }).catch(() => {
       this.toastr.error('Erro ao copiar texto');
     });
