@@ -13,6 +13,32 @@ declare global {
 /** Tracking endpoint — usa apiHost do env (nginx proxy em produção) */
 const TRACK_ENDPOINT = `${env.apiHost}/track`;
 
+/**
+ * visitor_id: lido de ?_rdtd_vid (passado pelo WordPress via CTA)
+ * ou do localStorage (persistido entre sessões).
+ * Conecta: post lido no WordPress → app aberto → compra = mesma pessoa.
+ */
+function resolveVisitorId(): string {
+  const fromUrl = new URLSearchParams(window.location.search).get('_rdtd_vid');
+  const stored  = localStorage.getItem('_rdtd_vid');
+  const vid     = fromUrl || stored ||
+    (typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : Math.random().toString(36).slice(2) + Date.now());
+  localStorage.setItem('_rdtd_vid', vid);
+  // Remove da URL sem reload para não sujar o history
+  if (fromUrl) {
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('_rdtd_vid');
+      window.history.replaceState({}, '', url.toString());
+    } catch (_) {}
+  }
+  return vid;
+}
+
+const VISITOR_ID = resolveVisitorId();
+
 export interface AnalyticsEvent {
   event: string;
   tool: string;
@@ -284,10 +310,12 @@ export class AnalyticsService {
 
   /** Fire-and-forget POST para o tracking endpoint */
   private sendToN8n(payload: object): void {
+    // Injeta visitor_id em todos os eventos para conectar com sessões do WordPress
+    const enriched = Object.assign({ visitor_id: VISITOR_ID }, payload);
     fetch(TRACK_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(enriched),
     }).catch(() => { /* intentionally silent */ });
   }
 
