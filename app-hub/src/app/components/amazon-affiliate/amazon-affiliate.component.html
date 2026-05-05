@@ -1,4 +1,30 @@
-<div class="amz-affiliate" *ngIf="items.length > 0">
+<!-- MODO CARD: encaixa na grade de ferramentas -->
+<ng-container *ngIf="mode === 'card' && items.length > 0">
+  <div class="amz-card-inner">
+    <span class="amz-card-badge">📚 Leitura</span>
+    <div class="amz-card-icon">📚</div>
+    <h3 class="amz-card-title">Livros para Criadores de Conteúdo</h3>
+    <p class="amz-card-desc">Indicados por quem usa IA para criar conteúdo todo dia</p>
+    <div class="amz-card-books">
+      <a
+        *ngFor="let book of items"
+        [href]="book.url"
+        target="_blank"
+        rel="noopener sponsored"
+        class="amz-card-book-link"
+      >
+        <span class="amz-book-cat">{{ book.cat }}</span>
+        {{ book.title }}
+      </a>
+    </div>
+    <a [href]="items[0]?.url" target="_blank" rel="noopener sponsored" class="amz-card-cta">
+      Ver na Amazon →
+    </a>
+  </div>
+</ng-container>
+
+<!-- MODO COMPACT: painel lateral / abaixo de ferramentas -->
+<div class="amz-affiliate" *ngIf="mode === 'compact' && items.length > 0">
   <p class="amz-label">📚 Livros recomendados</p>
   <div class="amz-list">
     <div

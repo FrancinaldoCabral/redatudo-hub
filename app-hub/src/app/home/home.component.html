@@ -318,34 +318,37 @@
     </div>
 
     <div class="tools-grid" *ngIf="getDisplayTools().length > 0">
-      <a 
-        *ngFor="let tool of getDisplayTools()" 
-        [attr.href]="tool.route"
-        class="tool-card" 
-        [style.--tool-color]="getCategoryColor(tool.category)"
-      >
-        <span *ngIf="tool.badge" class="tool-badge" [class.badge-hot]="tool.badge.includes('🔥')" [class.badge-new]="tool.badge.includes('✨')">
-          {{ tool.badge }}
-        </span>
-        <div class="tool-icon">{{ tool.icon }}</div>
-        <h3 class="tool-title">{{ tool.name }}</h3>
-        <p class="tool-description">{{ tool.description }}</p>
-        <div class="tool-meta">
-          <span class="tool-category" [style.background-color]="getCategoryColor(tool.category) + '20'" [style.color]="getCategoryColor(tool.category)">
-            {{ getCategoryIcon(tool.category) }} {{ tool.category }}
+      <ng-container *ngFor="let tool of getDisplayTools(); let i = index">
+        <!-- Card de livros Amazon após o 2º item (index 1) -->
+        <app-amazon-affiliate *ngIf="i === 1" [mode]="'card'" [group]="'prod'"></app-amazon-affiliate>
+        <a
+          [attr.href]="tool.route"
+          class="tool-card"
+          [style.--tool-color]="getCategoryColor(tool.category)"
+        >
+          <span *ngIf="tool.badge" class="tool-badge" [class.badge-hot]="tool.badge.includes('🔥')" [class.badge-new]="tool.badge.includes('✨')">
+            {{ tool.badge }}
           </span>
-          <span class="tool-cost free">
-            Grátis
+          <div class="tool-icon">{{ tool.icon }}</div>
+          <h3 class="tool-title">{{ tool.name }}</h3>
+          <p class="tool-description">{{ tool.description }}</p>
+          <div class="tool-meta">
+            <span class="tool-category" [style.background-color]="getCategoryColor(tool.category) + '20'" [style.color]="getCategoryColor(tool.category)">
+              {{ getCategoryIcon(tool.category) }} {{ tool.category }}
+            </span>
+            <span class="tool-cost free">
+              Grátis
+            </span>
+          </div>
+          <div class="tool-stats">
+            <span>{{ getToolUsage(tool.id) }}</span>
+            <span class="rating">⭐ {{ getToolRating(tool.id) }}</span>
+          </div>
+          <span class="btn-tool">
+            Usar Ferramenta →
           </span>
-        </div>
-        <div class="tool-stats">
-          <span>{{ getToolUsage(tool.id) }}</span>
-          <span class="rating">⭐ {{ getToolRating(tool.id) }}</span>
-        </div>
-        <span class="btn-tool">
-          Usar Ferramenta →
-        </span>
-      </a>
+        </a>
+      </ng-container>
     </div>
 
     <!-- Cards estáticos originais removidos - agora tudo é dinâmico -->

@@ -42,14 +42,17 @@ const CATALOG: Book[] = [
 })
 export class AmazonAffiliateComponent implements OnInit {
   @Input() group: string = 'ia';
+  /** 'compact' = painel lateral estreito; 'card' = slot na grade de ferramentas */
+  @Input() mode: 'compact' | 'card' = 'compact';
 
   items: Book[] = [];
+  cardBook: Book | null = null;
 
   ngOnInit(): void {
-    const pool = this.group
-      ? CATALOG.filter(b => b.group === this.group)
-      : CATALOG;
-    this.items = this.shuffle(pool).slice(0, 2);
+    const pool = this.group ? CATALOG.filter(b => b.group === this.group) : CATALOG;
+    const shuffled = this.shuffle(pool);
+    this.items = shuffled.slice(0, 2);
+    this.cardBook = shuffled[0] || null;
   }
 
   private shuffle<T>(arr: T[]): T[] {
