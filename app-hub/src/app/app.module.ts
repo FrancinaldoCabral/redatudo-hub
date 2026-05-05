@@ -98,6 +98,7 @@ import { TapToCopyCardComponent } from './tools/shared/tap-to-copy-card/tap-to-c
 // Novos componentes de créditos e header
 import { ToolHeaderComponent } from './components/tool-header/tool-header.component'
 import { CreditsModalComponent } from './components/credits-modal/credits-modal.component'
+import { AmazonAffiliateComponent } from './components/amazon-affiliate/amazon-affiliate.component'
 
 // Serviços centralizados
 import { BalanceService } from './services/balance.service'
@@ -158,7 +159,9 @@ export function markdownItFactory(): MarkdownIt {
     ToolHeaderComponent,
     CreditsModalComponent,
     // Email verification
-    EmailVerificationModalComponent
+    EmailVerificationModalComponent,
+    // Afiliado Amazon
+    AmazonAffiliateComponent
   ],
   imports: [
     BrowserModule,

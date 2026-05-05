@@ -1,0 +1,23 @@
+<div class="amz-affiliate" *ngIf="items.length > 0">
+  <p class="amz-label">📚 Livros recomendados</p>
+  <div class="amz-list">
+    <div
+      class="amz-item"
+      *ngFor="let book of items; let last = last"
+      [class.amz-item--last]="last"
+    >
+      <a
+        [href]="book.url"
+        target="_blank"
+        rel="noopener sponsored"
+        class="amz-title"
+      >{{ book.title }}</a>
+      <p class="amz-meta">
+        <span class="amz-domain">amazon.com.br</span>
+        &middot;
+        <span>{{ book.cat }}</span>
+      </p>
+      <p class="amz-desc">{{ book.desc }}</p>
+    </div>
+  </div>
+</div>
