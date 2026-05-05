@@ -318,9 +318,7 @@
     </div>
 
     <div class="tools-grid" *ngIf="getDisplayTools().length > 0">
-      <ng-container *ngFor="let tool of getDisplayTools(); let i = index">
-        <!-- Card de livros Amazon após o 2º item (index 1) -->
-        <app-amazon-affiliate *ngIf="i === 1" [mode]="'card'" [group]="'prod'"></app-amazon-affiliate>
+      <ng-container *ngFor="let tool of getDisplayTools(); let i = index; let last = last">
         <a
           [attr.href]="tool.route"
           class="tool-card"
@@ -348,6 +346,8 @@
             Usar Ferramenta →
           </span>
         </a>
+        <!-- Card de livros Amazon após o último item -->
+        <app-amazon-affiliate *ngIf="last" [mode]="'card'" [group]="'prod'"></app-amazon-affiliate>
       </ng-container>
     </div>
 
