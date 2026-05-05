@@ -22,6 +22,7 @@ import { EbookDesignController } from '../controllers/api/ebook-design.controlle
 import { addSubscriptionCredits, addAdditionalCredits } from '../controllers/api/subscription.controller'
 import * as projectReferenceController from '../controllers/api/project-reference.controller'
 import * as tempFileController from '../controllers/api/temp-file.controller'
+import { trackEventController } from '../controllers/api/track.controller'
 import path from 'path'
 import fs from 'fs'
 import { OpenrouterModels } from '../util'
@@ -36,6 +37,9 @@ const PDF_STORAGE_PATH = path.join(__dirname, '..', 'pdf-storage')
 if (!fs.existsSync(PDF_STORAGE_PATH)) {
     fs.mkdirSync(PDF_STORAGE_PATH, { recursive: true })
 }
+
+// ── Tracking ──────────────────────────────────────────────────────────────────
+router.post('/track', express.json(), trackEventController)
 
 let models: any
 

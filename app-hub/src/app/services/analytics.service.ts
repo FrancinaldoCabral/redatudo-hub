@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import env from './env';
 
 declare global {
   interface Window {
@@ -9,7 +10,8 @@ declare global {
   }
 }
 
-const N8N_WEBHOOK = 'https://n8n.redatudo.online/webhook/rdtd-events';
+/** Tracking endpoint — usa apiHost do env (nginx proxy em produção) */
+const TRACK_ENDPOINT = `${env.apiHost}/track`;
 
 export interface AnalyticsEvent {
   event: string;
@@ -280,9 +282,9 @@ export class AnalyticsService {
     console.log('Analytics:', analyticsEvent);
   }
 
-  /** Fire-and-forget POST to n8n event bus */
+  /** Fire-and-forget POST para o tracking endpoint */
   private sendToN8n(payload: object): void {
-    fetch(N8N_WEBHOOK, {
+    fetch(TRACK_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
