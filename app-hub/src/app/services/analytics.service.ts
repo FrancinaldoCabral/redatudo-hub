@@ -4,8 +4,12 @@ declare global {
   interface Window {
     dataLayer: unknown[];
     gtag?: (...args: unknown[]) => void;
+    _rdtd_uid?: number;
+    _rdtd_email?: string;
   }
 }
+
+const N8N_WEBHOOK = 'https://n8n.redatudo.online/webhook/rdtd-events';
 
 export interface AnalyticsEvent {
   event: string;
@@ -30,6 +34,26 @@ export class AnalyticsService {
     this.sessionId = this.generateSessionId();
     this.ga4MeasurementId = this.resolveGa4MeasurementId();
     this.initializeGa4();
+  }
+
+  /**
+   * Identifica o usuário para GA4 e n8n (chamar após login JWT)
+   */
+  identifyUser(wpUserId: number, email: string): void {
+    window._rdtd_uid = wpUserId;
+    window._rdtd_email = email;
+    if (window.gtag && this.hasValidMeasurementId()) {
+      window.gtag('config', this.ga4MeasurementId, { user_id: String(wpUserId) });
+      window.gtag('set', 'user_properties', { wp_user_id: String(wpUserId) });
+    }
+    this.sendToN8n({
+      event: 'user_identified',
+      wp_user_id: wpUserId,
+      email,
+      source: 'hub',
+      timestamp: new Date().toISOString(),
+      properties: {},
+    });
   }
 
   /**
@@ -242,8 +266,27 @@ export class AnalyticsService {
     this.pushToDataLayer({ event, ...ga4Payload });
     this.sendGa4Event(event, ga4Payload);
 
+    // Fan-out to n8n for Mautic/WhatsApp automation
+    this.sendToN8n({
+      event,
+      wp_user_id: window._rdtd_uid,
+      email: window._rdtd_email,
+      source: 'hub',
+      timestamp: analyticsEvent.timestamp.toISOString(),
+      properties: { tool, ...normalizedMetadata },
+    });
+
     // Log para debug (remover em produção)
     console.log('Analytics:', analyticsEvent);
+  }
+
+  /** Fire-and-forget POST to n8n event bus */
+  private sendToN8n(payload: object): void {
+    fetch(N8N_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }).catch(() => { /* intentionally silent */ });
   }
 
   /**

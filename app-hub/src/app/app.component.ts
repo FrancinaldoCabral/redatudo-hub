@@ -46,6 +46,12 @@ export class AppComponent implements OnInit {
         if (success) {
           this.socketService.setupSocketConnection()
           this.spinner.hide()
+
+          // Identify user for GA4 + n8n pipeline
+          const user = this.auth.getUser()
+          if (user?.id && user?.email) {
+            this.analyticsService.identifyUser(Number(user.id), String(user.email))
+          }
         } else {
           this.spinner.hide()
         }
