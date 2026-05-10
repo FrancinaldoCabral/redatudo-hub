@@ -22,7 +22,11 @@ const corsOptions = {
             process.env.CLIENT_URL,
             process.env.FRONTEND_URL,
             'https://chat.redatudo.online',
-            'https://hub.redatudo.online'
+            'https://hub.redatudo.online',
+            'https://redatudo.online',
+            'https://www.redatudo.online',
+            'https://redatudo.com',
+            'https://www.redatudo.com'
         ].filter(Boolean); // Remove valores undefined
 
         if (allowedOrigins.includes(origin)) {

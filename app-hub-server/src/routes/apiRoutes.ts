@@ -303,6 +303,11 @@ router.post('/resend-email', middlewares.authWebMiddleware, resendEmailVerifyCon
 router.post('/resend-code', middlewares.authWebMiddleware, resendCodeViaWebhookController)
 router.post('/code-verify', middlewares.authWebMiddleware, codeVerifyController)
 
+//BEHAVIORAL ANALYTICS — WordPress, Hub, ebook-flow
+// Sem auth: write-only, CORS restringe origens
+router.options('/track', cors(corsOptions))
+router.post('/track', trackEventController)
+
 //WEBHOOKS WOOCOMMERCE/WORDPRESS
 const WEBHOOK_SECRET = process.env.WOOCOMMERCE_SECRET
 router.post('/remove-customer', removeCustomer)
