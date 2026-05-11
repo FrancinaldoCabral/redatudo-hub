@@ -11,7 +11,7 @@ declare global {
 }
 
 /** Tracking endpoint — usa apiHost do env (nginx proxy em produção) */
-const TRACK_ENDPOINT = `${env.apiHost}/track`;
+const TRACK_ENDPOINT = `${env.apiHost}/api/track`;
 
 /**
  * visitor_id: lido de ?_rdtd_vid (passado pelo WordPress via CTA)
