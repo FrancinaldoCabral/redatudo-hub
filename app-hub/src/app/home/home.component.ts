@@ -58,6 +58,19 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   tools: Tool[] = [
     {
+      id: 'whatsapp-ai',
+      name: 'Automação de WhatsApp com IA',
+      description: 'Atenda, venda e responda automaticamente no WhatsApp com agentes de IA 24/7. Aumente suas conversões sem perder nenhum cliente.',
+      icon: '🤖',
+      route: 'https://dash.vendly.chat/',
+      featured: true,
+      category: 'Automação',
+      creditCost: 0,
+      isExternal: true,
+      badge: '🔥 Destaque',
+      highlight: true
+    },
+    {
       id: 'ebook-studio',
       name: 'Gerador de Ebook',
       description: 'Crie ebooks completos com capítulos, imagens e formatação profissional em 10 minutos',
@@ -314,6 +327,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getToolRating(toolId: string): string {
     const ratings: { [key: string]: string } = {
+      'whatsapp-ai': '5.0',
       'ebook-studio': '4.9',
       'ebook-studio-tcc': '4.9',
       'title-generator': '4.9',
@@ -337,6 +351,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getToolUsage(toolId: string): string {
     const usages: { [key: string]: string } = {
+      'whatsapp-ai': '24h atendimento ativo',
       'ebook-studio': '18.7k gerações hoje',
       'ebook-studio-tcc': '18.7k gerações hoje',
       'title-generator': '12.4k gerações hoje',
@@ -458,7 +473,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       'Marketing': '#7C3AED',
       'E-commerce': '#10B981',
       'Premium': '#F59E0B',
-      'IA': '#8B5CF6'
+      'IA': '#8B5CF6',
+      'Automação': '#25D366'
     };
     return categoryColors[category] || '#7C3AED';
   }
@@ -471,7 +487,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       'Marketing': '📝',
       'E-commerce': '🛍️',
       'Premium': '⭐',
-      'IA': '🤖'
+      'IA': '🤖',
+      'Automação': '💬'
     };
     return categoryIcons[category] || '🎯';
   }
