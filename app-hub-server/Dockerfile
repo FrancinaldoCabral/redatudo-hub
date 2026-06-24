@@ -39,16 +39,22 @@ RUN apt-get update && apt-get install -y \
     libxtst6 \
     lsb-release \
     xdg-utils \
+    chromium \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
 
+# Use the system Chromium installed via apt instead of letting Puppeteer
+# download its own (~170MB) at install time. Faster, more reliable builds.
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
 # Copy package files
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production && \
+RUN npm ci --omit=dev && \
     npm install typescript@^5.1.6 --save-dev
 
 # Copy source files
@@ -56,13 +62,6 @@ COPY . .
 
 # Build TypeScript
 RUN npm run build
-
-# Create puppeteer cache directory
-RUN mkdir -p .cache/puppeteer
-
-# Set environment variables for Puppeteer
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
 # Expose port
 EXPOSE 5000
