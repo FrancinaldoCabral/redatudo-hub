@@ -61,7 +61,7 @@ Texto: "${args.text}"
 Forneça a correção completa com todas as informações necessárias.`;
 
     const response = await openai.createCompletion({
-      model: metadata.model || 'google/gemini-2.5-flash-lite-preview-09-2025',
+      model: metadata.model || 'google/gemini-2.5-flash-lite',
       max_tokens: 64000,
       messages: [{ role: 'user', content: prompt }],
       tools: tools,

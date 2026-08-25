@@ -56,7 +56,7 @@ const tccThemesTool: Tool = {
     const prompt = `Gere ${args.number || 5} temas para TCC na área de ${args.area}. Nível: ${args.level || 'graduação'}.`;
 
     const response = await openai.createCompletion({
-      model: metadata.model || 'google/gemini-2.5-flash-lite-preview-09-2025',
+      model: metadata.model || 'google/gemini-2.5-flash-lite',
       max_tokens: 64000,
       messages: [{ role: 'user', content: prompt }],
       tools: tools,

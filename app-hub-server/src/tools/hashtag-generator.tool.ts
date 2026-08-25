@@ -56,7 +56,7 @@ const hashtagGeneratorTool: Tool = {
     const prompt = args.theme;
 
     const response = await openai.createCompletion({
-      model: metadata.model || 'google/gemini-2.5-flash-lite-preview-09-2025',
+      model: metadata.model || 'google/gemini-2.5-flash-lite',
       max_tokens: 64000,
       messages: [{ role: 'user', content: prompt }],
       tools: tools,
